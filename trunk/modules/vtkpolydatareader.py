@@ -9,45 +9,32 @@ from enthought.tvtk.api import tvtk
 import types
 
 module_info = {'name': 'visual.vtkpolydatareader',
-				 'desc': "Module with cone source"}
+                'desc': "Module with cone source"}
 
 class vtkpolydatareader(Module):
-	""" modulo de prueba visual """
-	VTK_File = File(filter=['*.vtk'])
+    """ modulo de prueba visual """
+    VTK_File = File(filter=['*.vtk'])
 
-	view = Group('VTK_File')
-
-
-	def start(self):
-		self.name = 'VTK Data Reader'
-		self.output_ports.append(OutputPort(types.IntType, 'salida1' ,self))
+    view = Group('VTK_File')
 
 
-	def _process(self):
-		self.progress = 0
-
-		self.poly = tvtk.PolyDataReader(file_name = self.VTK_File )
-		print self.poly.file_name
-#		m = tvtk.PolyDataMapper(input=self.poly.output)
-#		p = tvtk.Property()
-#		self.actor = tvtk.Actor(mapper=m, property=p)
-		poly = self.poly.output
-		poly.update()
-		print poly
-
-		polys = poly.polys
-		polys.init_traversal()
-
-		npts = 0
-		pts  = 0
-		print polys.to_array()
+    def start(self):
+        self.name = 'VTK Data Reader'
+        self.output_ports.append(OutputPort(types.IntType, 'salida1' ,self))
 
 
-		self.progress = 100
-		self.get_output('salida1').data = self.poly.output
+    def _process(self):
+        self.progress = 0
 
-	def _VTK_File_changed(self):
-		self.process()
+        self.poly = tvtk.PolyDataReader(file_name = self.VTK_File )
+        print self.poly.file_name
+        poly = self.poly.output
+
+        self.progress = 100
+        self.get_output('salida1').data = self.poly.output
+
+    def _VTK_File_changed(self):
+        self.process()
 
 
 
