@@ -13,7 +13,8 @@ import wx.lib.ogl as ogl
 import wx.lib.docview as docview
 import wx.lib.pydocview as pydocview
 import logging.config
-from mapero.datafloweditor.dvdataflow_editor import DataflowDocument, DataflowView
+from mapero.datafloweditor.view import DataflowView
+from mapero.datafloweditor.document import DataflowDocument
 from mapero.datafloweditor.dataflow_editor_frame import DataflowEditorFrame
 _ = wx.GetTranslation
 
