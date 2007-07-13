@@ -13,9 +13,11 @@ import wx.lib.ogl as ogl
 import wx.lib.docview as docview
 import wx.lib.pydocview as pydocview
 import logging.config
-from mapero.datafloweditor.view import DataflowView
-from mapero.datafloweditor.document import DataflowDocument
-from mapero.datafloweditor.dataflow_editor_frame import DataflowEditorFrame
+
+from editor_frame import DataflowEditorFrame
+from document import DataflowDocument
+from view import DataflowView
+
 _ = wx.GetTranslation
 
 
@@ -99,7 +101,6 @@ class DataflowEditorApplication(pydocview.DocApp):
         # Tell the framework that everything is great
         return True
 
-
 #----------------------------------------------------------------------------
 # Main
 #----------------------------------------------------------------------------
@@ -108,6 +109,5 @@ class DataflowEditorApplication(pydocview.DocApp):
 ogl.OGLInitialize()
 app = DataflowEditorApplication(redirect=False)
 logging_conf = os.path.join(cwd3, 'logging.conf')
-print logging_conf
 logging.config.fileConfig(logging_conf)
 app.MainLoop()
