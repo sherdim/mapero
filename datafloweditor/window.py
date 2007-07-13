@@ -21,7 +21,7 @@ from enthought.traits import Float, Str, Instance
 from enthought.traits.ui import View, Item
 from mapero.core.module import Module
 from mapero.core.modulemanager import ModuleManager
-from mapero.datafloweditor.dataflowdiagram import DataflowDiagram
+from mapero.datafloweditor.diagram import DataflowDiagram
 
 from mapero.core.catalog import Catalog
 from mapero.core.ui.catalog_tree import CatalogTree

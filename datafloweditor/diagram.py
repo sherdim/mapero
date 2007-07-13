@@ -5,10 +5,6 @@ import wx.lib.ogl as ogl
 
 ID_MOUSE_MOVE = 101
 
-from mapero.datafloweditor.moduleshape import PortShape, ModuleShape
-from mapero.datafloweditor.modulegui import ModuleGUI
-from mapero.datafloweditor.connectiongui import ConnectionGUI
-from xml.dom.minidom import Document, parse
 
 class ModuleNameDropTarget(wx.TextDropTarget):
     def __init__(self, parent):
@@ -41,7 +37,8 @@ class DataflowDiagram(ogl.Diagram):
         self.connection_shapes = []
         self.from_here = False
         self.module_selected = None
-
+        print "starting diagram !!!"
+        
     def OnMouseEvent(self, evt):
         canvas = self.GetCanvas()
         dc = wx.ClientDC(canvas)
