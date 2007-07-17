@@ -8,10 +8,13 @@
 import wx
 import wx.lib.docview
 import wx.lib.pydocview
+import logging
 
 from commands import *
-from dataflowdiagram import DataflowDiagram
+from diagram import DataflowDiagram
 from xml.dom.minidom import Document, parse
+
+log = logging.getLogger("mapero.logger.mvc");
 
 _ = wx.GetTranslation
 
@@ -90,14 +93,19 @@ class DataflowView(wx.lib.docview.View):
 	def OnUpdate(self, sender = None, hint = None):
 		if wx.lib.docview.View.OnUpdate(self, sender, hint):
 			return
-		print "UPDATE !!!"
+		log.debug( "updating view" )
 		for module, geometrics in self.GetDocument().GetModuleGeometrics().items():
 			module_shape = self.GetDiagramCtrl().get_module_shape(module)
 			if module_shape:
 				module_shape.SetGeometrics(geometrics)
 			else:
-				print "adding module shape"
+				log.debug( "adding module shape" )
 				self.GetDiagramCtrl().add_module_shape(module, geometrics)
+		for module_shape in self.GetDiagramCtrl().module_shapes:
+			if (module_shape not in self.GetDocument().GetModuleGeometrics().keys()):
+				log.debug("removing module shape for : %s", module_shape.module.name )
+				self.GetDiagramCtrl().remove_module_shape(module_shape.module)
+				
 
 		for connection, geometrics in self.GetDocument().GetConnectionGeometrics().items():
 			connection_shape = self.GetDiagramCtrl().get_connection_shape(connection)

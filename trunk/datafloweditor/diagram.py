@@ -1,5 +1,7 @@
+from module_shape import ModuleShape
+from connection_shape import ConnectionShape
 from information_popup import InformationPopup
-from mapero.datafloweditor.connectionshape import ConnectionShape
+
 import wx
 import wx.lib.ogl as ogl
 
@@ -99,6 +101,13 @@ class DataflowDiagram(ogl.Diagram):
         self.AddShape(module_shape)
         self.module_shapes.append(module_shape)
         module_shape.SetGeometrics(geometrics)
+        
+    def remove_module_shape(self, module):
+        module_shape = self.get_module_shape(module)
+        self.RemoveModuleShape(module_shape)
+        self.module_shapes.remove(module_shape)
+        del module_shape
+        
 
     def add_connection_shape(self, connection):
         connection_shape = ConnectionShape(connection)
@@ -117,12 +126,6 @@ class DataflowDiagram(ogl.Diagram):
         connection_shape.Show(True)
 
         self.GetCanvas().Refresh()
-
-    def remove_module(self, module):
-        module_gui = self.get_module_gui(module)
-        module_gui.module_shape.Delete()
-        self.modules_gui.remove(module_gui)
-        self.Refresh()
 
     def new_connection(self, x0, y0, x1, y1):
         port_shape_from = self.GetCanvas().FindShape(x0, y0)[0]

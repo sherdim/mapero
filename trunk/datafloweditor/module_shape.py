@@ -1,7 +1,7 @@
 import wx
 import wx.lib.ogl as ogl
 from wx.lib.ogl._oglmisc import ATTACHMENT_MODE_EDGE, SHADOW_RIGHT
-from mapero.datafloweditor.connectionshape import ConnectionShape
+from connection_shape import ConnectionShape
 
 class AttachmentPoint(object):
 	def __init__(self, id = 0, x = 0, y = 0):

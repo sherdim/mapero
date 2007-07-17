@@ -1,8 +1,9 @@
 import wx
+import logging
 from mapero.core.module_manager import ModuleManager
 from xml.dom.minidom import Document, parse
 
-
+log = logging.getLogger("mapero.logger.mvc");
 
 class Point2D:
     def __init__(self, x, y):
@@ -89,7 +90,7 @@ class DataflowDocument(wx.lib.docview.Document):
             connection_element.appendChild(input_port)
             diagram.appendChild(connection_element)
 
-        print doc.writexml(fileObject, "",  "\t", "\n")
+        doc.writexml(fileObject, "",  "\t", "\n")
         return True
 
 
@@ -122,8 +123,7 @@ class DataflowDocument(wx.lib.docview.Document):
 
     def add_module(self, module_name, x, y, w = 151, h = 91):
         self._module_manager.set(trait_change_notify = False)
-        print "------------ module_name", module_name
-        print "------------ geometrics", x, " " , y, " " , w, " " , h
+        log.debug( "adding module: %s - geometrics:  ( x: %d, y: %d, w: %d, h: %d )"  %  (module_name, x, y, w, h) )
         module = self._module_manager.add(module_name)
         self._module_geometrics[module] = ModuleGeometrics(x, y, w, h)
         return module

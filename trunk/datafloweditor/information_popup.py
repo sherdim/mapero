@@ -1,6 +1,6 @@
-from connectionshape import ConnectionShape
-from moduleshape import PortShape
-from moduleshape import ModuleShape
+from connection_shape import ConnectionShape
+from module_shape import PortShape
+from module_shape import ModuleShape
 import wx
 _ = wx.GetTranslation
 
