@@ -104,7 +104,12 @@ class DataflowDiagram(ogl.Diagram):
         
     def remove_module_shape(self, module):
         module_shape = self.get_module_shape(module)
-        self.RemoveModuleShape(module_shape)
+        for input_port_shape in module_shape.input_port_shapes:
+            self.RemoveShape(input_port_shape)
+        for output_port_shape in module_shape.output_port_shapes:
+            self.RemoveShape(output_port_shape)
+
+        self.RemoveShape(module_shape)
         self.module_shapes.remove(module_shape)
         del module_shape
         
