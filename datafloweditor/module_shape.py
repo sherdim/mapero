@@ -3,6 +3,9 @@ import wx.lib.ogl as ogl
 from wx.lib.ogl._oglmisc import ATTACHMENT_MODE_EDGE, SHADOW_RIGHT
 from connection_shape import ConnectionShape
 
+import logging
+log = logging.getLogger("mapero.logger.diagram");
+
 class AttachmentPoint(object):
 	def __init__(self, id = 0, x = 0, y = 0):
 		self._id = id
@@ -73,7 +76,9 @@ class ModuleShape(ogl.RectangleShape):
 		self.SetBrush(wx.Brush(wx.Colour(243,250,167), wx.SOLID))
 		self.input_port_shapes = []
 		self.output_port_shapes = []
-		self.p_width = 11;
+		self.p_width = 11
+		
+		log.debug("creating module shape for module : %s" % module)
 
 		self.SetX(x)
 		self.SetY(y)
@@ -196,9 +201,15 @@ class ModuleShape(ogl.RectangleShape):
 		self.DrawLinks(dc)
 	
 	def SetGeometrics(self, geometrics):
-	    	self.SetX(geometrics.GetX())
-	    	self.SetY(geometrics.GetY())
-	    	self.SetHeight(geometrics.GetHeight())
-	    	self.SetWidth(geometrics.GetWidth())
+		self.SetX(geometrics.GetX())
+		self.SetY(geometrics.GetY())
+		self.SetHeight(geometrics.GetHeight())
+		self.SetWidth(geometrics.GetWidth())
 		self.UpdateModule(self.module)
 
+	def __del__():
+		log.debug("removing module shape for module : %s" % self.module)
+		
+		input_port_shapes = []
+		output_port_shapes = []
+		

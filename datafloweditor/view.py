@@ -99,10 +99,10 @@ class DataflowView(wx.lib.docview.View):
 			if module_shape:
 				module_shape.SetGeometrics(geometrics)
 			else:
-				log.debug( "adding module shape" )
+				log.debug( "adding module shape for : %s", module.name )
 				self.GetDiagramCtrl().add_module_shape(module, geometrics)
 		for module_shape in self.GetDiagramCtrl().module_shapes:
-			if (module_shape not in self.GetDocument().GetModuleGeometrics().keys()):
+			if (module_shape.module not in self.GetDocument().GetModuleGeometrics().keys()):
 				log.debug("removing module shape for : %s", module_shape.module.name )
 				self.GetDiagramCtrl().remove_module_shape(module_shape.module)
 				
