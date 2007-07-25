@@ -135,10 +135,11 @@ class DataflowDocument(wx.lib.docview.Document):
 
     def move_module(self, module, mx, my):
         geometric = self.GetModuleGeometrics()[module]
+        log.debug( "moving module:  %s  - pos (%d,%d ) " % (module.name, mx, my))
         geometric.x += mx
         geometric.y += my
-        print "moved module: ", module.name, " (", mx, " , ", my, ")"
 
     def remove_module(self, module):
         self._module_manager.remove(module)
+        log.debug( "removing module:  %s " % (module.name))
         del self._module_geometrics[module]
