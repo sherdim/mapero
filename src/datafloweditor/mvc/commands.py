@@ -90,3 +90,22 @@ class AddModuleCommand(SimpleDVModuleCommand):
         doc.remove_module(module)
         return True
 
+class RemoveModuleCommand(SimpleDVModuleCommand):
+    def __init__(self, dataflowDocument, module, x, y):
+        self._x = x
+        self._y = y
+        SimpleDVModuleCommand.__init__(self, "Remove Module", dataflowDocument, module)
+
+    def SimpleDo(self):
+        doc = self.GetDataflowDocument()
+        module = self.GetModule()
+        x = self._x
+        y = self._y
+        self._module = doc.remove_module(module)
+        return True
+
+    def SimpleUndo(self):
+        doc = self.GetDataflowDocument()
+        module = self.GetModule()
+        doc.add_module(module, x, y)
+        return True
