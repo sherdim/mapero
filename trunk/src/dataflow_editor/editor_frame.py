@@ -3,8 +3,8 @@ import wx.aui
 import wx.lib.ogl as ogl
 import wx.lib.docview as docview
 import wx.lib.pydocview as pydocview
-from mapero.core.catalog import Catalog
-from mapero.core.ui.catalog_tree import CatalogTree
+from core.catalog import Catalog
+from core.ui.catalog_tree import CatalogTree
 
 class DataflowEditorFrame(pydocview.DocTabbedParentFrame):
     def __init__(self, docManager, frame, id, title, pos = wx.DefaultPosition,

@@ -1,5 +1,5 @@
-from mapero.core.connection import Connection
-from mapero.core.module import Module
+from core.connection import Connection
+from core.module import Module
 from enthought.traits.api import HasTraits,  List
 
 class Network(HasTraits):

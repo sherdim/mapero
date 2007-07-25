@@ -19,9 +19,9 @@ from enthought.pyface.action import Action, Group, MenuBarManager, MenuManager,\
 
 from enthought.traits import Float, Str, Instance
 from enthought.traits.ui import View, Item
-from mapero.core.module import Module
-from mapero.core.modulemanager import ModuleManager
-from mapero.datafloweditor.diagram import DataflowDiagram
+from core.module import Module
+from core.modulemanager import ModuleManager
+from dataflow_editor.diagram import DataflowDiagram
 
 from mapero.core.catalog import Catalog
 from mapero.core.ui.catalog_tree import CatalogTree

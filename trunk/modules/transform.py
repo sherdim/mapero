@@ -1,7 +1,7 @@
+from core.module import Module
+from core.port import OutputPort, InputPort
 from numpy.oldnumeric.precision import Float
 from enthought.traits.api import Array
-from mapero.core.module import Module
-from mapero.core.port import OutputPort, InputPort
 from numpy import zeros, dot
 
 module_info = {	"name": "DataTransform.transform",

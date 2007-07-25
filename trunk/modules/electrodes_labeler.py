@@ -1,7 +1,6 @@
-from mapero.core.port import InputPort
+from core.module import Module
+from core.port import OutputPort, InputPort
 from numpy.oldnumeric.precision import Int
-from mapero.core.module import Module
-from mapero.core.port import OutputPort
 from enthought.traits.api import File, Array, List, Str
 from enthought.traits.ui.api import  Group
 from numpy import array, zeros, resize

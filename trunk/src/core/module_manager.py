@@ -1,6 +1,6 @@
-from mapero.core.network import Network
-from mapero.core.connection import Connection
-from mapero.core.catalog import Catalog
+from core.network import Network
+from core.connection import Connection
+from core.catalog import Catalog
 from enthought.traits.api import HasTraits, Instance, Trait
 import gc
 import sys

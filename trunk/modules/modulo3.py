@@ -1,6 +1,5 @@
-from mapero.core.module import Module
-from mapero.core.port import OutputPort
-from mapero.core.port import InputPort
+from core.module import Module
+from core.port import OutputPort, InputPort
 from enthought.traits.api import Range, Int
 from enthought.traits.ui.api import View, Group
 

@@ -1,6 +1,5 @@
-from mapero.core.module import VisualModule
-from mapero.core.port import OutputPort
-from mapero.core.port import InputPort , MultiInputPort
+from core.module import VisualModule
+from core.port import OutputPort, InputPort
 from enthought.traits.api import Range, Int, Instance
 from enthought.traits.ui.api import View, Group, Item
 from enthought.pyface.tvtk.decorated_scene import DecoratedScene

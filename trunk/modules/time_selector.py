@@ -1,8 +1,7 @@
+from core.module import VisualModule
+from core.port import OutputPort, InputPort
 from enthought.util import numerix
-from mapero.core.module import VisualModule
 from numpy.oldnumeric.precision import Float
-from mapero.core.port import OutputPort
-from mapero.core.port import InputPort
 from enthought.traits.api import Range, Array, Int
 from enthought.traits.ui.api import Group
 from enthought.chaco2.api import   add_default_axes, add_default_grids, LinearMapper,  ArrayDataSource, MultiArrayDataSource, DataRange1D
@@ -13,7 +12,7 @@ from scipy.special import *
 
 from enthought.enable2.wx_backend.api import Window
 
-from mapero.multiline_plot import MultiLinePlot
+from multiline_plot import MultiLinePlot
 
 from enthought.util.numerix import linspace
 
