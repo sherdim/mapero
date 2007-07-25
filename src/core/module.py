@@ -12,8 +12,8 @@ import logging
 from threading import Thread
 from enthought.traits.api import HasTraits, Range, Any, List, Str
 
-from mapero.core.port import InputPort
-from mapero.core.port import OutputPort
+from core.port import InputPort
+from core.port import OutputPort
 
 from enthought.traits.ui.api import View, Group, Include
 

@@ -1,7 +1,7 @@
+from core.module import Module
+from core.port import OutputPort, InputPort
 from numpy.oldnumeric.precision import Float, Int
 from enthought.traits.api import Array, List, Str
-from mapero.core.module import Module
-from mapero.core.port import OutputPort, InputPort
 from numpy import ones, zeros, dot, take, argsort
 
 module_info = {	"name": "DataTransform.closest_point_finder",

@@ -14,9 +14,9 @@ import wx.lib.docview as docview
 import wx.lib.pydocview as pydocview
 import logging.config
 
-from editor_frame import DataflowEditorFrame
-from document import DataflowDocument
-from view import DataflowView
+from dataflow_editor.editor_frame import DataflowEditorFrame
+from dataflow_editor.mvc.document import DataflowDocument
+from dataflow_editor.mvc.view import DataflowView
 
 _ = wx.GetTranslation
 
@@ -108,6 +108,6 @@ class DataflowEditorApplication(pydocview.DocApp):
 # Run the DataflowEditorApplication and do not redirect output to the wxPython error dialog
 ogl.OGLInitialize()
 app = DataflowEditorApplication(redirect=False)
-logging_conf = os.path.join(cwd3, 'logging.conf')
+logging_conf = os.path.join(cwd2, 'logging.conf')
 logging.config.fileConfig(logging_conf)
 app.MainLoop()

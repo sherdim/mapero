@@ -1,7 +1,6 @@
-from mapero.core.module import Module
+from core.module import Module
+from core.port import OutputPort, InputPort
 from numpy.oldnumeric.precision import Float, Int
-from mapero.core.port import OutputPort
-from mapero.core.port import InputPort
 from enthought.traits.api import Array, Enum
 from enthought.traits.ui.api import Group
 

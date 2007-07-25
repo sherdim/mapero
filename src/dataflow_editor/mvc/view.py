@@ -11,7 +11,7 @@ import wx.lib.pydocview
 import logging
 
 from commands import *
-from diagram import DataflowDiagram
+from dataflow_editor.ui.shape.diagram import DataflowDiagram
 from xml.dom.minidom import Document, parse
 
 log = logging.getLogger("mapero.logger.mvc");

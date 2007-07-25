@@ -1,6 +1,6 @@
 import wx
 import logging
-from mapero.core.module_manager import ModuleManager
+from core.module_manager import ModuleManager
 from xml.dom.minidom import Document, parse
 
 log = logging.getLogger("mapero.logger.mvc");

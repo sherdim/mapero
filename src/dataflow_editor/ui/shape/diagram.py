@@ -1,6 +1,6 @@
 from module_shape import ModuleShape
 from connection_shape import ConnectionShape
-from information_popup import InformationPopup
+from dataflow_editor.information_popup import InformationPopup
 
 import wx
 import wx.lib.ogl as ogl

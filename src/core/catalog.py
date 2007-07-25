@@ -1,14 +1,17 @@
 from enthought.traits.api import List, Directory, HasTraits
-from os.path import abspath, dirname, join, split, isdir, isfile
+from os.path import abspath, dirname, join, split, isdir, isfile, realpath
 import glob
 import string
 import re
 import imp
-import mapero
-
 #TODO: verificar mejor los paths y los nombres que se dan a los modulos
+cwd1 = realpath(__file__)
+cwd2 = split(cwd1)[0]
+cwd3 = split(cwd2)[0]
+cwd4 = split(cwd3)[0]
 
-mapero_path =  abspath(dirname(mapero.__file__))
+mapero_path =  abspath(cwd4)
+print mapero_path
 builtin_modules = join(mapero_path, 'modules')
 
 class NotFoundInCatalogError(Exception):

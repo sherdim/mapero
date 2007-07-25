@@ -9,7 +9,7 @@ from enthought.traits.traits import Bool
 
 from enthought.traits.api import Instance, HasTraits
 
-from mapero.core.port import OutputPort, InputPort
+from core.port import OutputPort, InputPort
 
 
 
