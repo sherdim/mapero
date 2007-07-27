@@ -12,6 +12,7 @@ import logging
 
 from commands import *
 from dataflow_editor.ui.shape.diagram import DataflowDiagram
+from dataflow_editor.ui.interactor.keyboard import KeyboardInteractor
 from xml.dom.minidom import Document, parse
 
 log = logging.getLogger("mapero.logger.mvc");
@@ -38,7 +39,10 @@ class DataflowView(wx.lib.docview.View):
 		frame.Layout()
 		frame.Show(True)
 		self.Activate()
-		return True
+        	self.keyword_interactor = KeyboardInteractor(doc, self)
+		canvas = self._diagramCtrl.GetCanvas()
+		wx.EVT_KEY_UP(canvas, self.keyword_interactor.on_event)
+        	return True
 
 
 	def OnModify(self, event):
