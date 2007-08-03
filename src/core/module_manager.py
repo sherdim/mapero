@@ -1,11 +1,13 @@
 from core.network import Network
 from core.connection import Connection
 from core.catalog import Catalog
+from core.module import Module
 from enthought.traits.api import HasTraits, Instance, Trait
 import gc
 import sys
+import logging
 
-
+log = logging.getLogger("mapero.logger.engine");
 
 
 class ModuleNotFoundInNetworkError(Exception):
@@ -47,12 +49,12 @@ class ModuleManager(HasTraits):
                 return True
         return False
 
-    def add(self, module_name, label = '', module = None):
-        print 'module_name: ', module_name, '  label: ', label
+    def add(self, module_id, label = '', module = None):
+        log.debug( 'module_id: %s - label: %s ' % ( module_id, label) )
         module_number = 1
 
         if not module:
-            module = self.catalog.load_module(module_name)
+            module = self.catalog.load_module(module_id)
 
         if module:
             module.start_module()
@@ -67,7 +69,7 @@ class ModuleManager(HasTraits):
             return module
         else:
             print "asdcasdca"
-
+        
     def remove(self, module_label):
         module = self.get_module(module_label)
         self.disconnect_module(module_label)
@@ -136,8 +138,13 @@ class ModuleManager(HasTraits):
             if (port_from == connection.output_port) and (port_to == connection.input_port):
                 self.network.connections.remove(connection)
 
-    def disconnect_module(self, module_label):
-        module = self.get_module(module_label)
+    def disconnect_module(self, module):
+        connections = self.get_module_connections(module)
+        for connection in connections:
+            self.network.connections.remove(connection)
+            
+    def get_module_connections(self, module):
+        module = self.get_module(module)
 
         def filter_connections(connection):
             if (connection.input_port.module == module            \
@@ -147,5 +154,5 @@ class ModuleManager(HasTraits):
                 return False
 
         connections = filter(filter_connections, self.network.connections)
-        for connection in connections:
-            self.network.connections.remove(connection)
+        return connections
+        

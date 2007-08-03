@@ -54,7 +54,7 @@ class DataflowView(wx.lib.docview.View):
 				wordWrapStyle = wx.TE_WORDWRAP
 		else:
 				wordWrapStyle = wx.TE_DONTWRAP
-		module_manager = self.GetDocument().GetModuleManager()
+		module_manager = self.GetDocument().get_module_manager()
 		diagramCtrl = DataflowDiagram(parent, module_manager, None, self)
 		return diagramCtrl
 
@@ -98,37 +98,45 @@ class DataflowView(wx.lib.docview.View):
 		if wx.lib.docview.View.OnUpdate(self, sender, hint):
 			return
 		log.debug( "updating view" )
-		for module, geometrics in self.GetDocument().GetModuleGeometrics().items():
-			module_shape = self.GetDiagramCtrl().get_module_shape(module)
+		for module, geometrics in self.GetDocument().get_module_geometrics().items():
+			module_shape = self.get_diagram().get_module_shape(module)
 			if module_shape:
 				module_shape.SetGeometrics(geometrics)
 			else:
 				log.debug( "adding module shape for : %s", module.name )
-				self.GetDiagramCtrl().add_module_shape(module, geometrics)
-		for module_shape in self.GetDiagramCtrl().module_shapes:
-			if (module_shape.module not in self.GetDocument().GetModuleGeometrics().keys()):
+				self.get_diagram().add_module_shape(module, geometrics)
+		for module_shape in self.get_diagram().module_shapes:
+			if (module_shape.module not in self.GetDocument().get_module_geometrics().keys()):
 				log.debug("removing module shape for : %s", module_shape.module.name )
-				self.GetDiagramCtrl().remove_module_shape(module_shape.module)
+				module_shape.Select(False)
+				self.get_diagram().remove_module_shape(module_shape.module)
 				
 
-		for connection, geometrics in self.GetDocument().GetConnectionGeometrics().items():
-			connection_shape = self.GetDiagramCtrl().get_connection_shape(connection)
+		for connection, geometrics in self.GetDocument().get_connection_geometrics().items():
+			connection_shape = self.get_diagram().get_connection_shape(connection)
 			if connection_shape:
 				connection_shape.SetGeometrics(geometrics)
 				module_from = connection.output_port.module
 				module_to = connection.input_port.module
-				module_from_shape = self.GetDiagramCtrl().get_module_shape(module_from)
-				module_to_shape = self.GetDiagramCtrl().get_module_shape(module_to)
-				module_from_geometrics = self.GetDocument().GetModuleGeometrics()[module_from]
-				module_to_geometrics = self.GetDocument().GetModuleGeometrics()[module_to]
+				module_from_shape = self.get_diagram().get_module_shape(module_from)
+				module_to_shape = self.get_diagram().get_module_shape(module_to)
+				module_from_geometrics = self.GetDocument().get_module_geometrics()[module_from]
+				module_to_geometrics = self.GetDocument().get_module_geometrics()[module_to]
 				module_from_shape.SetGeometrics(module_from_geometrics)
 				module_to_shape.SetGeometrics(module_to_geometrics)
 
 			else:
 				print "adding connection shape"
-				self.GetDiagramCtrl().add_connection_shape(connection)
+				self.get_diagram().add_connection_shape(connection)
 
-		self.GetDiagramCtrl().GetCanvas().Refresh()
+		for connection_shape in self.get_diagram().connection_shapes:
+                        if (connection_shape.connection not in self.GetDocument().get_connection_geometrics().keys()):
+				log.debug("removing connection shape for : %s", connection_shape )
+				connection_shape.Select(False)
+				self.get_diagram().remove_connection_shape(connection_shape.connection)
+                    
+
+		self.get_diagram().GetCanvas().Refresh()
 
 
 
@@ -149,13 +157,13 @@ class DataflowView(wx.lib.docview.View):
 			if not self._diagramCtrl:
 				return False
 			doc.GetCommandProcessor().Undo()
-			self.GetDiagramCtrl().GetCanvas().Refresh()
+			self.get_diagram().GetCanvas().Refresh()
 			return True
 		elif id == wx.ID_REDO:
 			if not self._diagramCtrl:
 				return False
 			doc.GetCommandProcessor().Redo()
-			self.GetDiagramCtrl().GetCanvas().Refresh()
+			self.get_diagram().GetCanvas().Refresh()
 			return True
 		elif id == wx.ID_CUT:
 			if not self._diagramCtrl:
@@ -195,9 +203,9 @@ class DataflowView(wx.lib.docview.View):
 
 	#--- Methods for DiagramDocument to call
 
-	def GetDiagramCtrl(self):
+	def get_diagram(self):
 		return self._diagramCtrl
-
+            
 	def move_module(self, module, mx, my):
 		doc = self.GetDocument()
 		move_command = MoveCommand(doc, module, mx, my)

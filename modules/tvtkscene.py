@@ -1,5 +1,5 @@
 from core.module import VisualModule
-from core.port import OutputPort, InputPort
+from core.port import OutputPort, MultiInputPort
 from enthought.traits.api import Range, Int, Instance
 from enthought.traits.ui.api import View, Group, Item
 from enthought.pyface.tvtk.decorated_scene import DecoratedScene
