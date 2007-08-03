@@ -1,6 +1,7 @@
 import wx
 import logging
 from core.module_manager import ModuleManager
+from core.module import Module
 from xml.dom.minidom import Document, parse
 
 log = logging.getLogger("mapero.logger.mvc");
@@ -43,13 +44,13 @@ class DataflowDocument(wx.lib.docview.Document):
         self._module_geometrics = {}
         self._connection_geometrics = {}
 
-    def GetModuleManager(self):
+    def get_module_manager(self):
         return self._module_manager
 
-    def GetModuleGeometrics(self):
+    def get_module_geometrics(self):
         return self._module_geometrics
 
-    def GetConnectionGeometrics(self):
+    def get_connection_geometrics(self):
         return self._connection_geometrics
 
     def SaveObject(self, fileObject):
@@ -121,12 +122,19 @@ class DataflowDocument(wx.lib.docview.Document):
 
         return True
 
-    def add_module(self, module_name, x, y, w = 151, h = 91):
+    def add_module(self, module, x, y, w = 151, h = 91):
         self._module_manager.set(trait_change_notify = False)
-        log.debug( "adding module: %s - geometrics:  ( x: %d, y: %d, w: %d, h: %d )"  %  (module_name, x, y, w, h) )
-        module = self._module_manager.add(module_name)
-        self._module_geometrics[module] = ModuleGeometrics(x, y, w, h)
-        return module
+        log.debug( "module parameter type : %s"  % (type(module)) )
+        log.debug( "adding module: %s - geometrics:  ( x: %d, y: %d, w: %d, h: %d )"  %  (module, x, y, w, h) )
+        if isinstance(module, Module):
+            log.debug("adding a module by instance")
+            module_inst = self._module_manager.add('', module.name, module )
+        else:
+            log.debug("adding a module by module_id")
+            module_inst = self._module_manager.add(module)
+        if (module_inst != None):
+            self._module_geometrics[module_inst] = ModuleGeometrics(x, y, w, h)
+            return module_inst
 
     def add_connection(self, module_from, output_port_name, module_to, input_port_name):
         connection = self._module_manager.connect(module_from, output_port_name, module_to, input_port_name)
@@ -134,12 +142,15 @@ class DataflowDocument(wx.lib.docview.Document):
 #        self._connection_geometrics.
 
     def move_module(self, module, mx, my):
-        geometric = self.GetModuleGeometrics()[module]
+        geometric = self.get_module_geometrics()[module]
         log.debug( "moving module:  %s  - pos (%d,%d ) " % (module.name, mx, my))
         geometric.x += mx
         geometric.y += my
 
     def remove_module(self, module):
-        self._module_manager.remove(module)
         log.debug( "removing module:  %s " % (module.name))
+        connections = self._module_manager.get_module_connections(module)
+        for connection in connections:
+            del self._connection_geometrics[connection]
+        self._module_manager.remove(module)
         del self._module_geometrics[module]

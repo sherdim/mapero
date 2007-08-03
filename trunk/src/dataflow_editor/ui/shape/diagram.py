@@ -1,9 +1,13 @@
 from module_shape import ModuleShape
+from module_shape import PortShape
 from connection_shape import ConnectionShape
 from dataflow_editor.information_popup import InformationPopup
 
 import wx
 import wx.lib.ogl as ogl
+import logging
+
+log = logging.getLogger('mapero.logger.diagram')
 
 ID_MOUSE_MOVE = 101
 
@@ -39,7 +43,7 @@ class DataflowDiagram(ogl.Diagram):
         self.connection_shapes = []
         self.from_here = False
         self.module_selected = None
-        print "starting diagram !!!"
+        log.debug( "starting diagram !!!" )
         
     def OnMouseEvent(self, evt):
         canvas = self.GetCanvas()
@@ -113,6 +117,15 @@ class DataflowDiagram(ogl.Diagram):
         self.module_shapes.remove(module_shape)
         del module_shape
         
+    def remove_connection_shape(self, connection):
+        log.debug("removing connection_shape for connection : %s " % (connection))
+        connection_shape = self.get_connection_shape(connection)
+        
+        log.debug("connection_shape founded : %s " % (connection_shape) )
+ 
+        self.RemoveShape(connection_shape)
+        self.connection_shapes.remove(connection_shape)
+        del connection_shape
 
     def add_connection_shape(self, connection):
         connection_shape = ConnectionShape(connection)

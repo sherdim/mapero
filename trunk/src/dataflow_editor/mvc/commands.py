@@ -1,6 +1,8 @@
 import wx
 _ = wx.GetTranslation
+import logging
 
+log = logging.getLogger('mapero.logger.mvc')
 
 class SimpleDVCommand(wx.lib.docview.Command):
     def __init__(self, name, dataflowDocument):
@@ -101,11 +103,15 @@ class RemoveModuleCommand(SimpleDVModuleCommand):
         module = self.GetModule()
         x = self._x
         y = self._y
+        log.debug("doing remove module : %s " % (module))
         self._module = doc.remove_module(module)
         return True
 
     def SimpleUndo(self):
         doc = self.GetDataflowDocument()
         module = self.GetModule()
+        x = self._x
+        y = self._y
+        log.debug("undoing remove module : %s " % (module))
         doc.add_module(module, x, y)
         return True
