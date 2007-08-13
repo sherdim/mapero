@@ -16,7 +16,6 @@ Here is resumed the process :
     {{{
     cd /usr/lib/python2.5/site-packages
     sudo wget http://code.enthought.com/enstaller/eggs/ubuntu/feisty/unstable/numpy.egg-info
-    sudo easy_install -f http://code.enthought.com/enstaller/eggs/ubuntu/feisty/unstable enthought.tvtk
     sudo easy_install -f http://code.enthought.com/enstaller/eggs/ubuntu/feisty/unstable enthought.chaco2
     }}}
   * Downloading the svn mapero code
