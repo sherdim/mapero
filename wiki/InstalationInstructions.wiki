@@ -18,7 +18,13 @@ Here is resumed the process :
     sudo wget http://code.enthought.com/enstaller/eggs/ubuntu/feisty/unstable/numpy.egg-info
     sudo easy_install -f http://code.enthought.com/enstaller/eggs/ubuntu/feisty/unstable enthought.chaco2
     }}}
-  * Downloading the svn mapero code
+  * Downloading the svn mapero code to your <desired-dir>
     {{{
+    cd <desired-dir>
     svn checkout http://mapero.googlecode.com/svn/trunk/ mapero
+    }}}
+  * Running mapero dataflow editor
+    {{{
+    cd mapero/src
+    python dvdataflow_editor_app.py
     }}}
