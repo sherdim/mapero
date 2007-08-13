@@ -3,7 +3,7 @@
 
 _mapero is in an early development phase so at the moment you only can test the application downloading the svn repository code and run it locally (we have not platform specifics package to install)_
 
-*mapero* is based on an excellent python tool suit from [http://www.enthought.com/ Enthought Inc.], so basically the installation process is based on get running some components of ETS ([https://svn.enthought.com/enthought/wiki/InstallWithEggs Installing ETS using eggs]) and download the mapero svn code.
+*mapero* is based on an excellent python tool suit from [http://www.enthought.com/ Enthought Inc.], so basically the installation process is based on get running some components of ETS ([https://svn.enthought.com/enthought/wiki/InstallWithEggs Installing ETS using eggs]) and downloading the mapero svn code.
 
 Here is resumed the process :
 
