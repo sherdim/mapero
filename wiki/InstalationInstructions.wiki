@@ -1,6 +1,13 @@
-#summary One-sentence summary of this page.
+#labels Phase-Deploy
+#Platform specific installation instructions.
+_mapero is in an early develepment phase so at the moment you only can test the application downloading the svn repository code and run it locally (we have not platform specifics package to install) _
 
-= Introduction =
+*mapero* is based on an excellent python tool suit from [http://www.enthought.com/ Enthought Inc.], so basically the installation process is based on get running some components of ETS (Enthought Tool Suit) and download the mapero svn code.
+
+
+
+
+= Ubuntu Feisty =
 
 Add your content here.
 
@@ -11,4 +18,3 @@ Add your content here.  Format your content with:
   * Text in *bold* or _italic_
   * Headings, paragraphs, and lists
   * Automatic links to other wiki pages
-
