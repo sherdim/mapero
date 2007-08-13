@@ -10,9 +10,9 @@ Here is resumed the process :
 = Ubuntu Feisty =
   * Installing the ETS prerequisites
     {{{
-    apt-get install python-wxgtk2.8 python-wxtools python-setuptools python-numpy python-scipy python-vtk 
+    sudo apt-get install python-wxgtk2.8 python-setuptools python-numpy python-scipy python-vtk 
     }}}
   * Downloading the svn mapero code
     {{{
-
+    svn checkout http://mapero.googlecode.com/svn/trunk/ mapero
     }}}
