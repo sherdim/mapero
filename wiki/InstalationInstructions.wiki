@@ -3,14 +3,21 @@
 
 _mapero is in an early development phase so at the moment you only can test the application downloading the svn repository code and run it locally (we have not platform specifics package to install)_
 
-*mapero* is based on an excellent python tool suit from [http://www.enthought.com/ Enthought Inc.], so basically the installation process is based on get running some components of ETS (Enthought Tool Suit) [https://svn.enthought.com/enthought/wiki/InstallWithEggs Installing ETS using eggs ] and download the mapero svn code.
+*mapero* is based on an excellent python tool suit from [http://www.enthought.com/ Enthought Inc.], so basically the installation process is based on get running some components of ETS ([https://svn.enthought.com/enthought/wiki/InstallWithEggs Installing ETS using eggs]) and download the mapero svn code.
 
 Here is resumed the process :
 
 = Ubuntu Feisty =
   * Installing the ETS prerequisites
     {{{
-    sudo apt-get install python-wxgtk2.8 python-setuptools python-numpy python-scipy python-vtk 
+    sudo apt-get install python2.5 python-wxgtk2.8 python-setuptools python-numpy python-scipy python-vtk 
+    }}}
+  * Installing the ETS required components
+    {{{
+    cd /usr/lib/python2.5/site-packages
+    sudo wget http://code.enthought.com/enstaller/eggs/ubuntu/feisty/unstable/numpy.egg-info
+    sudo easy_install -f http://code.enthought.com/enstaller/eggs/ubuntu/feisty/unstable enthought.tvtk
+    sudo easy_install -f http://code.enthought.com/enstaller/eggs/ubuntu/feisty/unstable enthought.chaco2
     }}}
   * Downloading the svn mapero code
     {{{
