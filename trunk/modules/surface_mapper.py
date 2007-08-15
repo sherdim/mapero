@@ -1,7 +1,7 @@
 from core.module import Module
 from core.port import OutputPort, InputPort
 from numpy.oldnumeric.precision import Float, Int
-from enthought.traits.api import Array, Trait, Instance
+from enthought.traits import api as traits
 from enthought.traits.ui.api import Group
 from enthought.tvtk.api import tvtk
 
@@ -15,32 +15,21 @@ module_info = {'name': 'InverseSolution.surface_mapper',
 class surface_mapper (Module):
     """ surface mapper """
 
-    mapper = Instance(tvtk.PolyDataMapper)
-    property = Instance(tvtk.Property)
-
-    view = Group('mapper','property')
-
     def start(self):
         self.name = 'Surface Mapper'
 
-        dipole_sources_trait = Array(typecode=Float, shape=(None,None))
+        dipole_sources_trait = traits.Array(typecode=Float, shape=(None,None))
         self.ip_dipole_sources = InputPort(dipole_sources_trait, 'dipole source', self)
         self.input_ports.append(self.ip_dipole_sources)
         self.i_dipole_sources = None
-
-        cortex_trait = Trait
-        self.ip_cortex = InputPort(cortex_trait, 'cortex', self)
+        
+        polydata_trait = traits.Trait(tvtk.PolyData)
+        self.ip_cortex = InputPort(polydata_trait, 'cortex', self)
         self.input_ports.append(self.ip_cortex)
         self.i_cortex = None
 
-        actor_trait = Trait
-        self.op_actor = OutputPort(actor_trait, 'actor', self)
-        self.output_ports.append(self.op_actor)
-
-        self.mapper = tvtk.PolyDataMapper()
-        self.actor = tvtk.Actor()
-        self.property = tvtk.Property()
-        self.actor.property = self.property
+        self.op_polydata = OutputPort(polydata_trait, 'mapped cortex', self)
+        self.output_ports.append(self.op_polydata)
 
 
     def update(self, input_port, old, new):
@@ -53,19 +42,18 @@ class surface_mapper (Module):
 
     def _process(self):
         self.progress = 0
-        cortex = self.i_cortex
+        ocortex = self.i_cortex
         if (self.i_dipole_sources != None):
             dipoles = array(self.i_dipole_sources)
 #        dipoles = zeros(12670)
 #        dipoles[8197] = 1
             print "surface mapper: process ..."
 
-            cortex.point_data.scalars = dipoles[0:dipoles.shape[0],0]
+            ocortex.point_data.scalars = dipoles[0:dipoles.shape[0],0]
             print "dipoles.shape: ", dipoles.shape
-        self.mapper.input = cortex
-        self.actor.mapper = self.mapper
 
         self.progress = 100
-        self.op_actor.data = self.actor
+        self.op_polydata.data = ocortex
+        self.op_polydata.update_data()
 
 

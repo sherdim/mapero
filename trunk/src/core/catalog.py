@@ -1,4 +1,5 @@
-from enthought.traits.api import List, Directory, HasTraits
+from enthought.traits.api import List
+from enthought.traits.api import Directory, HasTraits
 from os.path import abspath, dirname, join, split, isdir, isfile, realpath
 import glob
 import string

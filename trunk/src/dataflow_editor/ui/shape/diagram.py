@@ -53,18 +53,18 @@ class DataflowDiagram(ogl.Diagram):
         (winx, winy) = evt.GetPositionTuple()
         shape = canvas.FindShape(x, y)[0]
 
-        if shape != None:
-            if not hasattr(self, "popup"):
-                popup = InformationPopup(canvas, shape)
-                self.popup = popup
-                pos = canvas.ClientToScreen((winx,winy))
-                print pos
-                popup.Position(pos, (0,-10))
-                popup.Show()
-        else:
-            if hasattr(self, "popup"):
-                self.popup.Destroy()
-                del self.popup
+#        if shape != None:
+#            if not hasattr(self, "popup"):
+#                popup = InformationPopup(canvas, shape)
+#                self.popup = popup
+#                pos = canvas.ClientToScreen((winx,winy))
+#                print pos
+#                popup.Position(pos, (0,-10))
+#                popup.Show()
+#        else:
+#            if hasattr(self, "popup"):
+#                self.popup.Destroy()
+#                del self.popup
 
         canvas.OnMouseEvent(evt)
 
