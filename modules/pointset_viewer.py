@@ -29,12 +29,12 @@ class pointset_viewer(Module):
 	def update(self, input_port, old, new):
 		if (input_port == self.get_input('array_input')):
 			if (input_port.data != None and input_port.data != []):
-				self.process_input()
+				self.process()
 			else:
 				self.progress = 0
 				self.get_output('actors_output').data = None
 
-	def process_input(self):
+	def _process(self):
 		input_array = self.get_input('array_input').data
 		self.progress = 0
 		progress_step = 100/input_array.shape[0]
