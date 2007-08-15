@@ -10,7 +10,7 @@ Here is resumed the process :
 = Ubuntu Feisty =
   * Installing the ETS prerequisites
     {{{
-    sudo apt-get install python2.5 python-wxgtk2.8 python-setuptools python-numpy python-scipy python-vtk 
+    sudo apt-get install python2.5 python-wxgtk2.6 python-setuptools python-numpy python-scipy python-vtk 
     }}}
   * Installing the ETS required components
     {{{
