@@ -92,15 +92,15 @@ class inverse_solution (Module):
 
         KW = getKW(K)
         print "KW.shape: ", KW.shape
-        self.process = 20
+        self.progress = 20
 
         KWKt = getM1xM2t(KW, K)
         print "KWKt.shape: ", KWKt.shape
-        self.process = 40
+        self.progress = 40
 
         KWKt_inv = pinv(KWKt)
         print "KWKt_inv.shape: ", KWKt_inv.shape
-        self.process = 80
+        self.progress = 80
 
         T = KW.T * KWKt_inv
         print "T.shape: ",T.shape

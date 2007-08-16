@@ -1,5 +1,5 @@
 import wx
-import wx.aui
+#import wx.aui
 import wx.lib.ogl as ogl
 import wx.lib.docview as docview
 import wx.lib.pydocview as pydocview
@@ -11,24 +11,33 @@ class DataflowEditorFrame(pydocview.DocTabbedParentFrame):
                 size = wx.DefaultSize, style = wx.DEFAULT_FRAME_STYLE,
                 name = "DataflowEditorFrame",
                 embeddedWindows = 0, minSize=20):
+
         super(DataflowEditorFrame, self).__init__(docManager, frame, id, title, pos,
-                        size, style, name, embeddedWindows, minSize )
+                        size, style, name, embeddedWindows )
 
-        catalog = Catalog()
-        self._catalog_tree = CatalogTree(self, root=catalog.get_catalog().items()[0], )
-        wx.EVT_MOTION(self._catalog_tree.control, self._on_catalog_tree_anytrait_changed)
 
-        self.mgr = wx.aui.AuiManager(self)
-        self.mgr.AddPane(self.networks_panel, wx.CENTER, 'Networks')
-        self.mgr.AddPane(self._catalog_tree.control, wx.LEFT, 'Catalog')
-        self.mgr.Update()
+#        self.mgr = wx.aui.AuiManager(self)
+#        self.mgr.AddPane(self.networks_panel, wx.CENTER, 'Networks')
+#        self.mgr.AddPane(self._catalog_tree.control, wx.LEFT, 'Catalog')
+#        self.mgr.Update()
 
     def CreateNotebook(self):
         """
         Creates the notebook to use for the tabbed document interface.
         """
-        self.networks_panel = wx.Panel(self)
+        print "creating notebook"
 
+        split = wx.SplitterWindow(self, -1, pos=(100,100), size=(1000,1000), style=wx.SP_3D)
+        split.SetMinimumPaneSize(20)
+        self.split = split
+
+        catalog = Catalog()
+        self._catalog_tree = CatalogTree(self.split, root=catalog.get_catalog().items()[0], )
+        wx.EVT_MOTION(self._catalog_tree.control, self._on_catalog_tree_anytrait_changed)
+        
+        self.networks_panel = wx.Panel(self.split)
+        split.SplitVertically(self._catalog_tree.control, self.networks_panel , 220)
+    
         if wx.Platform != "__WXMAC__":
                 self._notebook = wx.Notebook(self.networks_panel, wx.NewId())
         else:
