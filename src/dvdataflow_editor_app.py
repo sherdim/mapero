@@ -8,7 +8,6 @@ mro_dir = os.path.split(cwd3)[0]
 
 sys.path.append(mro_dir)
 import wx
-import wx.aui
 import wx.lib.ogl as ogl
 import wx.lib.docview as docview
 import wx.lib.pydocview as pydocview
