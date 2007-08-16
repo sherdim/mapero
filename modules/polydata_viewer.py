@@ -30,6 +30,7 @@ class polydata_viewer(Module):
         self.output_ports.append(self.op_actor)
         self.actor = None
         self.lookup_table = None
+        self.colors = []
 
     def update(self, input_port, old, new):
         if (input_port == self.get_input('polydata_input')):
@@ -51,22 +52,36 @@ class polydata_viewer(Module):
         self.progress = 100
 
     def _lookup_color_list_changed(self, value):
-        print value
-        number_of_colors = 256
-        colors_cnt = len(value)
-        self.lookup_table = tvtk.LookupTable()
-        self.lookup_table.number_of_colors = number_of_colors
-        self.lookup_table.build()
+        self.colors = value
+        self.recalc_lt()
         
-        r_colors = number_of_colors/colors_cnt -1
-        for i in range(colors_cnt):
-            red = value[i].Red()
-            green = value[i].Green()
-            blue = value[i].Blue()
-            self.lookup_table.set_table_value(i*r_colors, red , green , blue, 0)
-             
-        if self.actor:
-            self.actor.mapper.lookup_table = self.lookup_table
+    def _lookup_color_list_items_changed(self, event):
+        self.recalc_lt()
+        
+    def recalc_lt(self):
+        number_of_colors = 256
+#        print event.added
+#        if event.added:
+#            for color in event.added:
+#                self.colors.insert(event.index, color )
+#        if event.removed:
+#            self.colors.remove(event.removed )
+#            
+        colors_cnt = len(self.colors)
+        if colors_cnt >= 2:
+            self.lookup_table = tvtk.LookupTable()
+            self.lookup_table.number_of_colors = colors_cnt
+        
+            r_colors = number_of_colors/colors_cnt -1
+            r_colors = 1
+            for i in range(colors_cnt):
+                red = self.colors[i].Red()/255
+                green = self.colors[i].Green()/255
+                blue = self.colors[i].Blue()/255
+                self.lookup_table.set_table_value(i*r_colors, red , green , blue, 1)
+            
+            if self.actor:
+                self.actor.mapper.lookup_table = self.lookup_table
             
     def _low_scalar_changed(self, value):
         if self.actor:
