@@ -1,13 +1,2 @@
-wxPython is cool.
-asdcasdc
-asdcassdcasaaaa
-a
-aaaaaa
-aaaaaaa
-aaa
-aaaa
-aa
-aaaaa
-aaaaaaaaaaa
-aaaaaaaaaaaaaaaa
-aaaaaaaaaaaaaaaaaaa
+Remember there's a lot you can do to contribute!
+Writing a module is extremely simple, try it!
