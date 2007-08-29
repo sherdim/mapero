@@ -7,14 +7,16 @@ from enthought.traits.ui.api import ListEditor
 from enthought.tvtk.api import tvtk
 from enthought.tvtk.tvtk_base import vtk_color_trait
 
+import logging
+log = logging.getLogger("mapero.logger.module");
+
 module_info = {'name': 'visualization.polydata_viewer',
                  'desc': ""}
 
 class polydata_viewer(Module):
     """ modulo de prueba uno """
 
-    color = vtk_color_trait((1.0, 1.0, 1.0))
-    lookup_color_list = traits.List(traits.Color)
+    lookup_color_list = traits.List(traits.RGBAColor)
     low_scalar = traits.Float
     high_scalar = traits.Float
     view = Group(Item('lookup_color_list', resizable=True, height=300), 'low_scalar' ,'high_scalar')
@@ -46,7 +48,7 @@ class polydata_viewer(Module):
         self.mapper = tvtk.PolyDataMapper(input=input_array)
         if self.lookup_table:
             self.mapper.lookup_table = self.lookup_table
-        self.property = tvtk.Property(color=self.color)
+        self.property = tvtk.Property()
         self.actor = tvtk.Actor(mapper=self.mapper, property=self.property)
         self.op_actor.data = self.actor
         self.progress = 100
@@ -60,25 +62,26 @@ class polydata_viewer(Module):
         
     def recalc_lt(self):
         number_of_colors = 256
-#        print event.added
-#        if event.added:
-#            for color in event.added:
-#                self.colors.insert(event.index, color )
-#        if event.removed:
-#            self.colors.remove(event.removed )
-#            
-        colors_cnt = len(self.colors)
+         
+        colors_cnt = 0
+        for color in self.colors:
+            if  isinstance(color, tuple) and len(color)==4:
+                colors_cnt += 1
+            
         if colors_cnt >= 2:
             self.lookup_table = tvtk.LookupTable()
             self.lookup_table.number_of_colors = colors_cnt
         
             r_colors = number_of_colors/colors_cnt -1
             r_colors = 1
-            for i in range(colors_cnt):
-                red = self.colors[i].Red()/255
-                green = self.colors[i].Green()/255
-                blue = self.colors[i].Blue()/255
-                self.lookup_table.set_table_value(i*r_colors, red , green , blue, 1)
+            log.debug("number of colors: %s" , colors_cnt)
+            log.debug("colors: %s" , self.colors)
+
+            i = 0
+            for color in self.colors:
+                if  isinstance(color, tuple) and len(color)==4:
+                    self.lookup_table.set_table_value(i*r_colors, color[0] , color[1] , color[2], color[3])
+                    i += 1
             
             if self.actor:
                 self.actor.mapper.lookup_table = self.lookup_table

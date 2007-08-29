@@ -1,12 +1,15 @@
 from core.module import Module
 from core.port import OutputPort, InputPort
 from numpy.oldnumeric.precision import Float, Int
-from enthought.traits.api import Array, List, Str
-
+from enthought.traits import api as traits
 from numpy import array, resize
 
 module_info = {'name': 'InverseSolution.average_reference_operator',
                 'desc': ""}
+
+class registration_metadata(traits.HasTraits):
+    fm = traits.Float
+    channels = traits.List(traits.Str)
 
 class average_reference_operator(Module):
     """ average reference operator """
@@ -14,17 +17,17 @@ class average_reference_operator(Module):
     def start(self):
         self.name = 'Avg Ref Op'
 
-        registration_values_trait = Array(typecode=Float, shape=(None,None))
+        registration_values_trait = traits.Array(typecode=Float, shape=(None,None))
         self.ip_registration_values = InputPort(registration_values_trait, 'registration values', self)
         self.input_ports.append(self.ip_registration_values)
         self.i_registration_values = None
 
-        electrode_names_trait = List(Str)
+        electrode_names_trait =  traits.List(traits.Str)
         self.ip_registration_electrode_names = InputPort(electrode_names_trait, 'reg electrode names', self)
         self.input_ports.append(self.ip_registration_electrode_names)
         self.i_registration_electrode_names = None
 
-        lead_field_trait = Array(typecode=Float, shape=(None,None))
+        lead_field_trait = traits.Array(typecode=Float, shape=(None,None))
         self.ip_lead_field = InputPort(lead_field_trait, 'lead field', self)
         self.input_ports.append(self.ip_lead_field)
         self.i_lead_field = None
@@ -35,6 +38,10 @@ class average_reference_operator(Module):
 
         self.op_registration_values_avg = OutputPort(registration_values_trait, 'registration values avg', self)
         self.output_ports.append(self.op_registration_values_avg)
+
+        registration_metadata_trait = traits.Trait()
+        self.op_registration_metadata = OutputPort(registration_metadata_trait, 'registration metadata', self)
+        self.output_ports.append(self.op_registration_metadata)
 
         self.op_lead_field_avg = OutputPort(lead_field_trait, 'lead field avg', self)
         self.output_ports.append(self.op_lead_field_avg)
@@ -65,7 +72,8 @@ class average_reference_operator(Module):
         i_lead_cols = i_lead_field.shape[1]
         o_registration_values_avg = array(())
         o_lead_field_avg = array(())
-
+        o_registration_metadata = registration_metadata()
+        
         row_counter = 0
         reg_row_counter = 0
         for reg_name in i_registration_electrode_names:
@@ -76,6 +84,7 @@ class average_reference_operator(Module):
                     o_lead_field_avg = resize(o_lead_field_avg, (row_counter+1, i_lead_cols))
                     o_registration_values_avg[row_counter] = i_registration_values[reg_row_counter]
                     o_lead_field_avg[row_counter] = i_lead_field[lead_row_counter]
+                    o_registration_metadata.channels.append(reg_name)
                     row_counter += 1
                 lead_row_counter += 1
             reg_row_counter += 1

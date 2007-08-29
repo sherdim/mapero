@@ -107,6 +107,7 @@ class DataflowDiagram(ogl.Diagram):
         module_shape.SetGeometrics(geometrics)
         
     def remove_module_shape(self, module):
+        log.debug("removing module_shape for module : %s " % (module))
         module_shape = self.get_module_shape(module)
         for input_port_shape in module_shape.input_port_shapes:
             self.RemoveShape(input_port_shape)
@@ -115,7 +116,6 @@ class DataflowDiagram(ogl.Diagram):
 
         self.RemoveShape(module_shape)
         self.module_shapes.remove(module_shape)
-        del module_shape
         
     def remove_connection_shape(self, connection):
         log.debug("removing connection_shape for connection : %s " % (connection))
@@ -169,15 +169,6 @@ class DataflowDiagram(ogl.Diagram):
                 module_shape.Select(True)
             else:
                 module_shape.Select(False)
-
-        if self.module_selected:
-            self.ui_selected = module.edit_traits(parent=self.prop_editor, kind='subpanel')
-            box = wx.BoxSizer( wx.VERTICAL )
-            box.Add( self.ui_selected.control, 0, wx.ALL | wx.EXPAND )
-
-#            self.prop_editor.SetSizer( box )
-#            self.prop_editor.SetScrollRate(10,10)
-#            self.prop_editor.CenterOnParent( wx.BOTH )
 
 
             self.GetCanvas().Refresh()
