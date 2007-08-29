@@ -2,7 +2,7 @@ from core.module import VisualModule
 from core.port import OutputPort, InputPort
 from enthought.util import numerix
 from numpy.oldnumeric.precision import Float
-from enthought.traits.api import Range, Array, Int
+from enthought.traits import api as traits
 from enthought.traits.ui.api import Group
 from enthought.chaco2.api import   add_default_axes, add_default_grids, LinearMapper,  ArrayDataSource, MultiArrayDataSource, DataRange1D
 from enthought.chaco2.tools.api import RangeSelection, RangeSelectionOverlay
@@ -15,21 +15,65 @@ from enthought.enable2.wx_backend.api import Window
 from multiline_plot import MultiLinePlot
 
 from enthought.util.numerix import linspace
+import threading
 
 import wx
 import enthought
+import thread
+import time
+
+import logging
+log = logging.getLogger("mapero.logger.module");
 
 module_info = {'name': 'visualization.time_selector',
                 'desc': ""}
 
+class Timer:
+
+    # Create Timer Object
+    def __init__(self, interval, function, *args, **kwargs):
+        self.__lock = thread.allocate_lock()
+        self.__interval = interval
+        self.__function = function
+        self.__args = args
+        self.__kwargs = kwargs
+        self.__loop = False
+        self.__alive = False
+
+    # Start Timer Object
+    def start(self):
+        self.__lock.acquire()
+        if not self.__alive:
+            self.__loop = True
+            self.__alive = True
+            thread.start_new_thread(self.__run, ())
+        self.__lock.release()
+
+    # Stop Timer Object
+    def stop(self):
+        self.__lock.acquire()
+        self.__loop = False
+        self.__lock.release()
+
+    # Private Thread Function
+    def __run(self):
+        while self.__loop:
+            self.__function(*self.__args, **self.__kwargs)
+            time.sleep(self.__interval)
+        self.__alive = False
+        
 class time_selector(VisualModule):
     """ modulo de prueba uno """
 
-    h = Range(2,100)
-    a = enthought.traits.api.Float(2.0)
-    column = Range(0,12600)
+    h = traits.Range(2,100)
+    a = traits.Float(2.0)
 
-    view = Group('h','a','column')
+    fm = traits.Float(1)
+    time_factor = traits.Float(10.0)
+    play = traits.Button(label='play')
+    
+    
+    view = Group('h','a','fm', 'time_factor', 'play')
 
     def __init__(self, **traits):
         super(time_selector, self).__init__(**traits)
@@ -37,19 +81,36 @@ class time_selector(VisualModule):
 
     def start(self):
 
-        values_trait = Array(typecode=Float, shape=(None,None))
+        values_trait = traits.Array(typecode=Float, shape=(None,None))
         self.ip_values = InputPort(values_trait, 'values', self)
         self.input_ports.append(self.ip_values)
         self.i_values = None
 
-        selected_values_trait = Array(typecode=Float, shape=(None,1))
+        self.ip_metadata = InputPort(traits.Str, 'metadata', self)
+        self.input_ports.append(self.ip_metadata)
+        self.i_metadata = None
+
+        selected_values_trait =  traits.Array(typecode=Float, shape=(None,1))
         self.op_selected_values = OutputPort(selected_values_trait, 'selected values', self)
         self.output_ports.append(self.op_selected_values)
         self.o_selected_values = None
         self.range_selection = None
 
         self.plot = None
+        self.timer = None
+        
+        
+    def _play_fired(self):
+        if self.timer == None:
+            self.timer = Timer(self.time_factor/self.fm, self.update_ranges)
+            self.timer.start()
+        else:
+            self.timer.stop()
+            self.timer = None
 
+    def update_ranges(self):
+        log.debug(" fm: %s   time_factor: %s" % (self.fm, self.time_factor))
+        
     def _column_changed(self, value):
         if self.range_selection != None:
             self.range_selection.selection = (value,value)

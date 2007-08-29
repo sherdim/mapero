@@ -104,7 +104,8 @@ class RemoveModuleCommand(SimpleDVModuleCommand):
         x = self._x
         y = self._y
         log.debug("doing remove module : %s " % (module))
-        self._module = doc.remove_module(module)
+#        self._module = doc.remove_module(module)
+        doc.remove_module(module)
         return True
 
     def SimpleUndo(self):

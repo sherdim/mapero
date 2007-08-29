@@ -5,8 +5,8 @@ from core.module import Module
 from enthought.traits.api import HasTraits, Instance, Trait
 import gc
 import sys
-import logging
 
+import logging
 log = logging.getLogger("mapero.logger.engine");
 
 
@@ -77,8 +77,9 @@ class ModuleManager(HasTraits):
         self.network.modules.remove(module)
         quedan = sys.getrefcount(module)
         if quedan > 2:
-                print "quedan: ", sys.getrefcount(module)
+                log.debug( "quedan: %s ", sys.getrefcount(module))
                 referrers = gc.get_referrers(module)
+                log.debug( "referrers: %s" , referrers )
                 garbage = gc.garbage
         #fbi()
 

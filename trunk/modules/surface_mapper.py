@@ -9,6 +9,9 @@ from numpy import matrix, array, zeros
 from scipy.linalg import pinv
 from scipy import square, diag, identity
 
+import logging
+log = logging.getLogger("mapero.logger.module");
+
 module_info = {'name': 'InverseSolution.surface_mapper',
                     'desc': ""}
 
@@ -47,10 +50,10 @@ class surface_mapper (Module):
             dipoles = array(self.i_dipole_sources)
 #        dipoles = zeros(12670)
 #        dipoles[8197] = 1
-            print "surface mapper: process ..."
+            log.debug( "surface mapper: process ...")
 
             ocortex.point_data.scalars = dipoles[0:dipoles.shape[0],0]
-            print "dipoles.shape: ", dipoles.shape
+            log.debug( "dipoles.shape: ", dipoles.shape )
 
         self.progress = 100
         self.op_polydata.data = ocortex

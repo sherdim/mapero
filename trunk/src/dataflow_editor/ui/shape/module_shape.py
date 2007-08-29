@@ -162,8 +162,8 @@ class ModuleShape(ogl.RectangleShape):
 		ogl.RectangleShape.OnMovePost(self, dc, x, y, old_x, old_y, display)
 
 
-	def OnLeftClick(self, x, y, keys, attachment):
-		self.GetCanvas().GetDiagram().edit_module(self.module)
+#	def OnLeftClick(self, x, y, keys, attachment):
+#		self.GetCanvas().GetDiagram().edit_module(self.module)
 
 	def OnDraw(self, dc):
 		ogl.RectangleShape.OnDraw(self, dc)
