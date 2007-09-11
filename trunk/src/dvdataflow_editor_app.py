@@ -4,7 +4,8 @@ import os.path
 cwd1 = os.path.realpath(__file__)
 cwd2 = os.path.split(cwd1)[0]
 cwd3 = os.path.split(cwd2)[0]
-mro_dir = os.path.split(cwd3)[0]
+mro_dir = os.path.split(cwd1)[0]
+print mro_dir
 
 sys.path.append(mro_dir)
 import wx
@@ -13,9 +14,9 @@ import wx.lib.docview as docview
 import wx.lib.pydocview as pydocview
 import logging.config
 
-from dataflow_editor.editor_frame import DataflowEditorFrame
-from dataflow_editor.mvc.document import DataflowDocument
-from dataflow_editor.mvc.view import DataflowView
+from mapero.dataflow_editor.editor_frame import DataflowEditorFrame
+from mapero.dataflow_editor.mvc.document import DataflowDocument
+from mapero.dataflow_editor.mvc.view import DataflowView
 
 _ = wx.GetTranslation
 
