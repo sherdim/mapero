@@ -15,11 +15,23 @@ from mapero.dataflow_editor.ui.shape.diagram import DataflowDiagram
 from mapero.dataflow_editor.ui.interactor.keyboard import KeyboardInteractor
 from mapero.dataflow_editor.ui.interactor.mouse import MouseInteractor
 from mapero.dataflow_editor.ui.shape.module_shape import ModuleShape
-from enthought.traits.ui.menu \
-    import Menu, Action
+from enthought.traits.ui.menu import Menu, Action
+
 log = logging.getLogger("mapero.logger.mvc");
 
 _ = wx.GetTranslation
+
+menu_titles = [ _("Remove"),
+                          _("-"),
+                          _("Refresh"),
+                          _("Edit Code"),
+                          _("Edit Code")
+                           ]
+
+menu_title_by_id = {}
+for title in menu_titles:
+    menu_title_by_id[ wx.NewId() ] = title
+
 
 class DataflowView(wx.lib.docview.View):
 
@@ -47,19 +59,44 @@ class DataflowView(wx.lib.docview.View):
         canvas = self._diagramCtrl.GetCanvas()
         wx.EVT_KEY_UP(canvas, self.keyword_interactor.on_event)
         wx.EVT_MOUSE_EVENTS(canvas, self.mouse_interactor.on_event)
+        wx.EVT_CONTEXT_MENU(canvas, self.on_context)
         
         return True
 
+    def remove_module(self, module):
+        self.GetDocument().remove_module(module)
+        
+    def refresh_module(self, module):
+        self.GetDocument().refresh_module(module)
+    
+    def show_menu_selected(self):
+        print "operation: " 
+        
+    def show_popup_menu(self, position):
+        if self.selected_modules and len(self.selected_modules)==1:
+            menu = wx.Menu()
+            for (id,title) in menu_title_by_id.items():
+                 menu.Append( id, title )
+                 wx.EVT_MENU( menu, id, self.show_menu_selected )
+            canvas = self._diagramCtrl.GetCanvas()
+            canvas.PopupMenu( menu, position )
+            
+                
+    def on_context(self, event):
+        menu = Menu( Action( name = 'Add', action = 'show_menu_selected( object)', on_perform=self.show_menu_selected ) )
+        canvas = self._diagramCtrl.GetCanvas()
+        caca = menu.create_menu(canvas)
+        pos = event.GetPosition()
+        caca.show(pos[0],pos[1])
 
+#        self.show_popup_menu(event.GetPosition())
+        
+        
     def OnModify(self, event):
         self.GetDocument().Modify(True)
 
 
     def _BuildDiagramCtrl(self, parent, font, color = wx.BLACK, value = "", selection = [0, 0]):
-        if self._wordWrap:
-                wordWrapStyle = wx.TE_WORDWRAP
-        else:
-                wordWrapStyle = wx.TE_DONTWRAP
         module_manager = self.GetDocument().get_module_manager()
         diagramCtrl = DataflowDiagram(parent, module_manager, None, self)
         return diagramCtrl

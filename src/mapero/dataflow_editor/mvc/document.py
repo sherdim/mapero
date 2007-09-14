@@ -154,3 +154,7 @@ class DataflowDocument(wx.lib.docview.Document):
             del self._connection_geometrics[connection]
         self._module_manager.remove(module)
         del self._module_geometrics[module]
+        
+    def refresh_module(self, module):
+        self._module_manager.reload(module)
+        
