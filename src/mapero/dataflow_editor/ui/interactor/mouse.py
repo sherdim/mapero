@@ -18,12 +18,18 @@ class MouseInteractor(BaseInteractor):
         if event.LeftDown():
             module = self.view.get_module(x, y)
             if module != None:
-                self.view.toggle_module_selection(module)
+                if (event.CmdDown()):
+                    self.view.toggle_module_selection(module)
+                else:
+                    self.view.select_module(module)
                 
         if event.LeftDClick():
             module = self.view.get_module(x, y)
             if module != None:
                 self.edit_module(module)
+        
+        if event.RightDown():
+            self.view.show_popup_menu((x,y))
         event.Skip()
         
         

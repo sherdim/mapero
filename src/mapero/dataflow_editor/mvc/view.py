@@ -15,7 +15,7 @@ from mapero.dataflow_editor.ui.shape.diagram import DataflowDiagram
 from mapero.dataflow_editor.ui.interactor.keyboard import KeyboardInteractor
 from mapero.dataflow_editor.ui.interactor.mouse import MouseInteractor
 from mapero.dataflow_editor.ui.shape.module_shape import ModuleShape
-from enthought.traits.ui.menu import Menu, Action
+from enthought.traits.ui.menu import Menu, Action, Separator
 
 log = logging.getLogger("mapero.logger.mvc");
 
@@ -66,30 +66,43 @@ class DataflowView(wx.lib.docview.View):
     def remove_module(self, module):
         self.GetDocument().remove_module(module)
         
-    def refresh_module(self, module):
-        self.GetDocument().refresh_module(module)
+    def is_only_one_module_selected(self):
+        if self.selected_modules != None and len(self.selected_modules)==1:
+            return True
+        else:
+            return False
+
+        
+    def refresh_module(self):
+        if self.selected_modules != None and len(self.selected_modules)==1:
+            self.GetDocument().refresh_module(self.selected_modules[0])
     
-    def show_menu_selected(self):
-        print "operation: " 
+    def edit_code(self):
+        print "edit_code: "
+        pass
+    
+    def show_module_help(self):
+        print "show_module_help: "
+        pass 
         
     def show_popup_menu(self, position):
-        if self.selected_modules and len(self.selected_modules)==1:
-            menu = wx.Menu()
-            for (id,title) in menu_title_by_id.items():
-                 menu.Append( id, title )
-                 wx.EVT_MENU( menu, id, self.show_menu_selected )
-            canvas = self._diagramCtrl.GetCanvas()
-            canvas.PopupMenu( menu, position )
+        menu = Menu( 
+                    Action( name = _('Copy'), enabled=False ),
+                    Action( name = _('Paste'), enabled=False ),
+                    Action( name = _('Delete'), enabled=False ),
+                    Separator(),
+                    Action( name = _('Refresh'), on_perform=self.refresh_module , enabled=self.is_only_one_module_selected() ),
+                    Action( name = _('Edit Code'), on_perform=self.edit_code, enabled=self.is_only_one_module_selected() ),
+                    Separator(),
+                    Action( name = _('Help'), on_perform=self.show_module_help, enabled=self.is_only_one_module_selected() )
+                    )
+        canvas = self._diagramCtrl.GetCanvas()
+        caca = menu.create_menu(canvas)
+        caca.show(position[0],position[1])
             
                 
     def on_context(self, event):
-        menu = Menu( Action( name = 'Add', action = 'show_menu_selected( object)', on_perform=self.show_menu_selected ) )
-        canvas = self._diagramCtrl.GetCanvas()
-        caca = menu.create_menu(canvas)
-        pos = event.GetPosition()
-        caca.show(pos[0],pos[1])
-
-#        self.show_popup_menu(event.GetPosition())
+        self.show_popup_menu(event.GetPosition())
         
         
     def OnModify(self, event):
@@ -291,6 +304,12 @@ class DataflowView(wx.lib.docview.View):
             self.selected_modules.append(module)
         doc.UpdateAllViews()
     
+    def select_module(self, module):
+        doc = self.GetDocument()
+        self.selected_modules = [module]
+        doc.UpdateAllViews()
+        
+        
     def callback(self):
         print "llamada !!!"
         
