@@ -8,7 +8,7 @@
 
 # Standard library imports.
 import wx
-import logging
+
 from threading import Thread
 from enthought.traits.api import HasTraits, Range, Any, List, Str
 
@@ -16,6 +16,10 @@ from mapero.core.port import InputPort
 from mapero.core.port import OutputPort
 
 from enthought.traits.ui.api import View, Group, Include
+
+import logging
+log = logging.getLogger("mapero.logger.module");
+
 
 class PortNotFoundError(Exception):
     def __init__(self, value):
@@ -119,17 +123,12 @@ class Module(HasTraits):
                     return output
         raise OutputPortNotFoundError(port)
 
-
-    def __get_pure_state__(self):
-        """Method used by the state_pickler.
-        """
-        d = self.__dict__.copy()
-        for attr in d.keys():
-            if attr not in self.trait_names():
-                d.pop(attr, None)
-        return d
-
-
+    def __getstate__(self):
+        traits_names = self.class_trait_names()
+        avoided_traits = ['input_ports', 'output_ports', 'trait_added', 'trait_modified', 'progress' ]
+        traits = [ trait for trait in traits_names if trait not in avoided_traits ]
+        result = self.get(traits)
+        return result
 
 
 class VisualModule(Module):
