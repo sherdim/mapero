@@ -201,15 +201,15 @@ class ModuleShape(ogl.RectangleShape):
 		self.DrawLinks(dc)
 	
 	def SetGeometrics(self, geometrics):
-		self.SetX(geometrics.GetX())
-		self.SetY(geometrics.GetY())
-		self.SetHeight(geometrics.GetHeight())
-		self.SetWidth(geometrics.GetWidth())
+		self.SetX(geometrics.x)
+		self.SetY(geometrics.y)
+		self.SetHeight(geometrics.h)
+		self.SetWidth(geometrics.w)
 		self.UpdateModule(self.module)
 
-	def __del__():
+	def __del__(self):
 		log.debug("removing module shape for module : %s" % self.module)
 		
-		input_port_shapes = []
-		output_port_shapes = []
+		self.input_port_shapes = []
+		self.output_port_shapes = []
 		

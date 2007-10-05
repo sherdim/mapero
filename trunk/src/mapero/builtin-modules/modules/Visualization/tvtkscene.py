@@ -3,9 +3,6 @@ from mapero.core.port import MultiInputPort
 from enthought.traits.api import Instance
 from enthought.traits.ui.api import Group, Item
 from enthought.pyface.tvtk.decorated_scene import DecoratedScene
-import wx
-
-import re
 
 import types
 
