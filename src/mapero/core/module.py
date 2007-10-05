@@ -36,6 +36,7 @@ class OutputPortNotFoundError(PortNotFoundError):
 
 
 
+
 ######################################################################
 # `Module` class.
 ######################################################################
@@ -122,14 +123,15 @@ class Module(HasTraits):
                 if output == port:
                     return output
         raise OutputPortNotFoundError(port)
-
-    def __getstate__(self):
+    
+    def __get_pure_state__(self):
         traits_names = self.class_trait_names()
-        avoided_traits = ['input_ports', 'output_ports', 'trait_added', 'trait_modified', 'progress' ]
+        avoided_traits = ['input_ports', 'output_ports', 'trait_added',
+                           'trait_modified', 'progress', 'parent' ]
         traits = [ trait for trait in traits_names if trait not in avoided_traits ]
         result = self.get(traits)
         return result
-
+    
 
 class VisualModule(Module):
     parent = Any

@@ -2,38 +2,37 @@ import wx
 import logging
 from mapero.core.module_manager import ModuleManager
 from mapero.core.module import Module
-from xml.dom.minidom import Document, parse
+import enthought.persistence.state_pickler as state_pickler
 
+from enthought.traits import api as traits
+
+from xml.dom.minidom import Document, parse
 log = logging.getLogger("mapero.logger.mvc");
 
-class Point2D:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+class Point2D(traits.HasTraits):
+    x=traits.Int()
+    y=traits.Int()
+    
+    def __init__(self, **traits):
+        super(Point2D, self).__init__(**traits)
 
-class ConnectionGeometrics:
-    def __init__(self, points = None):
-        self.points = points
+    
 
-class ModuleGeometrics:
+class ConnectionGeometrics(traits.HasTraits):
+    points = traits.List(Point2D)
 
-    def __init__(self, x, y, w,h):
-        self.x = x
-        self.y = y
-        self.w = w
-        self.h = h
+    def __init__(self, **traits):
+        super(ConnectionGeometrics, self).__init__(**traits)
 
-    def GetHeight(self):
-            return self.h
+class ModuleGeometrics(traits.HasTraits):
+    x=traits.Float()
+    y=traits.Float()
+    w=traits.Float()
+    h=traits.Float()
 
-    def GetWidth(self):
-            return self.w
+    def __init__(self, **traits):
+        super(ModuleGeometrics, self).__init__(**traits)
 
-    def GetX(self):
-            return self.x
-
-    def GetY(self):
-            return self.y
 
 class DataflowDocument(wx.lib.docview.Document):
 
@@ -54,44 +53,47 @@ class DataflowDocument(wx.lib.docview.Document):
         return self._connection_geometrics
 
     def SaveObject(self, fileObject):
-        doc = Document();
-        diagram = doc.createElement("diagram")
-        doc.appendChild(diagram)
-        module_id = 0
-        module_id_dict = {}
-        for module, geometric in self._module_geometrics.items():
-            module_id += 1
-            module_element = doc.createElement("module")
-            module_element.setAttribute("id", str(module_id))
-            module_info_element = doc.createElement("module_info")
-            module_info_element.setAttribute("name", module.module_info['name'])
-            module_element.appendChild(module_info_element)
-            module_id_dict[module] = module_id
-
-            geometric_element = doc.createElement("geometric");
-            geometric_element.setAttribute("h", str(geometric.GetHeight()));
-            geometric_element.setAttribute("w", str(geometric.GetWidth()));
-            geometric_element.setAttribute("y", str(geometric.GetY()));
-            geometric_element.setAttribute("x", str(geometric.GetX()));
-            module_element.appendChild(geometric_element)
-
-            diagram.appendChild(module_element)
-
-        for connection, geometric in self._connection_geometrics.items():
-            connection_element = doc.createElement("connection")
-            output_port_element = doc.createElement("output_port")
-            output_port_element.setAttribute("name", connection.output_port.name)
-            output_port_element.setAttribute("module_id", str(module_id_dict[connection.output_port.module]))
-            connection_element.appendChild(output_port_element)
-            diagram.appendChild(connection_element)
-
-            input_port = doc.createElement("input_port")
-            input_port.setAttribute("name", connection.input_port.name)
-            input_port.setAttribute("module_id", str(module_id_dict[connection.input_port.module]))
-            connection_element.appendChild(input_port)
-            diagram.appendChild(connection_element)
-
-        doc.writexml(fileObject, "",  "\t", "\n")
+        state_pickler.dump(self, fileObject)
+#        doc = Document();
+#        diagram = doc.createElement("diagram")
+#        doc.appendChild(diagram)
+#        module_id = 0
+#        module_id_dict = {}
+#        for module, geometric in self._module_geometrics.items():
+#            xml = XMLStatePickler().dumps(module)
+#            print xml
+#
+#            
+#            module_id += 1
+#            module_element = doc.createElement("module")
+#            module_element.setAttribute("id", str(module_id))
+#            module_info_element = doc.createElement("module_info")
+#            module_element.appendChild(module_info_element)
+#            module_id_dict[module] = module_id
+#
+#            geometric_element = doc.createElement("geometric");
+#            geometric_element.setAttribute("h", str(geometric.GetHeight()));
+#            geometric_element.setAttribute("w", str(geometric.GetWidth()));
+#            geometric_element.setAttribute("y", str(geometric.GetY()));
+#            geometric_element.setAttribute("x", str(geometric.GetX()));
+#            module_element.appendChild(geometric_element)
+#
+#            diagram.appendChild(module_element)
+#
+#        for connection, geometric in self._connection_geometrics.items():
+#            connection_element = doc.createElement("connection")
+#            output_port_element = doc.createElement("output_port")
+#            output_port_element.setAttribute("name", connection.output_port.name)
+#            output_port_element.setAttribute("module_id", str(module_id_dict[connection.output_port.module]))
+#            connection_element.appendChild(output_port_element)
+#            diagram.appendChild(connection_element)
+#
+#            input_port = doc.createElement("input_port")
+#            input_port.setAttribute("name", connection.input_port.name)
+#            input_port.setAttribute("module_id", str(module_id_dict[connection.input_port.module]))
+#            connection_element.appendChild(input_port)
+#            diagram.appendChild(connection_element)
+#        doc.writexml(fileObject, "",  "\t", "\n")
         return True
 
 
@@ -133,7 +135,7 @@ class DataflowDocument(wx.lib.docview.Document):
             log.debug("adding a module by module_id")
             module_inst = self._module_manager.add(module)
         if (module_inst != None):
-            self._module_geometrics[module_inst] = ModuleGeometrics(x, y, w, h)
+            self._module_geometrics[module_inst] = ModuleGeometrics(x=x, y=y, w=w, h=h)
             return module_inst
 
     def add_connection(self, module_from, output_port_name, module_to, input_port_name):
@@ -157,4 +159,10 @@ class DataflowDocument(wx.lib.docview.Document):
         
     def refresh_module(self, module):
         self._module_manager.reload(module)
+        
+    def __get_pure_state__(self):
+        dict = self._module_geometrics
+#        'network':self._module_manager.network,
+#        'connection_geometrics':self._connection_geometrics }
+        return dict
         
