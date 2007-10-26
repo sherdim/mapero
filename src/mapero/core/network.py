@@ -6,7 +6,7 @@ class Network(HasTraits):
 	""" Network Class """
 
 	modules = List(Module)
-	connections = List(Connection())
+	connections = List(Connection)
 
 	def __init__(self, **traits):
 		super(Network, self).__init__(**traits)

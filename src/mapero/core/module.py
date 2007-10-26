@@ -131,10 +131,7 @@ class Module(HasTraits):
         traits = [ trait for trait in traits_names if trait not in avoided_traits ]
         result = self.get(traits)
         return result
-    
-    def __set_pure_state__(self, state):
-        self.modules = state.modules
-        self.connections = state.connections
+
     
 
 class VisualModule(Module):
