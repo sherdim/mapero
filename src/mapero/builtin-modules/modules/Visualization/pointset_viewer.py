@@ -18,10 +18,10 @@ class pointset_viewer(Module):
 		self.name = 'Point Set Viewer'
 
 		point_set_trait = Array(typecode=Float, shape=(None,3))
-		self.ip_point_set = InputPort(point_set_trait, 'array_input', self)
+		self.ip_point_set = InputPort(data_type=point_set_trait,name='array_input',module=self)
 		self.input_ports.append(self.ip_point_set)
 
-		self.op_actors = OutputPort(point_set_trait, 'actors_output',self)
+		self.op_actors = OutputPort(data_type=point_set_trait,name='actors_output',module=self)
 		self.output_ports.append(self.op_actors)
 		self.sphere_sources = []
 		self.properties = []

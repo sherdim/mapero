@@ -2,7 +2,8 @@ import wx
 import logging
 from mapero.core.module_manager import ModuleManager
 from mapero.core.module import Module
-import enthought.persistence.state_pickler as state_pickler
+import xml_state_pickler as state_pickler
+#from enthought.persistence import state_pickler as state_pickler
 
 from enthought.traits import api as traits
 
@@ -40,6 +41,7 @@ class DataflowDocument(wx.lib.docview.Document):
         wx.lib.docview.Document .__init__(self)
         self._inModify = False
         self._module_manager = ModuleManager()
+        self.network = self._module_manager.network
         self._module_geometrics = {}
         self._connection_geometrics = {}
 
@@ -98,29 +100,31 @@ class DataflowDocument(wx.lib.docview.Document):
 
 
     def LoadObject(self, fileObject):
-        doc = parse(fileObject)
-        module_id_dict = {}
-        for module_element in doc.getElementsByTagName("module"):
-            id = int(module_element.getAttribute("id"))
-            for module_info_element in module_element.getElementsByTagName("module_info"):
-                module_name = module_info_element.getAttribute("name")
-            for geometric_element in module_element.getElementsByTagName("geometric"):
-                h = int(geometric_element.getAttribute("h"))
-                w = int(geometric_element.getAttribute("w"))
-                x = float(geometric_element.getAttribute("x"))
-                y = float(geometric_element.getAttribute("y"))
-
-            module = self.add_module(module_name, x, y, w, h)
-            module_id_dict[id] = module
-
-        for connection_element in doc.getElementsByTagName("connection"):
-            for output_port_element in connection_element.getElementsByTagName("output_port"):
-                output_port_name = str(output_port_element.getAttribute("name"))
-                module_from = module_id_dict[int(output_port_element.getAttribute("module_id"))]
-            for input_port_element in connection_element.getElementsByTagName("input_port"):
-                input_port_name = str(input_port_element.getAttribute("name"))
-                module_to = module_id_dict[int(input_port_element.getAttribute("module_id"))]
-            self.add_connection(module_from, output_port_name, module_to, input_port_name)
+        state = state_pickler.load_state(fileObject)
+        state_pickler.set_state(self, state)
+#        doc = parse(fileObject)
+#        module_id_dict = {}
+#        for module_element in doc.getElementsByTagName("module"):
+#            id = int(module_element.getAttribute("id"))
+#            for module_info_element in module_element.getElementsByTagName("module_info"):
+#                module_name = module_info_element.getAttribute("name")
+#            for geometric_element in module_element.getElementsByTagName("geometric"):
+#                h = int(geometric_element.getAttribute("h"))
+#                w = int(geometric_element.getAttribute("w"))
+#                x = float(geometric_element.getAttribute("x"))
+#                y = float(geometric_element.getAttribute("y"))
+#
+#            module = self.add_module(module_name, x, y, w, h)
+#            module_id_dict[id] = module
+#
+#        for connection_element in doc.getElementsByTagName("connection"):
+#            for output_port_element in connection_element.getElementsByTagName("output_port"):
+#                output_port_name = str(output_port_element.getAttribute("name"))
+#                module_from = module_id_dict[int(output_port_element.getAttribute("module_id"))]
+#            for input_port_element in connection_element.getElementsByTagName("input_port"):
+#                input_port_name = str(input_port_element.getAttribute("name"))
+#                module_to = module_id_dict[int(input_port_element.getAttribute("module_id"))]
+#            self.add_connection(module_from, output_port_name, module_to, input_port_name)
 
         return True
 
@@ -160,9 +164,17 @@ class DataflowDocument(wx.lib.docview.Document):
     def refresh_module(self, module):
         self._module_manager.reload(module)
         
+    def __set_pure_state__(self,state):
+        self._module_manager.network = state.network
+#        self._module_geometrics = module_geometrics
+#        self._connection_geometrics = state.connection_geometrics
+
     def __get_pure_state__(self):
-        dict = self._module_geometrics
-#        'network':self._module_manager.network,
+        dict = {
+#                'connection_geometrics':self._connection_geometrics,
+#                'module_geometrics': self._module_geometrics,
+                'network':self._module_manager.network
+        }
 #        'connection_geometrics':self._connection_geometrics }
         return dict
         
