@@ -27,17 +27,18 @@ class ModuleConnectionError(Exception):
 # `Conection` class.
 ######################################################################
 class Connection(HasTraits):
-	input_port = Instance(InputPort)
-	output_port = Instance(OutputPort)
+	input_port = Instance(InputPort())
+	output_port = Instance(OutputPort())
 	data = Any
 	enable = Property(Bool)
 
 	def __init__(self, **traits):
+		self.input_port = InputPort()
+		self.output_port = OutputPort()
 		super(Connection, self).__init__(**traits)
-		if (self.input_port != None) and (self.output_port != None):
-			self.input_port.connection = self
-			self.output_port.connections.append(self)
-			self.enable = True
+		self.input_port.connection = self
+		self.output_port.connections.append(self)
+		self.enable = True
 
 	def update_data(self):
 		self.input_port.update_data(self.data, self.data)

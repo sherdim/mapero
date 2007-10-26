@@ -123,7 +123,7 @@ class Module(HasTraits):
                 if output == port:
                     return output
         raise OutputPortNotFoundError(port)
-    
+        
     def __get_pure_state__(self):
         traits_names = self.class_trait_names()
         avoided_traits = ['input_ports', 'output_ports', 'trait_added',
@@ -131,6 +131,10 @@ class Module(HasTraits):
         traits = [ trait for trait in traits_names if trait not in avoided_traits ]
         result = self.get(traits)
         return result
+    
+    def __set_pure_state__(self, state):
+        self.modules = state.modules
+        self.connections = state.connections
     
 
 class VisualModule(Module):
