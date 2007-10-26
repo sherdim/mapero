@@ -37,12 +37,12 @@ class ModulePicklingTestCase(unittest.TestCase):
         network = self.module_manager.network
         s = state_pickler.dumps(network)    # Dump the state of `a`.
         state = state_pickler.loads_state(s)     # Get the state back.
-        b = state_pickler.create_instance(state) # Create the object.
+        b = self.module_manager.create_network_instance(state) # Create the object.
 #        for connection in state.connections:
 #            b.connections.append(Connection())
 #        for module in state.modules:
 #            b.modules.append(Module())
-        state_pickler.set_state(b, state)        # Set the object's state.
+#        state_pickler.set_state(b, state)        # Set the object's state.
         
         print b.modules[1].progress
         

@@ -160,4 +160,27 @@ class ModuleManager(HasTraits):
 
         connections = filter(filter_connections, self.network.connections)
         return connections
+    
+    def create_network_instance(self, state):
+        network = Network()
+        def get_module(module_label):
+            for module in network.modules:
+                if module.label == module_label:
+                    return module
+
+        for module_state in state.modules:
+            module_id = module_state.__metadata__['module']
+            module_id = module_id.split('mapero.modules.')[1]
+            module = self.catalog.load_module(module_id)
+            module.label = module_state['label']
+            network.modules.append(module)
+        for connection_state in state.connections:
+            input_port = get_module(connection_state.input_port.module.label).get_input(connection_state.input_port.name)
+            output_port = get_module(connection_state.output_port.module.label).get_output(connection_state.output_port.name)
+            
+            connection = Connection(input_port=input_port, output_port=output_port)
+            
+            network.connections.append(connection)
+            
+        return network
         

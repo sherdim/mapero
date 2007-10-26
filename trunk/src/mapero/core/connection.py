@@ -33,8 +33,6 @@ class Connection(HasTraits):
 	enable = Property(Bool)
 
 	def __init__(self, **traits):
-		self.input_port = InputPort()
-		self.output_port = OutputPort()
 		super(Connection, self).__init__(**traits)
 		self.input_port.connection = self
 		self.output_port.connections.append(self)
