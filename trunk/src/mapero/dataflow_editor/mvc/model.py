@@ -15,7 +15,6 @@ class Point2D(traits.HasTraits):
 
 class ConnectionGeometrics(traits.HasTraits):
     points = traits.List(Point2D)
-    connection = traits.WeakRef(Connection)
     
     def __init__(self, **traits):
         super(ConnectionGeometrics, self).__init__(**traits)
@@ -25,13 +24,12 @@ class ModuleGeometrics(traits.HasTraits):
     y=traits.Float()
     w=traits.Float()
     h=traits.Float()
-    module = traits.WeakRef(Module)
     
     def __init__(self, **traits):
         super(ModuleGeometrics, self).__init__(**traits)
 
 class DataflowEditorModel(traits.HasTraits):
-    network = Instance(Network)
+    network = traits.Instance(Network)
     module_geometrics = traits.Dict(Module, ModuleGeometrics)
     connection_geometrics = traits.Dict(Connection, ConnectionGeometrics)
     
