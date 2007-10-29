@@ -1,14 +1,10 @@
-import traceback
-from sets import Set
-
-from enthought.util.numerix import around, array, asarray, transpose, compress, concatenate, zeros, take
+from enthought.util.numerix import around, array, transpose, compress, concatenate, zeros, take
 
 
 # Enthought library imports
 from enthought.enable2.api import black_color_trait, LineStyle
-from enthought.traits.api import Any, Array, Enum, false, Float, Instance, Property, true, List, Int
+from enthought.traits.api import Any, Array, false, Float, Instance, Property, true, List, Int
 from enthought.traits.ui.api import View, Item
-from enthought.logger import logger
 
 
 # Local relative imports
