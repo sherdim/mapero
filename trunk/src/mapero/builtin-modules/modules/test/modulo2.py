@@ -14,4 +14,5 @@ class modulo2(Module):
         self.input_ports.append(self.in1)
 
     def update(self, input_port, old=None, new=None):
-        print self.in1.data
+        self.progress = self.in1.data
+        print "modulo2: ", self.progress

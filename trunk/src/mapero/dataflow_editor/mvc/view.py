@@ -5,9 +5,7 @@
 # Author:       Zacarias Ojeda
 #
 #----------------------------------------------------------------------------
-import wx
-import wx.lib.docview
-import wx.lib.pydocview
+from wx.lib import docview, pydocview
 import logging
 
 from commands import *
@@ -33,7 +31,7 @@ for title in menu_titles:
     menu_title_by_id[ wx.NewId() ] = title
 
 
-class DataflowView(wx.lib.docview.View):
+class DataflowView(docview.View):
 
     #--- Overridden methods
 
@@ -46,6 +44,8 @@ class DataflowView(wx.lib.docview.View):
 
     def OnCreate(self, doc, flags):
         frame = wx.GetApp().CreateDocumentFrame(self, doc, flags)
+        self.doc = doc
+        self.controller = self.doc.controller
         sizer = wx.BoxSizer()
         font, color = self._GetFontAndColorFromConfig()
         self._diagramCtrl = self._BuildDiagramCtrl(frame, font, color = color)
@@ -64,7 +64,7 @@ class DataflowView(wx.lib.docview.View):
         return True
 
     def remove_module(self, module):
-        self.GetDocument().remove_module(module)
+        self.doc.remove_module(module)
         
     def is_only_one_module_selected(self):
         if self.selected_modules != None and len(self.selected_modules)==1:
@@ -75,7 +75,7 @@ class DataflowView(wx.lib.docview.View):
         
     def refresh_module(self):
         if self.selected_modules != None and len(self.selected_modules)==1:
-            self.GetDocument().refresh_module(self.selected_modules[0])
+            self.doc.refresh_module(self.selected_modules[0])
     
     def edit_code(self):
         print "edit_code: "
@@ -106,11 +106,11 @@ class DataflowView(wx.lib.docview.View):
         
         
     def OnModify(self, event):
-        self.GetDocument().Modify(True)
+        self.doc.Modify(True)
 
 
     def _BuildDiagramCtrl(self, parent, font, color = wx.BLACK, value = "", selection = [0, 0]):
-        module_manager = self.GetDocument().get_module_manager()
+        module_manager = self.controller.module_manager
         diagramCtrl = DataflowDiagram(parent, module_manager, None, self)
         return diagramCtrl
 
@@ -154,9 +154,9 @@ class DataflowView(wx.lib.docview.View):
         if wx.lib.docview.View.OnUpdate(self, sender, hint):
             return
         log.debug( "updating view" )
-        doc = self.GetDocument()
+        controller = self.controller
         diagram = self.get_diagram()
-        for module, geometrics in doc.get_module_geometrics().items():
+        for module, geometrics in controller.get_module_geometrics().items():
             module_shape = diagram.get_module_shape(module)
             if module_shape:
                 module_shape.SetGeometrics(geometrics)
@@ -166,23 +166,23 @@ class DataflowView(wx.lib.docview.View):
                     module_shape.Select(False)
                     
             else:
-                log.debug( "adding module shape for : %s", module.name )
+                log.debug( "adding module shape for : %s", module.label )
                 diagram.add_module_shape(module, geometrics)
 
         for connection_shape in diagram.connection_shapes:
-            if (connection_shape.connection not in doc.get_connection_geometrics().keys()):
+            if (connection_shape.connection not in controller.get_connection_geometrics().keys()):
                 log.debug("removing connection shape for : %s", connection_shape )
                 connection_shape.Select(False)
                 diagram.remove_connection_shape(connection_shape.connection)
                 
         for module_shape in diagram.module_shapes:
-            if (module_shape.module not in doc.get_module_geometrics().keys()):
+            if (module_shape.module not in controller.get_module_geometrics().keys()):
                 log.debug("removing module shape for : %s", module_shape.module.name )
                 module_shape.Select(False)
                 diagram.remove_module_shape(module_shape.module)
                 
 
-        for connection, geometrics in doc.get_connection_geometrics().items():
+        for connection, geometrics in controller.get_connection_geometrics().items():
             connection_shape = diagram.get_connection_shape(connection)
             if connection_shape:
                 connection_shape.SetGeometrics(geometrics)
@@ -190,8 +190,8 @@ class DataflowView(wx.lib.docview.View):
                 module_to = connection.input_port.module
                 module_from_shape = diagram.get_module_shape(module_from)
                 module_to_shape = diagram.get_module_shape(module_to)
-                module_from_geometrics = doc.get_module_geometrics()[module_from]
-                module_to_geometrics = doc.get_module_geometrics()[module_to]
+                module_from_geometrics = controller.get_module_geometrics()[module_from]
+                module_to_geometrics = controller.get_module_geometrics()[module_to]
                 module_from_shape.SetGeometrics(module_from_geometrics)
                 module_to_shape.SetGeometrics(module_to_geometrics)
 
@@ -200,7 +200,7 @@ class DataflowView(wx.lib.docview.View):
                 diagram.add_connection_shape(connection)
                     
         for module in self.selected_modules:
-            if module not in doc.get_module_geometrics().keys():
+            if module not in controller.get_module_geometrics().keys():
                 self.selected_modules.remove(module)
                 
         diagram.GetCanvas().Refresh()
@@ -219,7 +219,7 @@ class DataflowView(wx.lib.docview.View):
     # Since ProcessEvent is not virtual, we have to trap the relevant events using this pseudo-ProcessEvent instead of EVT_MENU
     def ProcessEvent(self, event):
         id = event.GetId()
-        doc = self.GetDocument()
+        doc = self.doc
         if id == wx.ID_UNDO:
             if not self._diagramCtrl:
                 return False
@@ -274,12 +274,12 @@ class DataflowView(wx.lib.docview.View):
         return self._diagramCtrl
             
     def move_module(self, module, mx, my):
-        doc = self.GetDocument()
+        doc = self.doc
         move_command = MoveCommand(doc, module, mx, my)
         doc.GetCommandProcessor().Submit(move_command)
 
     def add_module(self, module_name, x, y):
-        doc = self.GetDocument()
+        doc = self.doc
         add_module_command = AddModuleCommand(doc, module_name, x, y)
         doc.GetCommandProcessor().Submit(add_module_command)
         
@@ -292,12 +292,12 @@ class DataflowView(wx.lib.docview.View):
         return module
 
     def new_connection(self, module_from, port_from, module_to, port_to):
-        doc = self.GetDocument()
+        doc = self.doc
         new_connection_command = NewConnectionCommand(doc, module_from, port_from, module_to, port_to)
         doc.GetCommandProcessor().Submit(new_connection_command)
         
     def toggle_module_selection(self, module):
-        doc = self.GetDocument()
+        doc = self.doc
         if module in self.selected_modules:
             self.selected_modules.remove(module)
         else:
@@ -305,7 +305,7 @@ class DataflowView(wx.lib.docview.View):
         doc.UpdateAllViews()
     
     def select_module(self, module):
-        doc = self.GetDocument()
+        doc = self.doc
         self.selected_modules = [module]
         doc.UpdateAllViews()
         

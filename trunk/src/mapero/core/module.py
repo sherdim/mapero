@@ -10,7 +10,7 @@
 import wx
 
 from threading import Thread
-from enthought.traits.api import HasTraits, Range, Any, List, Str
+from enthought.traits import api as traits
 
 from mapero.core.port import InputPort
 from mapero.core.port import OutputPort
@@ -40,17 +40,18 @@ class OutputPortNotFoundError(PortNotFoundError):
 ######################################################################
 # `Module` class.
 ######################################################################
-class Module(HasTraits):
+class Module(traits.HasTraits):
     """ Base class for all modules in the mapero structure """
-    label = Str
-    progress = Range(0,100)
+    id = traits.Int
+    label = traits.Str
+    progress = traits.Range(0,100)
 
-    input_ports = List(InputPort)
-    output_ports = List(OutputPort)
+    input_ports = traits.List(InputPort)
+    output_ports = traits.List(OutputPort)
 
     #logs = Dict(Str, Str)
 
-    module_view = View(    Group(
+    module_view = View(Group(
                         Group('label', label='General'),
                         Include('view')))
 
@@ -135,7 +136,7 @@ class Module(HasTraits):
     
 
 class VisualModule(Module):
-    parent = Any
+    parent = traits.Any
 
     def __init__(self, **traits):
         super(VisualModule, self).__init__(**traits)

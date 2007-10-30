@@ -1,8 +1,7 @@
 from mapero.core.network import Network
 from mapero.core.connection import Connection
 from mapero.core.catalog import Catalog
-from mapero.core.module import Module
-from enthought.traits.api import HasTraits, Instance, Trait
+from enthought.traits import api as traits
 import gc
 import sys
 
@@ -17,12 +16,14 @@ class ModuleNotFoundInNetworkError(Exception):
         return repr(self.value)
 
 
-class ModuleManager(HasTraits):
+class ModuleManager(traits.HasTraits):
     """ Module Manager Class """
 
-    catalog = Trait(Catalog(),Instance(Catalog()))
-    network = Trait(Network(), Instance(Network()))
-
+    catalog = traits.Trait(Catalog(),traits.Instance(Catalog()))
+    network = traits.Trait(Network(), traits.Instance(Network()))
+    max_module_id = traits.Int(0)
+    max_connection_id = traits.Int(0)
+    
     def __init__(self, **traits):
         super(ModuleManager, self).__init__(**traits)
         self.catalog.refresh()
@@ -32,6 +33,12 @@ class ModuleManager(HasTraits):
             if module.label == module_label:
                 return module
             raise ModuleNotFoundInNetworkError(module_label)
+        
+    def get_module_by_id(self, module_id):
+        for module in self.network.modules:
+            if module.id == module_id:
+                return module
+            raise ModuleNotFoundInNetworkError(module_id)
 
     def get_module(self, module_label):
         if isinstance(module_label,str):
@@ -68,6 +75,9 @@ class ModuleManager(HasTraits):
                     module_key = module_prefix_key+str(module_number)
             module.label = module_key
             self.network.modules.append(module)
+            self.max_module_id += 1
+            module.id = self.max_module_id
+            print "added module with id : ", module.id
             return module
         else:
             print "asdcasdca"
@@ -124,6 +134,8 @@ class ModuleManager(HasTraits):
         log.debug("new connection: from %s[%s] to %s[%s]" % (new_connection.output_port.module, new_connection.output_port, 
                                                              new_connection.input_port.module, new_connection.input_port)) 
 
+        self.max_connection_id += 1
+        new_connection.id = self.max_connection_id
 #        for connection in self.network.connections:
 #            if connection == new_connection:
 #                raise ModuleConnectionError('The connection has been established previously')

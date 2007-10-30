@@ -1,5 +1,4 @@
 import sys
-import os
 import os.path
 cwd1 = os.path.realpath(__file__)
 cwd2 = os.path.split(cwd1)[0]
@@ -58,7 +57,7 @@ class DataflowEditorApplication(pydocview.DocApp):
                                                     _("Dataflow"),
                                                     "*.mprd;*.mprd",
                                                     _("Dataflow"),
-                                                    _(".mprd"),
+                                                    _("mprd"),
                                                     _("Dataflow Document"),
                                                     _("Dataflow View"),
                                                     DataflowDocument,

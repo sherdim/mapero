@@ -1,61 +1,25 @@
-import wx
+from wx.lib import docview
+from mapero.dataflow_editor.mvc.controller import DataflowEditorController
 import logging
-from mapero.core.module_manager import ModuleManager
-from mapero.core.module import Module
-import xml_state_pickler as state_pickler
-#from enthought.persistence import state_pickler as state_pickler
+#import xml_state_pickler as state_pickler
+from enthought.persistence import state_pickler as state_pickler
 
-from enthought.traits import api as traits
 
-from xml.dom.minidom import Document, parse
 log = logging.getLogger("mapero.logger.mvc");
 
-class Point2D(traits.HasTraits):
-    x=traits.Int()
-    y=traits.Int()
+class DataflowDocument(docview.Document):
     
-    def __init__(self, **traits):
-        super(Point2D, self).__init__(**traits)
-
-    
-
-class ConnectionGeometrics(traits.HasTraits):
-    points = traits.List(Point2D)
-
-    def __init__(self, **traits):
-        super(ConnectionGeometrics, self).__init__(**traits)
-
-class ModuleGeometrics(traits.HasTraits):
-    x=traits.Float()
-    y=traits.Float()
-    w=traits.Float()
-    h=traits.Float()
-
-    def __init__(self, **traits):
-        super(ModuleGeometrics, self).__init__(**traits)
-
-
-class DataflowDocument(wx.lib.docview.Document):
-
     def __init__(self):
-        wx.lib.docview.Document .__init__(self)
+        log.debug( "creating document" )
+        
+        super(DataflowDocument,self).__init__(self)
         self._inModify = False
-        self._module_manager = ModuleManager()
-        self.network = self._module_manager.network
-        self._module_geometrics = {}
-        self._connection_geometrics = {}
-
-    def get_module_manager(self):
-        return self._module_manager
-
-    def get_module_geometrics(self):
-        return self._module_geometrics
-
-    def get_connection_geometrics(self):
-        return self._connection_geometrics
+        self.controller = DataflowEditorController(document=self)
+    
 
     def SaveObject(self, fileObject):
-        state_pickler.dump(self, fileObject)
+        dataflow_editor_model = self.controller.dataflow_editor_model
+        state_pickler.dump(dataflow_editor_model, fileObject)
 #        doc = Document();
 #        diagram = doc.createElement("diagram")
 #        doc.appendChild(diagram)
@@ -101,7 +65,7 @@ class DataflowDocument(wx.lib.docview.Document):
 
     def LoadObject(self, fileObject):
         state = state_pickler.load_state(fileObject)
-        state_pickler.set_state(self, state)
+        self.controller.create_dataflow_model(state)
 #        doc = parse(fileObject)
 #        module_id_dict = {}
 #        for module_element in doc.getElementsByTagName("module"):
@@ -128,53 +92,5 @@ class DataflowDocument(wx.lib.docview.Document):
 
         return True
 
-    def add_module(self, module, x, y, w = 151, h = 91):
-        self._module_manager.set(trait_change_notify = False)
-        log.debug( "module parameter type : %s"  % (type(module)) )
-        log.debug( "adding module: %s - geometrics:  ( x: %d, y: %d, w: %d, h: %d )"  %  (module, x, y, w, h) )
-        if isinstance(module, Module):
-            log.debug("adding a module by instance")
-            module_inst = self._module_manager.add('', module.name, module )
-        else:
-            log.debug("adding a module by module_id")
-            module_inst = self._module_manager.add(module)
-        if (module_inst != None):
-            self._module_geometrics[module_inst] = ModuleGeometrics(x=x, y=y, w=w, h=h)
-            return module_inst
-
-    def add_connection(self, module_from, output_port_name, module_to, input_port_name):
-        connection = self._module_manager.connect(module_from, output_port_name, module_to, input_port_name)
-        self._connection_geometrics[connection] = ConnectionGeometrics()
-#        self._connection_geometrics.
-
-    def move_module(self, module, mx, my):
-        geometric = self.get_module_geometrics()[module]
-        log.debug( "moving module:  %s  - pos (%d,%d ) " % (module.name, mx, my))
-        geometric.x += mx
-        geometric.y += my
-
-    def remove_module(self, module):
-        log.debug( "removing module:  %s " % (module.name))
-        connections = self._module_manager.get_module_connections(module)
-        for connection in connections:
-            del self._connection_geometrics[connection]
-        self._module_manager.remove(module)
-        del self._module_geometrics[module]
         
-    def refresh_module(self, module):
-        self._module_manager.reload(module)
-        
-    def __set_pure_state__(self,state):
-        self._module_manager.network = state.network
-#        self._module_geometrics = module_geometrics
-#        self._connection_geometrics = state.connection_geometrics
 
-    def __get_pure_state__(self):
-        dict = {
-#                'connection_geometrics':self._connection_geometrics,
-#                'module_geometrics': self._module_geometrics,
-                'network':self._module_manager.network
-        }
-#        'connection_geometrics':self._connection_geometrics }
-        return dict
-        
