@@ -1,10 +1,13 @@
 from mapero.core.module import Module
 from mapero.core.port import OutputPort
 from enthought.traits import api as traits
+from enthought.traits.ui.api import Group
 
 class modulo1(Module):
     """ """
     param = traits.Int(0)
+    
+    view = Group('param')
     
     def __init__(self, **traits):
         super(modulo1, self).__init__(**traits)

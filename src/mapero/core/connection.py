@@ -2,12 +2,8 @@
 # Author: Zacarias F. Ojeda <correo@zojeda.com.ar>
 # Copyright (c) 2005, Enthought, Inc.
 # License: BSD Style.
-from enthought.traits.traits import Property
-from enthought.traits.traits import Any
-from enthought.traits.traits import WeakRef
-from enthought.traits.traits import Bool
 
-from enthought.traits.api import Instance, HasTraits
+from enthought.traits import api as traits
 
 from mapero.core.port import OutputPort, InputPort
 
@@ -26,11 +22,12 @@ class ModuleConnectionError(Exception):
 ######################################################################
 # `Conection` class.
 ######################################################################
-class Connection(HasTraits):
-	input_port = Instance(InputPort())
-	output_port = Instance(OutputPort())
-	data = Any
-	enable = Property(Bool)
+class Connection(traits.HasTraits):
+	id = traits.Int
+	input_port = traits.Instance(InputPort())
+	output_port = traits.Instance(OutputPort())
+	data = traits.Any
+	enable = traits.Property(traits.Bool)
 
 	def __init__(self, **traits):
 		super(Connection, self).__init__(**traits)
