@@ -47,7 +47,7 @@ class Connection(traits.HasTraits):
 	def _data_changed(self, old, new):
 		self.input_port.data = self.data
 
-	def 	_set_enable(self, value):
+	def _set_enable(self, value):
 		if (value != self.enable):
 			if (value == True):
 				if (self.input_port != None) and (self.output_port != None):
@@ -57,6 +57,10 @@ class Connection(traits.HasTraits):
 
 	def _get_enable(self):
 		pass
+	
+	def __get_pure_state(self):
+		dict = {'enable': self.enable}
+		return dict
 
 	def __del__(self):
 		self.enable = False

@@ -1,5 +1,6 @@
 from wx.lib import docview
 from mapero.dataflow_editor.mvc.controller import DataflowEditorController
+from enthought.persistence.state_pickler import StateSetterError
 import logging
 #import xml_state_pickler as state_pickler
 from enthought.persistence import state_pickler as state_pickler

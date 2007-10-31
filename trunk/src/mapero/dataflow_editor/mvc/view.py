@@ -196,7 +196,7 @@ class DataflowView(docview.View):
                 module_to_shape.SetGeometrics(module_to_geometrics)
 
             else:
-                print "adding connection shape"
+                log.debug( "adding connection shape" )
                 diagram.add_connection_shape(connection)
                     
         for module in self.selected_modules:

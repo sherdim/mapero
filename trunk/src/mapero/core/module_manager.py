@@ -2,6 +2,7 @@ from mapero.core.network import Network
 from mapero.core.connection import Connection
 from mapero.core.catalog import Catalog
 from enthought.traits import api as traits
+from enthought.persistence import state_pickler
 import gc
 import sys
 
@@ -185,6 +186,8 @@ class ModuleManager(traits.HasTraits):
             module_id = module_id.split('mapero.modules.')[1]
             module = self.catalog.load_module(module_id)
             module.label = module_state['label']
+            module.id = module_state['id']
+            module.start_module()
             network.modules.append(module)
         for connection_state in state.connections:
             input_port = get_module(connection_state.input_port.module.label).get_input(connection_state.input_port.name)

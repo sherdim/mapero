@@ -20,7 +20,11 @@ class tvtkscene(VisualModule):
         super(tvtkscene, self).__init__(**traits)
         self.name = 'TVTK Scene'
         self.actors_pattern = "actors1"
-        self.input_ports.append(MultiInputPort(types.IntType, self.actors_pattern, self))
+        self.input1 = MultiInputPort(
+                                     data_type = types.IntType,
+                                     name = self.actors_pattern,
+                                     module = self)
+        self.input_ports.append(self.input1)
         self.input_actors = None
 
     def update(self, input_port, old, new):
