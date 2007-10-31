@@ -17,9 +17,16 @@ class vtkpolydatareader(Module):
     view = Group('VTK_File')
 
 
-    def start(self):
+    def __init__(self, **traits):
+        super(vtkpolydatareader, self).__init__(**traits)
         self.name = 'VTK Data Reader'
-        self.output_ports.append(OutputPort(types.IntType, 'salida1' ,self))
+        self.out1 = OutputPort(
+                                data_type = None,
+                                name = 'out1',
+                                module = self
+                                )
+        
+        self.output_ports.append(self.out1)
 
 
     def _process(self):
@@ -30,7 +37,7 @@ class vtkpolydatareader(Module):
         poly = self.poly.output
 
         self.progress = 100
-        self.get_output('salida1').data = self.poly.output
+        self.out1.data = self.poly.output
 
     def _VTK_File_changed(self):
         self.process()

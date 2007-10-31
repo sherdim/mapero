@@ -8,6 +8,7 @@ from mapero.dataflow_editor.mvc.model import DataflowEditorModel
 from enthought.traits import api as traits
 from enthought.persistence import state_pickler
 from mapero.dataflow_editor.mvc import module_geometrics
+from mapero.dataflow_editor.mvc.persistence.state_setter import StateSetter
 
 import logging
 log = logging.getLogger("mapero.logger.mvc");
@@ -29,7 +30,8 @@ class DataflowEditorController(traits.HasTraits):
         
     def create_dataflow_model(self, state):
         network = self.module_manager.create_network_instance(state.network)
-        state_pickler.set_state(network, state.network)
+        state_setter = StateSetter()
+        state_setter.set(network, state.network)
         module_geometrics = []
         connection_geometrics = []
         

@@ -21,14 +21,24 @@ class polydata_viewer(Module):
     high_scalar = traits.Float
     view = Group(Item('lookup_color_list', resizable=True, height=300), 'low_scalar' ,'high_scalar')
     
-    def start(self):
+    def __init__(self, **traitsv):
+        super(polydata_viewer, self).__init__(**traitsv)
         self.name = 'Point Set Viewer'
 
         polydata_trait = traits.Trait(tvtk.PolyData)
-        self.ip_polydata = InputPort(polydata_trait, 'polydata_input', self)
+        polydata_trait = None
+        self.ip_polydata = InputPort(
+                                     data_type = polydata_trait,
+                                     name = 'polydata_input',
+                                     module = self
+                                     )
         self.input_ports.append(self.ip_polydata)
 
-        self.op_actor = OutputPort(polydata_trait, 'actors_output',self)
+        self.op_actor = OutputPort(
+                                   data_type = polydata_trait,
+                                   name = 'actors_output',
+                                   module = self
+                                   )
         self.output_ports.append(self.op_actor)
         self.actor = None
         self.lookup_table = None
