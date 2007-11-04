@@ -13,10 +13,15 @@ class pointset_reader(Module):
 	"""  """
 	file = File(filter=['*.pts'])
 
-	def start(self):
+	def __init__(self, **traits):
+		super(pointset_reader, self).__init__(**traits)
 		self.name = 'PointSet Reader'
 		point_set_trait = Array(typecode=Float, shape=(None,3))
-		self.op_point_set = OutputPort(point_set_trait, 'array_output', self)
+		self.op_point_set = OutputPort(
+									   data_type = point_set_trait,
+									   name = 'array_output',
+									   module = self
+									   )
 		self.output_ports.append(self.op_point_set)
 
 	def _file_changed(self):

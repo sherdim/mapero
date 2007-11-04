@@ -60,7 +60,7 @@ class DataflowEditorController(traits.HasTraits):
         log.debug( "adding module: %s - geometrics:  ( x: %d, y: %d, w: %d, h: %d )"  %  (module, x, y, w, h) )
         if isinstance(module, Module):
             log.debug("adding a module by instance")
-            module_inst = self.module_manager.add('', module.name, module )
+            module_inst = self.module_manager.add('', module.label, module )
         else:
             log.debug("adding a module by module_id")
             module_inst = self.module_manager.add(module)
@@ -78,16 +78,21 @@ class DataflowEditorController(traits.HasTraits):
     def move_module(self, module, mx, my):
         geometric = self.get_module_geometrics()[module]
         log.debug( "moving module:  %s  - pos (%d,%d ) " % (module.label, mx, my))
-        geometric.x += mx
-        geometric.y += my
+        geometric.x = geometric.x + mx
+        geometric.y = geometric.y + my
 
     def remove_module(self, module):
-        log.debug( "removing module:  %s " % (module.name))
+        log.debug( "removing module:  %s " % (module.label))
         connections = self.module_manager.get_module_connections(module)
         for connection in connections:
-            del self.dataflow_editor_model.connection_geometrics[connection]
+            if connection in self.dataflow_editor_model.network.connections:
+                for connection_geometrics in self.dataflow_editor_model.connection_geometrics:
+                    if connection_geometrics.connection_id == connection.id:
+                        self.dataflow_editor_model.connection_geometrics.remove(connection_geometrics)
+        
+        module_geometrics = self.get_module_geometrics()[module]
+        self.dataflow_editor_model.module_geometrics.remove(module_geometrics)
         self.module_manager.remove(module)
-        del self.dataflow_editor_model.module_geometrics[module]
         
     def refresh_module(self, module):
         self.module_manager.reload(module)

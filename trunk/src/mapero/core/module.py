@@ -57,7 +57,7 @@ class Module(traits.HasTraits):
 
     class ProcessThread(Thread):
         def __init__(self, module):
-             Thread.__init__(self)
+             Thread.__init__(self, name=module.__class__.__name__+'-process')
              self.module = module
         def run(self):
              self.module._process()
@@ -96,11 +96,11 @@ class Module(traits.HasTraits):
 
 
     def process(self):
-#        process_thread = self.ProcessThread(self)
-#        logging.debug("starting module processing thread : " +  self.__class__.__name__ )
-#        process_thread.start()
-#        logging.debug("started module processing thread : " + self.__class__.__name__ )
-        self._process()
+        process_thread = self.ProcessThread(self)
+        logging.debug("starting module processing thread : " +  self.__class__.__name__ )
+        process_thread.start()
+        logging.debug("started module processing thread : " + self.__class__.__name__ )
+#        self._process()
 
     def _process(self):
         pass
@@ -130,6 +130,7 @@ class Module(traits.HasTraits):
         avoided_traits = ['input_ports', 'output_ports', 'trait_added',
                            'trait_modified', 'progress', 'parent' ]
         traits = [ trait for trait in traits_names if trait not in avoided_traits ]
+        log.debug("returning state : %s for module [%s]" % (traits,self.__class__.__name__ ))
         result = self.get(traits)
         return result
 

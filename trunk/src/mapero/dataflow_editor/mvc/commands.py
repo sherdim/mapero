@@ -45,6 +45,28 @@ class NewConnectionCommand(SimpleDVCommand):
             controller = self.controller
             controller.remove_connection(self.module_from, self.port_from, self.module_to, self.port_to)
             return True
+        
+class DeleteSelectionCommand(SimpleDVCommand):
+    def __init__(self, dataflow_document, selected_modules, selected_connections):
+            SimpleDVCommand.__init__(self, "Delete Selection", dataflow_document)
+            controller = self.controller
+            self.modules_with_geometrics = {}
+            for module, geometrics in controller.get_module_geometrics().items():
+                if module in selected_modules:
+                    self.modules_with_geometrics[module] = geometrics
+                    
+
+    def SimpleDo(self):
+            controller = self.controller
+            for module in self.modules_with_geometrics.keys():
+                controller.remove_module(module)
+            return True
+
+    def SimpleUndo(self):
+            controller = self.controller
+            for module, geometrics in self.modules_with_geometrics.items():
+                controller.add_module(module, geometrics.x, geometrics.y, geometrics.w, geometrics.h)
+            return True
 
 class SimpleDVModuleCommand(SimpleDVCommand):
     def __init__(self, name, dataflow_document, module):

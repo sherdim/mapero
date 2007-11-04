@@ -5,7 +5,7 @@
 # Author:       Zacarias Ojeda
 #
 #----------------------------------------------------------------------------
-from wx.lib import docview, pydocview
+from wx.lib import docview
 import logging
 
 from commands import *
@@ -40,6 +40,7 @@ class DataflowView(docview.View):
         self._diagramCtrl = None
         self._wordWrap = wx.ConfigBase_Get().ReadInt("DiagramEditorWordWrap", True)
         self.selected_modules = []
+        self.selected_connections = []
 
 
     def OnCreate(self, doc, flags):
@@ -86,10 +87,11 @@ class DataflowView(docview.View):
         pass 
         
     def show_popup_menu(self, position):
+        delete_enabled = len(self.selected_modules)>0 or len(self.selected_connections)>0 and True or False
         menu = Menu( 
                     Action( name = _('Copy'), enabled=False ),
                     Action( name = _('Paste'), enabled=False ),
-                    Action( name = _('Delete'), enabled=False ),
+                    Action( name = _('Delete'), enabled=delete_enabled, on_perform=self.delete_selection ),
                     Separator(),
                     Action( name = _('Refresh'), on_perform=self.refresh_module , enabled=self.is_only_one_module_selected() ),
                     Action( name = _('Edit Code'), on_perform=self.edit_code, enabled=self.is_only_one_module_selected() ),
@@ -177,7 +179,7 @@ class DataflowView(docview.View):
                 
         for module_shape in diagram.module_shapes:
             if (module_shape.module not in controller.get_module_geometrics().keys()):
-                log.debug("removing module shape for : %s", module_shape.module.name )
+                log.debug("removing module shape for : %s", module_shape.module.label )
                 module_shape.Select(False)
                 diagram.remove_module_shape(module_shape.module)
                 
@@ -285,6 +287,7 @@ class DataflowView(docview.View):
         
     def get_module(self, x, y):
         diagram = self.get_diagram()
+        canvas = diagram.GetCanvas()
         module_shape = diagram.GetCanvas().FindShape(x, y)[0]
         module = None
         if isinstance(module_shape, ModuleShape):
@@ -321,6 +324,10 @@ class DataflowView(docview.View):
         print dir(menu)
 
         #self.context_menu = self.__create_context_menu()
-        
+    
+    def delete_selection(self):
+        doc = self.doc
+        delete_selection_command = DeleteSelectionCommand(doc, self.selected_modules, self.selected_connections)
+        doc.GetCommandProcessor().Submit(delete_selection_command)
 
 

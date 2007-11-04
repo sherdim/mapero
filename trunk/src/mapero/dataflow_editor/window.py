@@ -11,16 +11,16 @@ import wx
 import wx.lib.ogl as ogl
 
 # Enthought library imports.
-from enthought.pyface import GUI
-from enthought.pyface import PythonShell
-from enthought.pyface import SplitApplicationWindow , SplitPanel
-from enthought.pyface.action import Action, Group, MenuBarManager, MenuManager,\
+from enthought.pyface.api import GUI
+from enthought.pyface.api import PythonShell
+from enthought.pyface.api import SplitApplicationWindow , SplitPanel
+from enthought.pyface.action.api import Action, Group, MenuBarManager, MenuManager,\
 																		Separator
 
-from enthought.traits import Float, Str, Instance
-from enthought.traits.ui import View, Item
+from enthought.traits.api import Float, Str, Instance
+from enthought.traits.ui.api import View, Item
 from mapero.core.module import Module
-from mapero.core.modulemanager import ModuleManager
+from mapero.core.module_manager import ModuleManager
 from dataflow_editor.diagram import DataflowDiagram
 
 from mapero.core.catalog import Catalog

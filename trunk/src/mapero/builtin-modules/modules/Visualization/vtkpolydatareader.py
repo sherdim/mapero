@@ -17,8 +17,8 @@ class vtkpolydatareader(Module):
     view = Group('VTK_File')
 
 
-    def __init__(self, **traits):
-        super(vtkpolydatareader, self).__init__(**traits)
+    def __init__(self, **traitsv):
+        super(vtkpolydatareader, self).__init__(**traitsv)
         self.name = 'VTK Data Reader'
         self.out1 = OutputPort(
                                 data_type = None,

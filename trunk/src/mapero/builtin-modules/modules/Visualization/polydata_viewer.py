@@ -43,6 +43,9 @@ class polydata_viewer(Module):
         self.actor = None
         self.lookup_table = None
         self.colors = []
+        
+        self.low_scalar = 0
+        self.high_scalar = 100
 
     def update(self, input_port, old, new):
         if (input_port == self.get_input('polydata_input')):
@@ -60,6 +63,7 @@ class polydata_viewer(Module):
             self.mapper.lookup_table = self.lookup_table
         self.property = tvtk.Property()
         self.actor = tvtk.Actor(mapper=self.mapper, property=self.property)
+        self.actor.mapper.scalar_range=(self.low_scalar, self.high_scalar)
         self.op_actor.data = self.actor
         self.progress = 100
 

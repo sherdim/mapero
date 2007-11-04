@@ -12,14 +12,15 @@ from scipy import square, identity, reshape, sparse
 module_info = {'name': 'InverseSolution.inverse_solution',
                     'desc': ""}
 
-class inverse_solution (Module):
+class inverse_solution(Module):
     """ inverse solution """
 
     method = Enum( "WMN", "MN", "LORETA")
 
     view = Group('method')
 
-    def start(self):
+    def __init__(self, **traits):
+        super(inverse_solution, self).__init__(**traits)
         self.name = 'Inverse Solution'
 
 #        dipole_source_trait = Array(typecode=Float, shape=(None,None))
@@ -28,12 +29,20 @@ class inverse_solution (Module):
 #        self.i_dipole_source = None
 
         lead_field_trait = Array(typecode=Float, shape=(None,None))
-        self.ip_lead_field_avg = InputPort(lead_field_trait, 'lead field avg', self)
+        self.ip_lead_field_avg = InputPort(
+                                           data_type = lead_field_trait,
+                                           name = 'lead field avg',
+                                           module = self
+                                           )
         self.input_ports.append(self.ip_lead_field_avg)
         self.i_lead_field_avg = None
 
         inverse_solution_trait = Array(typecode=Float, shape=(None,None))
-        self.op_inverse_solution = OutputPort(inverse_solution_trait, 'inverse solution', self)
+        self.op_inverse_solution = OutputPort(
+                                              data_type = inverse_solution_trait,
+                                              name = 'inverse solution',
+                                              module = self
+                                              )
         self.output_ports.append(self.op_inverse_solution)
 
 

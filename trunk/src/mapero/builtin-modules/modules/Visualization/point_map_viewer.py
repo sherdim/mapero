@@ -1,7 +1,7 @@
 from mapero.core.module import Module
 from mapero.core.port import OutputPort, InputPort
 from numpy.oldnumeric.precision import Float, Int
-from enthought.traits.api import Range, Array
+from enthought.traits import api as traits
 from enthought.traits.ui.api import Group
 from enthought.tvtk.api import tvtk
 from enthought.tvtk.tvtk_base import  vtk_color_trait
@@ -11,27 +11,44 @@ module_info = {'name': 'Visualization.point_map_viewer',
 
 class point_map_viewer(Module):
 	""" modulo de prueba uno """
-	radius = Range(1.0, 10.0, 2.0)
+	radius = traits.Range(1.0, 10.0, 2.0)
 	color = vtk_color_trait((1.0, 1.0, 1.0))
 
-	def start(self):
+	def __init__(self, **traitsv):
+		super(point_map_viewer, self).__init__(**traitsv)
 		self.name = 'Point Map Viewer'
 
 		point_set_trait = Array(typecode=Float, shape=(None,3))
-		self.ip_from_point_set = InputPort(point_set_trait, 'from_point_set', self)
+		self.ip_from_point_set = InputPort(
+										   data_type = point_set_trait,
+										   name = 'from_point_set',
+										   module = self
+										   )
 		self.input_ports.append(self.ip_from_point_set)
 		self.i_to_point_set = None
 
-		self.ip_to_point_set = InputPort(point_set_trait, 'to_point_set', self)
+		self.ip_to_point_set = InputPort(
+										 data_type = point_set_trait,
+										 name = 'to_point_set',
+										 module = self
+										 )
 		self.input_ports.append(self.ip_to_point_set)
 		self.i_from_point_set = None
 
 		point_set_trait = Array(typecode=Int, shape=(None,2))
-		self.ip_map = InputPort(point_set_trait, 'map_point_set', self)
+		self.ip_map = InputPort(
+							    data_type = point_set_trait,
+							    name = 'map_point_set',
+							    module = self
+							    )
 		self.input_ports.append(self.ip_map)
 		self.i_map = None
 
-		self.op_actors = OutputPort(point_set_trait, 'actors_output', self)
+		self.op_actors = OutputPort(
+								    data_type = point_set_trait,
+								    name = 'actors_output',
+								    module = self
+								    )
 		self.output_ports.append(self.op_actors)
 
 		self.line_sources = []

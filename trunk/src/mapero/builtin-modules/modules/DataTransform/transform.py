@@ -10,18 +10,31 @@ module_info = {	"name": "DataTransform.transform",
 class transform(Module):
 	"""  """
 
-	def start(self):
+	def __init__(self, **traits):
+		super(transform, self).__init__(**traits)
 		self.name = 'Geometric Mapper'
-		self.op_point_set = OutputPort(list, 'array_output',self)
+		self.op_point_set = OutputPort(
+									   data_type = list,
+									   name = 'array_output',
+									   module = self
+									   )
 		self.output_ports.append(self.op_point_set)
 
 		matrix_trait = Array(typecode=Float, shape=(4,4))
-		self.ip_matrix = InputPort(matrix_trait, 'matrix_map', self)
+		self.ip_matrix = InputPort(
+								   data_type = matrix_trait,
+								   name = 'matrix_map',
+								   module = self
+								   )
 		self.input_ports.append(self.ip_matrix)
 		self.matrix = None
 
 		point_set_trait = Array(typecode=Float, shape=(None,3))
-		self.ip_point_set = InputPort(point_set_trait, 'point_set', self)
+		self.ip_point_set = InputPort(
+									  data_type = point_set_trait,
+									  name = 'point_set',
+									  module = self
+									  )
 		self.input_ports.append(self.ip_point_set)
 		self.i_point_set = None
 
