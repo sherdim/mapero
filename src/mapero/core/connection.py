@@ -62,7 +62,7 @@ class Connection(traits.HasTraits):
 		"""Method used by the state_pickler.
 		"""
 		d = self.__dict__.copy()
-		for attr in ('data'):
+		for attr in ('data',):
 			d.pop(attr, None)
 		return d
 

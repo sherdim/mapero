@@ -121,7 +121,7 @@ class time_selector(VisualModule):
     def update_ranges(self):
         log.debug(" fm: %s   time_factor: %s" % (self.fm, self.time_factor))
         selection = self.range_selection.selection
-        self.range_selection.selection = (selection[0] +1, selection[1]+1)
+        self.range_selection.selection = (selection[0] +10, selection[1] +10)
         print " selection:  ", selection
         
     def _column_changed(self, value):
