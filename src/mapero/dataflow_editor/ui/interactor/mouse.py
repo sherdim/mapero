@@ -12,8 +12,13 @@ class MouseInteractor(BaseInteractor):
         
         
     def on_event(self, event):
-        x = event.GetX()
-        y = event.GetY()
+        self.view.Activate()
+        canvas = self.view.get_diagram().GetCanvas()
+        canvas.SetFocus()
+
+        dc = wx.ClientDC(canvas)
+        canvas.PrepareDC(dc)
+        x, y = event.GetLogicalPosition(dc)  # this takes into account scrollbar offset
         
         if event.LeftDown():
             module = self.view.get_module(x, y)

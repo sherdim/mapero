@@ -14,36 +14,65 @@ class registration_metadata(traits.HasTraits):
 class average_reference_operator(Module):
     """ average reference operator """
 
-    def start(self):
+    def __init__(self, **traitsv):
+        super(average_reference_operator, self).__init__(**traitsv)
         self.name = 'Avg Ref Op'
 
         registration_values_trait = traits.Array(typecode=Float, shape=(None,None))
-        self.ip_registration_values = InputPort(registration_values_trait, 'registration values', self)
+        self.ip_registration_values = InputPort(
+                                                data_type = registration_values_trait,
+                                                name = 'registration values',
+                                                module = self
+                                                )
         self.input_ports.append(self.ip_registration_values)
         self.i_registration_values = None
 
         electrode_names_trait =  traits.List(traits.Str)
-        self.ip_registration_electrode_names = InputPort(electrode_names_trait, 'reg electrode names', self)
+        self.ip_registration_electrode_names = InputPort(
+                                                         data_type = electrode_names_trait,
+                                                         name = 'reg electrode names',
+                                                         module = self
+                                                         )
         self.input_ports.append(self.ip_registration_electrode_names)
         self.i_registration_electrode_names = None
 
         lead_field_trait = traits.Array(typecode=Float, shape=(None,None))
-        self.ip_lead_field = InputPort(lead_field_trait, 'lead field', self)
+        self.ip_lead_field = InputPort(
+                                       data_type = lead_field_trait,
+                                       name = 'lead field',
+                                       module = self
+                                       )
         self.input_ports.append(self.ip_lead_field)
         self.i_lead_field = None
 
-        self.ip_lead_field_electrode_names = InputPort(electrode_names_trait, 'lead field electrode names', self)
+        self.ip_lead_field_electrode_names = InputPort(
+                                                       data_type = electrode_names_trait,
+                                                       name = 'lead field electrode names',
+                                                       module = self
+                                                       )
         self.input_ports.append(self.ip_lead_field_electrode_names)
         self.i_lead_field_electrode_names = None
 
-        self.op_registration_values_avg = OutputPort(registration_values_trait, 'registration values avg', self)
+        self.op_registration_values_avg = OutputPort(
+                                                     data_type = registration_values_trait,
+                                                     name = 'registration values avg',
+                                                     module = self
+                                                     )
         self.output_ports.append(self.op_registration_values_avg)
 
         registration_metadata_trait = traits.Trait()
-        self.op_registration_metadata = OutputPort(registration_metadata_trait, 'registration metadata', self)
+        self.op_registration_metadata = OutputPort(
+                                                   data_type = registration_metadata_trait,
+                                                   name = 'registration metadata',
+                                                   module = self
+                                                   )
         self.output_ports.append(self.op_registration_metadata)
 
-        self.op_lead_field_avg = OutputPort(lead_field_trait, 'lead field avg', self)
+        self.op_lead_field_avg = OutputPort(
+                                            data_type = lead_field_trait,
+                                            name = 'lead field avg',
+                                            module = self
+                                            )
         self.output_ports.append(self.op_lead_field_avg)
 
     def update(self, input_port, old, new):

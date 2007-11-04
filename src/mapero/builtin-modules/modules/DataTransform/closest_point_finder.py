@@ -10,18 +10,31 @@ module_info = {	"name": "DataTransform.closest_point_finder",
 class closest_point_finder(Module):
 	"""  """
 
-	def start(self):
+	def __init__(self, **traits):
+		super(closest_point_finder, self).__init__(**traits)
 		self.name = 'Closest Point Finder'
 		map_trait = Array(typecode=Int, shape=(None,2))
-		self.op_map = OutputPort(map_trait, 'array_output',self)
+		self.op_map = OutputPort(
+								 data_type = map_trait,
+								 name = 'array_output',
+								 module = self
+								 )
 		self.output_ports.append(self.op_map)
 
 		point_set_trait = Array(typecode=Float, shape=(None,3))
-		self.ip_from_point_set = InputPort(point_set_trait, 'point_set1', self)
+		self.ip_from_point_set = InputPort(
+										   data_type = point_set_trait,
+										   name = 'point_set1',
+										   module = self
+										   )
 		self.input_ports.append(self.ip_from_point_set)
 		self.i_to_point_set = None
 
-		self.ip_to_point_set = InputPort(point_set_trait, 'point_set2', self)
+		self.ip_to_point_set = InputPort(
+										 data_type = point_set_trait,
+										 name = 'point_set2',
+										 module = self
+										 )
 		self.input_ports.append(self.ip_to_point_set)
 		self.i_from_point_set = None
 

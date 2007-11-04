@@ -75,23 +75,33 @@ class time_selector(VisualModule):
     
     view = Group('h','a','fm', 'time_factor', 'play')
 
-    def __init__(self, **traits):
-        super(time_selector, self).__init__(**traits)
+    def __init__(self, **traitsv):
+        super(time_selector, self).__init__(**traitsv)
         self.name = 'Time Selector'
 
-    def start(self):
-
         values_trait = traits.Array(typecode=Float, shape=(None,None))
-        self.ip_values = InputPort(values_trait, 'values', self)
+        self.ip_values = InputPort(
+                                   data_type = values_trait,
+                                   name = 'values',
+                                   module = self
+                                   )
         self.input_ports.append(self.ip_values)
         self.i_values = None
 
-        self.ip_metadata = InputPort(traits.Str, 'metadata', self)
+        self.ip_metadata = InputPort(
+                                     data_type = traits.Str,
+                                     name = 'metadata',
+                                     module = self
+                                     )
         self.input_ports.append(self.ip_metadata)
         self.i_metadata = None
 
         selected_values_trait =  traits.Array(typecode=Float, shape=(None,1))
-        self.op_selected_values = OutputPort(selected_values_trait, 'selected values', self)
+        self.op_selected_values = OutputPort(
+                                             data_type = selected_values_trait,
+                                             name = 'selected values',
+                                             module = self
+                                             )
         self.output_ports.append(self.op_selected_values)
         self.o_selected_values = None
         self.range_selection = None
@@ -110,6 +120,9 @@ class time_selector(VisualModule):
 
     def update_ranges(self):
         log.debug(" fm: %s   time_factor: %s" % (self.fm, self.time_factor))
+        selection = self.range_selection.selection
+        self.range_selection.selection = (selection[0] +1, selection[1]+1)
+        print " selection:  ", selection
         
     def _column_changed(self, value):
         if self.range_selection != None:
@@ -128,6 +141,9 @@ class time_selector(VisualModule):
         low = 0.0
         high = i_values.shape[1]
         t = linspace(low, high, i_values.shape[1])
+        if ( self.plot != None ):
+            self.container.remove(self.plot)
+            
         self.plot = create_multi_line_plot((t,i_values),width=0.5)
         #plot = create_multi_line_plot((t,i_values),width=0.5)
 
@@ -144,8 +160,6 @@ class time_selector(VisualModule):
 
         self.progress = 100
 
-    def _selection_handler(self, value):
-        print "value: ", value
 
     def _create_window(self):
         self.container = OverlayPlotContainer(padding=40, bgcolor="lightgray",

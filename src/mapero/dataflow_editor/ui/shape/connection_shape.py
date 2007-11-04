@@ -97,5 +97,5 @@ class ConnectionShape(ogl.LineShape):
             ogl.LineShape.InsertLineControlPoint(dc, point)
 
     def SetGeometrics(self, geometrics):
-        log.debug ( "setting geometrics ", geometrics)
+        log.debug ( "setting geometrics ")
 

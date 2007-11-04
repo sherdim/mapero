@@ -14,19 +14,32 @@ module_info = {	"name": "DataTransform.direct_mapping",
 class direct_mapping(Module):
 	"""  """
 
-	def start(self):
+	def __init__(self, **traitsv):
+		super(direct_mapping, self).__init__(**traitsv)
 		self.name = 'Direct Mapping'
 
 		polydata_trait = traits.Trait(tvtk.PolyData)
-		self.ip_input_polydata = InputPort(polydata_trait, 'geometry', self)
+		self.ip_input_polydata = InputPort(
+										   data_type = polydata_trait,
+										   name = 'geometry', 
+										   module = self
+										   )
 		self.input_ports.append(self.ip_input_polydata)
 		self.i_input_polydata = None
 
-		self.ip_values_polydata = InputPort(polydata_trait, 'values', self)
+		self.ip_values_polydata = InputPort(
+										    data_type = polydata_trait,
+										    name = 'values',
+										    module = self
+										    )
 		self.input_ports.append(self.ip_values_polydata)
 		self.i_values_polydata = None
 
-		self.op_polydata = OutputPort(polydata_trait, 'polydata', self)
+		self.op_polydata = OutputPort(
+									  data_type = polydata_trait,
+									  name = 'polydata', 
+									  module = self
+									  )
 		self.output_ports.append(self.op_polydata)
 
 

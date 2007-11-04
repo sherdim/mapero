@@ -13,18 +13,31 @@ class position_label_electrodes_separator(Module):
 	"""  """
 	file = File(filter=['*.txt'])
 
-	def start(self):
+	def __init__(self, **traits):
+		super(position_label_electrodes_separator, self).__init__(**traits)
 		self.name = 'Position-Label Separator'
 		point_set_trait = Array(typecode=Float, shape=(None,3))
-		self.op_point_set = OutputPort(point_set_trait, 'array_output', self)
+		self.op_point_set = OutputPort(
+									   data_type = point_set_trait,
+									   name = 'array_output',
+									   module = self
+									   )
 		self.output_ports.append(self.op_point_set)
 
 		list_string_trait = List(Str)
-		self.op_labels = OutputPort(list_string_trait, 'labels', self)
+		self.op_labels = OutputPort(
+								    data_type = list_string_trait,
+								    name = 'labels',
+								    module = self
+								    )
 		self.output_ports.append(self.op_labels)
 
 		electrode_names_trait = List(Str)
-		self.ip_registration_electrode_names = InputPort(electrode_names_trait, 'reg electrode names', self)
+		self.ip_registration_electrode_names = InputPort(
+														 data_type = electrode_names_trait,
+														 name = 'reg electrode names',
+														 module = self
+														 )
 		self.input_ports.append(self.ip_registration_electrode_names)
 		self.i_registration_electrode_names = None
 

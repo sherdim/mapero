@@ -32,9 +32,6 @@ class Port(HasTraits):
 	def __init__(self, **traits):
 		super(Port, self).__init__(**traits)
 
-	def __set_pure_state__(self, state):
-		for key, value in state.items():
-			self.key = value
 		
 	def __get_pure_state__(self):
 		"""Method used by the state_pickler.

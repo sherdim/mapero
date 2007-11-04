@@ -75,8 +75,8 @@ class ModuleManager(traits.HasTraits):
                     module_number+=1
                     module_key = module_prefix_key+str(module_number)
             module.label = module_key
-            self.network.modules.append(module)
             self.max_module_id += 1
+            self.network.modules.append(module)
             module.id = self.max_module_id
             print "added module with id : ", module.id
             return module
@@ -176,6 +176,8 @@ class ModuleManager(traits.HasTraits):
     
     def create_network_instance(self, state):
         network = Network()
+        self.max_module_id = 0
+        self.max_connection_id = 0
         def get_module(module_label):
             for module in network.modules:
                 if module.label == module_label:
@@ -188,14 +190,17 @@ class ModuleManager(traits.HasTraits):
             module.label = module_state['label']
             module.id = module_state['id']
             module.start_module()
+            self.max_module_id = module.id > self.max_module_id and module.id or self.max_module_id
             network.modules.append(module)
         for connection_state in state.connections:
             input_port = get_module(connection_state.input_port.module.label).get_input(connection_state.input_port.name)
             output_port = get_module(connection_state.output_port.module.label).get_output(connection_state.output_port.name)
             
             connection = Connection(input_port=input_port, output_port=output_port)
-            
+            connection.id = connection_state['id']
+            self.max_connection_id = connection.id > self.max_connection_id and connection.id or self.max_connection_id
             network.connections.append(connection)
             
+        self.network = network
         return network
         

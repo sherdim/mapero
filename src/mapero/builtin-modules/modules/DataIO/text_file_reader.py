@@ -13,11 +13,16 @@ class text_file_reader(Module):
 	"""  """
 	file = File(filter=['*.txt'])
 
-	def start(self):
+	def __init__(self, **traits):
+		super(text_file_reader, self).__init__(**traits)
 		self.name = 'Text File Reader'
 
 		list_string_trait = List(Str)
-		self.op_lines = OutputPort(list_string_trait, 'lines', self)
+		self.op_lines = OutputPort(
+								   data_type =  list_string_trait,
+								   name = 'lines', 
+								   module = self
+								   )
 		self.output_ports.append(self.op_lines)
 
 

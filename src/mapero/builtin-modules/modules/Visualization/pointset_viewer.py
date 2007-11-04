@@ -1,7 +1,7 @@
 from mapero.core.module import Module
 from mapero.core.port import OutputPort, InputPort
 from numpy.oldnumeric.precision import Float
-from enthought.traits.api import Range, Array
+from enthought.traits import api as traits
 from enthought.traits.ui.api import Group
 from enthought.tvtk.api import tvtk
 from enthought.tvtk.tvtk_base import vtk_color_trait
@@ -11,17 +11,26 @@ module_info = {'name': 'Visualization.pointset_viewer',
 
 class pointset_viewer(Module):
 	""" modulo de prueba uno """
-	radius = Range(1.0, 10.0, 2.0)
+	radius = traits.Range(1.0, 10.0, 2.0)
 	color = vtk_color_trait((1.0, 1.0, 1.0))
 
-	def start(self):
+	def __init__(self, **traits):
+		super(pointset_viewer, self).__init__(**traits)
 		self.name = 'Point Set Viewer'
 
-		point_set_trait = Array(typecode=Float, shape=(None,3))
-		self.ip_point_set = InputPort(data_type=point_set_trait,name='array_input',module=self)
+		point_set_trait = traits.Array(typecode=Float, shape=(None,3))
+		self.ip_point_set = InputPort(
+									  data_type = point_set_trait,
+									  name = 'array_input',
+									  module = self
+									  )
 		self.input_ports.append(self.ip_point_set)
 
-		self.op_actors = OutputPort(data_type=point_set_trait,name='actors_output',module=self)
+		self.op_actors = OutputPort(
+								    data_type = point_set_trait,
+								    name = 'actors_output',
+								    module = self
+								    )
 		self.output_ports.append(self.op_actors)
 		self.sphere_sources = []
 		self.properties = []

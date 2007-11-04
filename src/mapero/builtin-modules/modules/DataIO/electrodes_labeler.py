@@ -15,20 +15,33 @@ class electrodes_labeler(Module):
 
 	view = Group('file')
 
-	def start(self):
+	def __init__(self, **traits):
+		super(electrodes_labeler, self).__init__(**traits)
 		self.name = 'Electrodes Labeler'
 
 		list_string_trait = List(Str)
-		self.ip_labels = InputPort(list_string_trait, 'labels', self)
+		self.ip_labels = InputPort(
+								   data_type = list_string_trait,
+								   name = 'labels',
+								   module = self
+								   )
 		self.input_ports.append(self.ip_labels)
 		self.i_labels = None
 
 		point_set_trait = Array(typecode=Int, shape=(None,2))
-		self.ip_map = InputPort(point_set_trait, 'map_point_set', self)
+		self.ip_map = InputPort(
+							    data_type = point_set_trait,
+							    name = 'map_point_set',
+							    module = self
+							    )
 		self.input_ports.append(self.ip_map)
 		self.i_map = None
 
-		self.op_labels = OutputPort(list_string_trait, 'labels', self)
+		self.op_labels = OutputPort(
+								    data_type = list_string_trait,
+								    name = 'labels',
+								    module = self
+								    )
 		self.output_ports.append(self.op_labels)
 
 	def update(self, input_port, old, new):

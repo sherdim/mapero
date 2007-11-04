@@ -58,9 +58,13 @@ class Connection(traits.HasTraits):
 	def _get_enable(self):
 		pass
 	
-	def __get_pure_state(self):
-		dict = {'enable': self.enable}
-		return dict
+	def __get_pure_state__(self):
+		"""Method used by the state_pickler.
+		"""
+		d = self.__dict__.copy()
+		for attr in ('data'):
+			d.pop(attr, None)
+		return d
 
 	def __del__(self):
 		self.enable = False

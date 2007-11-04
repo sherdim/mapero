@@ -15,23 +15,36 @@ log = logging.getLogger("mapero.logger.module");
 module_info = {'name': 'InverseSolution.surface_mapper',
                     'desc': ""}
 
-class surface_mapper (Module):
+class surface_mapper(Module):
     """ surface mapper """
 
-    def start(self):
+    def __init__(self, **traitsv):
+        super(surface_mapper, self).__init__(**traitsv)
         self.name = 'Surface Mapper'
 
         dipole_sources_trait = traits.Array(typecode=Float, shape=(None,None))
-        self.ip_dipole_sources = InputPort(dipole_sources_trait, 'dipole source', self)
+        self.ip_dipole_sources = InputPort(
+                                           data_type = dipole_sources_trait,
+                                           name = 'dipole source',
+                                           module = self
+                                           )
         self.input_ports.append(self.ip_dipole_sources)
         self.i_dipole_sources = None
         
         polydata_trait = traits.Trait(tvtk.PolyData)
-        self.ip_cortex = InputPort(polydata_trait, 'cortex', self)
+        self.ip_cortex = InputPort(
+                                   data_type = polydata_trait,
+                                   name = 'cortex',
+                                   module = self
+                                   )
         self.input_ports.append(self.ip_cortex)
         self.i_cortex = None
 
-        self.op_polydata = OutputPort(polydata_trait, 'mapped cortex', self)
+        self.op_polydata = OutputPort(
+                                      data_type = polydata_trait,
+                                      name = 'mapped cortex',
+                                      module = self
+                                      )
         self.output_ports.append(self.op_polydata)
 
 
@@ -53,7 +66,8 @@ class surface_mapper (Module):
             log.debug( "surface mapper: process ...")
 
             ocortex.point_data.scalars = dipoles[0:dipoles.shape[0],0]
-            log.debug( "dipoles.shape: ", dipoles.shape )
+            print "dipoles.shape: ", dipoles.shape
+            #log.debug( "dipoles.shape: %s" % dipoles.shape )
 
         self.progress = 100
         self.op_polydata.data = ocortex

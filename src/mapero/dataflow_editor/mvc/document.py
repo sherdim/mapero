@@ -1,11 +1,10 @@
 from wx.lib import docview
 from mapero.dataflow_editor.mvc.controller import DataflowEditorController
-from enthought.persistence.state_pickler import StateSetterError
-import logging
 #import xml_state_pickler as state_pickler
 from enthought.persistence import state_pickler as state_pickler
 
 
+import logging
 log = logging.getLogger("mapero.logger.mvc");
 
 class DataflowDocument(docview.Document):
@@ -20,7 +19,9 @@ class DataflowDocument(docview.Document):
 
     def SaveObject(self, fileObject):
         dataflow_editor_model = self.controller.dataflow_editor_model
+        log.debug("saving file")
         state_pickler.dump(dataflow_editor_model, fileObject)
+        log.debug("file saved")
 #        doc = Document();
 #        diagram = doc.createElement("diagram")
 #        doc.appendChild(diagram)
@@ -65,8 +66,11 @@ class DataflowDocument(docview.Document):
 
 
     def LoadObject(self, fileObject):
+        log.debug("loading state from file: ")
         state = state_pickler.load_state(fileObject)
+        log.debug("creating dataflow from state")
         self.controller.create_dataflow_model(state)
+        log.debug("dataflow created")
 #        doc = parse(fileObject)
 #        module_id_dict = {}
 #        for module_element in doc.getElementsByTagName("module"):

@@ -5,7 +5,7 @@ from enthought.traits.ui.api import Group
 
 class modulo1(Module):
     """ """
-    param = traits.Range(100)
+    param = traits.Range(0,100)
     
     view = Group('param')
     

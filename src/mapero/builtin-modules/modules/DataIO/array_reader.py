@@ -12,9 +12,14 @@ class array_reader(Module):
 	"""  """
 	file = File(filter=["matrix text file [*.mat]", "*.mat", "text file [*.txt]", "*.txt"])
 
-	def start(self):
+	def __init__(self, **traits):
+		super(array_reader, self).__init__(**traits)
 		self.name = 'Array Reader'
-		self.output_ports.append(OutputPort(list, 'array_output', self))
+		self.array_output = OutputPort(
+									   data_type=list,
+									   name = 'array_output',
+									   module = self)
+		self.output_ports.append(self.array_output)
 		self.a = array([[]], dtype=float)
 
 	def _file_changed(self):
@@ -56,7 +61,7 @@ class array_reader(Module):
 			index+=1
 
 		self.progress = 100;
-		self.get_output('array_output').data = self.a
+		self.array_output.data = self.a
 
 	def read_line(self, file):
 		string = file.next()
