@@ -95,9 +95,7 @@ class DataflowDiagram(ogl.Diagram):
 
 
     def add_module(self, x, y, module_name):
-        print "(x,y) : (%s,%s)" % (x,y)
         cx, cy = self.GetCanvas().CalcUnscrolledPosition(x,y)
-        print "(cx,cy) : (%s,%s)" % (cx,cy)
         self.view.add_module(module_name, cx, cy)
 
     def add_module_shape(self, module, geometrics):

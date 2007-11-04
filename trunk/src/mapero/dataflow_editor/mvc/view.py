@@ -87,6 +87,7 @@ class DataflowView(docview.View):
         pass 
         
     def show_popup_menu(self, position):
+        cx, cy = self.get_diagram().GetCanvas().CalcUnscrolledPosition(position[0],position[1])
         delete_enabled = len(self.selected_modules)>0 or len(self.selected_connections)>0 and True or False
         menu = Menu( 
                     Action( name = _('Copy'), enabled=False ),
@@ -100,7 +101,7 @@ class DataflowView(docview.View):
                     )
         canvas = self._diagramCtrl.GetCanvas()
         caca = menu.create_menu(canvas)
-        caca.show(position[0],position[1])
+        caca.show(cx,cy)
             
                 
     def on_context(self, event):
