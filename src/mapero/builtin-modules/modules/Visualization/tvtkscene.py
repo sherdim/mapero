@@ -33,26 +33,21 @@ class tvtkscene(VisualModule):
     def update(self, input_port, old, new):
         if (new == None and old != None):
             self.input_actors = old
-            GUI.invoke_later(self._remove_actors)
+            GUI.invoke_later( self._remove_actors )
         if (old != new) :
-            if isinstance(input_port.data, list):
-                self.input_actors = input_port.data
-            else:
-                self.input_actors = [input_port.data]
-            GUI.invoke_later(self._add_actors)
+            self.input_actors = input_port.data
+            GUI.invoke_later( self._add_actors )
 
 
     def _add_actors(self):
         self.progress = 0
         self.scene.add_actors(self.input_actors)
         self.progress = 100
-        print "rerendered scene"
 
     def _remove_actors(self):
         self.progress = 0
         self.scene.remove_actors(self.input_actors)
         self.progress = 100
-        print "rerendered scene"
 
 
     def _create_window(self):

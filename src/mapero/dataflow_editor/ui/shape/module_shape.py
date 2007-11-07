@@ -82,15 +82,14 @@ class ModuleShape(ogl.RectangleShape):
 
 		self.SetX(x)
 		self.SetY(y)
-
-	def UpdateModule(self, module):
+		
+	def UpdateModule(self):
 		for child in self._children:
 			child.Delete()
 		self._children = []
 		self.input_port_shapes = []
 		self.output_port_shapes = []
 		self.ClearAttachments()
-		self.module = module
 
 		for input_port in self.module.input_ports:
 				port_shape = PortShape(input_port, False)
@@ -107,7 +106,8 @@ class ModuleShape(ogl.RectangleShape):
 				self._children.append(port_shape)
 
 		self.update_port_positions()
-		self.GetCanvas().Refresh()
+		self.refresh()
+		self.module.on_trait_change(self.refresh, "progress")
 		log.debug( " updating module_shape " )
 
 	def get_port_attachment(self, port):
@@ -201,11 +201,15 @@ class ModuleShape(ogl.RectangleShape):
 		self.DrawLinks(dc)
 	
 	def SetGeometrics(self, geometrics):
-		self.SetX(geometrics.x)
-		self.SetY(geometrics.y)
-		self.SetHeight(geometrics.h)
-		self.SetWidth(geometrics.w)
-		self.UpdateModule(self.module)
+		if (geometrics):
+			self.SetX(geometrics.x)
+			self.SetY(geometrics.y)
+			self.SetHeight(geometrics.h)
+			self.SetWidth(geometrics.w)
+		self.refresh()
+
+	def refresh(self):
+		self.GetCanvas().Refresh()
 
 	def __del__(self):
 		log.debug("removing module shape for module : %s" % self.module)

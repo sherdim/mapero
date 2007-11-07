@@ -15,7 +15,12 @@ class DataflowDocument(docview.Document):
         super(DataflowDocument,self).__init__(self)
         self._inModify = False
         self.controller = DataflowEditorController(document=self)
+        
+        self.controller.on_trait_event(self.update_views, 'network_updated')
     
+    def update_views(self):
+        self.Modify(True)
+        self.UpdateAllViews()
 
     def SaveObject(self, fileObject):
         dataflow_editor_model = self.controller.dataflow_editor_model
@@ -71,6 +76,8 @@ class DataflowDocument(docview.Document):
         log.debug("creating dataflow from state")
         self.controller.create_dataflow_model(state)
         log.debug("dataflow created")
+        
+
 #        doc = parse(fileObject)
 #        module_id_dict = {}
 #        for module_element in doc.getElementsByTagName("module"):

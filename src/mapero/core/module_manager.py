@@ -76,8 +76,8 @@ class ModuleManager(traits.HasTraits):
                     module_key = module_prefix_key+str(module_number)
             module.label = module_key
             self.max_module_id += 1
-            self.network.modules.append(module)
             module.id = self.max_module_id
+            self.network.modules.append(module)
             print "added module with id : ", module.id
             return module
         else:

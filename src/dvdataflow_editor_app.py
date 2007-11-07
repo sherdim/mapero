@@ -6,7 +6,7 @@ cwd3 = os.path.split(cwd2)[0]
 mro_dir = os.path.split(cwd1)[0]
 print mro_dir
 
-sys.path.append(mro_dir)
+#sys.path.append(mro_dir)
 import wx
 import wx.lib.ogl as ogl
 import wx.lib.docview as docview
