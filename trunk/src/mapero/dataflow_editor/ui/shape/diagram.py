@@ -104,6 +104,7 @@ class DataflowDiagram(ogl.Diagram):
         module_shape.Show(True)
         self.AddShape(module_shape)
         self.module_shapes.append(module_shape)
+        module_shape.UpdateModule()
         module_shape.SetGeometrics(geometrics)
         
     def remove_module_shape(self, module):

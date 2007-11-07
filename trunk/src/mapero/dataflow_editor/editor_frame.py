@@ -22,14 +22,27 @@ class DataflowEditorFrame(pydocview.DocTabbedParentFrame):
 #        self.mgr.AddPane(self._catalog_tree.control, wx.LEFT, 'Catalog')
 #        self.mgr.Update()
 
+
+#    def _LayoutWindow(self):
+#        """
+#        Lays out the frame.
+#        """
+#        wx.LayoutAlgorithm().LayoutFrame(self, self.networks_panel)
+        
+
+
+    def OnSize(self, event):
+        event.Skip()
+        
     def CreateNotebook(self):
         """
         Creates the notebook to use for the tabbed document interface.
         """
         print "creating notebook"
 
-        split = wx.SplitterWindow(self, -1, pos=(100,100), size=(1000,1000), style=wx.SP_3D)
-        split.SetMinimumPaneSize(20)
+        split = wx.SplitterWindow(self, -1, style=wx.SP_3D)
+        
+        #split.SetMinimumPaneSize(20)
         self.split = split
 
         catalog = Catalog()
@@ -37,7 +50,9 @@ class DataflowEditorFrame(pydocview.DocTabbedParentFrame):
         wx.EVT_MOTION(self._catalog_tree.control, self._on_catalog_tree_anytrait_changed)
         
         self.networks_panel = wx.Panel(self.split)
-        split.SplitVertically(self._catalog_tree.control, self.networks_panel , 220)
+        vbox_np = wx.BoxSizer()
+        
+        split.SplitVertically(self._catalog_tree.control, self.networks_panel, 220)
     
         if wx.Platform != "__WXMAC__":
                 self._notebook = wx.Notebook(self.networks_panel, wx.NewId())
@@ -76,6 +91,20 @@ class DataflowEditorFrame(pydocview.DocTabbedParentFrame):
                 print "Warning: getBlankIcon isn't 16x16, not crossplatform"
         self._blankIconIndex = iconList.AddIcon(icon)
         self._notebook.AssignImageList(iconList)
+        
+        
+        vbox_np.Add(self._notebook, 1, wx.EXPAND, 0)
+        self.networks_panel.SetSizer(vbox_np)
+        
+        all_sizer = wx.BoxSizer(wx.VERTICAL)
+        all_sizer.Add(self.split, 1 ,wx.EXPAND, 0)
+        self.SetBackgroundColour(wx.RED)
+        self.SetSizer(all_sizer)
+        #all_sizer.Fit(self)
+        self.Layout()
+        
+        
+
 
     ###########################################################################
     # Private interface.
@@ -101,4 +130,5 @@ class DataflowEditorFrame(pydocview.DocTabbedParentFrame):
                         "failed"
 
             return
+        evt.Skip()
 

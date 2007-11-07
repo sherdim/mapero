@@ -64,30 +64,31 @@ class Module(traits.HasTraits):
 
     def __init__(self, **traits):
         super(Module, self).__init__(**traits)
-        logging.debug( "creating module" )
+        log.debug( "creating module" )
         self.module_info = {}
 
         #self.logs = {'error': '', 'warning': '', 'info': '', 'debug': ''}
         #self.log('info', "Module %s created", self.__class__.__name__)
 
     def __del__(self):
-        logging.debug( "Module %s deleted" % self.__class__.__name__)
+        log.debug( "Module %s deleted" % self.__class__.__name__)
 
     def start_module(self):
         self.start()
-        logging.debug( "Module %s started" % self.__class__.__name__)
+        log.debug( "Module %s started" % self.__class__.__name__)
 
     def start(self):
         pass
 
     def stop_module(self):
         self.stop()
-        logging.debug( "Module %s stoped" % self.__class__.__name__)
+        log.debug( "Module %s stoped" % self.__class__.__name__)
 
     def stop(self):
         pass
 
     def update_module(self, input_port, old=None, new=None):
+        log.debug( "Updating module  %s  from  %s" % (self.__class__.__name__, input_port.name))
         self.update(input_port, old, new)
         #print 'module %s updated from input port: %s' % (self.name, input_port)
 
@@ -97,9 +98,9 @@ class Module(traits.HasTraits):
 
     def process(self):
         process_thread = self.ProcessThread(self)
-        logging.debug("starting module processing thread : " +  self.__class__.__name__ )
+        log.debug("starting module processing thread : " +  self.__class__.__name__ )
         process_thread.start()
-        logging.debug("started module processing thread : " + self.__class__.__name__ )
+        log.debug("started module processing thread : " + self.__class__.__name__ )
 #        self._process()
 
     def _process(self):

@@ -18,6 +18,8 @@ class DataflowEditorController(traits.HasTraits):
     dataflow_editor_model = traits.Instance(DataflowEditorModel)
     document = traits.Trait()
     
+    network_updated = traits.Event
+    
     def __init__(self, **traits):
         super(DataflowEditorController, self).__init__(**traits)
         self.module_manager = ModuleManager()
@@ -26,12 +28,18 @@ class DataflowEditorController(traits.HasTraits):
             self.dataflow_editor_model = DataflowEditorModel(
                                 network = self.module_manager.network
                                  )
+        network = self.module_manager.network
+        network.on_trait_event(
+                                self._network_updated, 'updated'
+                              )
+
             
         
     def create_dataflow_model(self, state):
-        network = self.module_manager.create_network_instance(state.network)
+        network = self.module_manager.create_network_instance( state.network )
+        network.on_trait_event( self._network_updated, 'updated' )
         state_setter = StateSetter()
-        state_setter.set(network, state.network)
+        state_setter.set( network, state.network )
         module_geometrics = []
         connection_geometrics = []
         
@@ -125,3 +133,5 @@ class DataflowEditorController(traits.HasTraits):
             if geometrics.connection_id == connection.id:
                 return geometrics
             
+    def _network_updated(self):
+        self.network_updated = True

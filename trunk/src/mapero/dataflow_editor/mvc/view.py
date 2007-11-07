@@ -6,7 +6,6 @@
 #
 #----------------------------------------------------------------------------
 from wx.lib import docview
-import logging
 
 from commands import *
 from mapero.dataflow_editor.ui.shape.diagram import DataflowDiagram
@@ -15,6 +14,7 @@ from mapero.dataflow_editor.ui.interactor.mouse import MouseInteractor
 from mapero.dataflow_editor.ui.shape.module_shape import ModuleShape
 from enthought.traits.ui.menu import Menu, Action, Separator
 
+import logging
 log = logging.getLogger("mapero.logger.mvc");
 
 _ = wx.GetTranslation
@@ -262,6 +262,7 @@ class DataflowView(docview.View):
             return True
         else:
             return wx.lib.docview.View.ProcessEvent(self, event)
+        event.Skip()
 
 
     def ProcessUpdateUIEvent(self, event):

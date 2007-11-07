@@ -31,8 +31,8 @@ class Connection(traits.HasTraits):
 
 	def __init__(self, **traits):
 		super(Connection, self).__init__(**traits)
-		self.input_port.connection = self
 		self.output_port.connections.append(self)
+		self.input_port.connection = self
 		self.enable = True
 
 	def update_data(self):
@@ -51,9 +51,9 @@ class Connection(traits.HasTraits):
 		if (value != self.enable):
 			if (value == True):
 				if (self.input_port != None) and (self.output_port != None):
-					self.input_port.data = self.output_port.data
+					self.data = self.output_port.data
 			else:
-				self.input_port.data = None
+				self.data = None
 
 	def _get_enable(self):
 		pass

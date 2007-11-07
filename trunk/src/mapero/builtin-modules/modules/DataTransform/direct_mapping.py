@@ -62,7 +62,6 @@ class direct_mapping(Module):
 		log.debug("starting update")
 		probe_filter.update()
 		log.debug("finished update")
-		log.debug(probe_filter.output.point_data.scalars)
 		
 		self.op_polydata.data = probe_filter.output
 		self.progress = 100
