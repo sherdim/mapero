@@ -1,5 +1,5 @@
 import os.path
-from pkg_resources import resource_string, resource_stream
+from pkg_resources import resource_filename, resource_stream
 
 #sys.path.append(mro_dir)
 import wx
@@ -21,7 +21,7 @@ _ = wx.GetTranslation
 
 class DataflowEditorApplication(pydocview.DocApp):
 
-    SPLASH = "splash.png"
+    SPLASH = resource_filename(__name__, "splash.png")
 
     def OpenMainFrame(self):
         docManager = self.GetDocumentManager()
