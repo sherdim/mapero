@@ -1,5 +1,6 @@
 from mapero.core.module import Module
 from mapero.core.port import OutputPort, InputPort
+from mapero.dataflow_editor.decorators.thread import threaded_process
 from numpy.oldnumeric.precision import Float
 from enthought.traits import api as traits
 from enthought.traits.ui.api import Group
@@ -43,7 +44,8 @@ class pointset_viewer(Module):
 				self.progress = 0
 				self.get_output('actors_output').data = None
 
-	def _process(self):
+	@threaded_process
+	def process(self):
 		input_array = self.get_input('array_input').data
 		self.progress = 0
 		progress_step = 100/input_array.shape[0]

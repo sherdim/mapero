@@ -1,5 +1,6 @@
 from mapero.core.module import Module
 from mapero.core.port import OutputPort, InputPort
+from mapero.dataflow_editor.decorators.thread import threaded_process
 from numpy.oldnumeric.precision import Float
 from enthought.traits import api as traits
 from enthought.traits.ui.api import Group, Item
@@ -16,7 +17,7 @@ module_info = {'name': 'Visualization.polydata_viewer',
 class polydata_viewer(Module):
     """ modulo de prueba uno """
 
-    lookup_color_list = traits.List(traits.RGBAColor)
+    lookup_color_list = traits.List(traits.RGBColor)
     low_scalar = traits.Float
     high_scalar = traits.Float
     view = Group(Item('lookup_color_list', resizable=True, height=300), 'low_scalar' ,'high_scalar')
@@ -55,7 +56,8 @@ class polydata_viewer(Module):
                 self.progress = 0
                 self.get_output('actors_output').data = None
 
-    def _process(self):
+    @threaded_process
+    def process(self):
         input_array = self.get_input('polydata_input').data
         self.progress = 0    
         self.mapper = tvtk.PolyDataMapper(input=input_array)

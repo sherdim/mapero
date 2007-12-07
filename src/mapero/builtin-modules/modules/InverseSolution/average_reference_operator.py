@@ -1,5 +1,6 @@
 from mapero.core.module import Module
 from mapero.core.port import OutputPort, InputPort
+from mapero.dataflow_editor.decorators.thread import threaded_process
 from numpy.oldnumeric.precision import Float, Int
 from enthought.traits import api as traits
 from numpy import array, resize
@@ -90,7 +91,8 @@ class average_reference_operator(Module):
             and (self.i_lead_field_electrode_names != None):
             self.process()
 
-    def _process(self):
+    @threaded_process
+    def process(self):
         self.progress = 0
         i_registration_values = self.i_registration_values
         i_lead_field = self.i_lead_field

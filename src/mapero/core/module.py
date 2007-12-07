@@ -9,11 +9,11 @@
 # Standard library imports.
 import wx
 
-from threading import Thread
 from enthought.traits import api as traits
 
 from mapero.core.port import InputPort
 from mapero.core.port import OutputPort
+from mapero.dataflow_editor.decorators.thread import threaded_process, invoke_later
 
 from enthought.traits.ui.api import View, Group, Include
 
@@ -34,9 +34,6 @@ class InputPortNotFoundError(PortNotFoundError):
 class OutputPortNotFoundError(PortNotFoundError):
     pass
 
-
-
-
 ######################################################################
 # `Module` class.
 ######################################################################
@@ -55,12 +52,12 @@ class Module(traits.HasTraits):
                         Group('label', label='General'),
                         Include('view')))
 
-    class ProcessThread(Thread):
-        def __init__(self, module):
-             Thread.__init__(self, name=module.__class__.__name__+'-process')
-             self.module = module
-        def run(self):
-             self.module._process()
+#    class ProcessThread(Thread):
+#        def __init__(self, module):
+#             Thread.__init__(self, name=module.__class__.__name__+'-process')
+#             self.module = module
+#        def run(self):
+#             self.module._process()
 
     def __init__(self, **traits):
         super(Module, self).__init__(**traits)
@@ -94,17 +91,6 @@ class Module(traits.HasTraits):
 
     def update(self, input_port, old=None, new=None):
         print 'datos actualizados'
-
-
-    def process(self):
-        process_thread = self.ProcessThread(self)
-        log.debug("starting module processing thread : " +  self.__class__.__name__ )
-        process_thread.start()
-        log.debug("started module processing thread : " + self.__class__.__name__ )
-#        self._process()
-
-    def _process(self):
-        pass
 
     def get_input(self, port):
         for input in self.input_ports:

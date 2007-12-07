@@ -159,7 +159,7 @@ class ModuleShape(ogl.RectangleShape):
 
 	def OnMovePost(self, dc, x, y, old_x, old_y, display):
 		self.GetCanvas().GetDiagram().move_module(self.module,  x - old_x, y - old_y)
-		ogl.RectangleShape.OnMovePost(self, dc, x, y, old_x, old_y, display)
+#		ogl.RectangleShape.OnMovePost(self, dc, x, y, old_x, old_y, display)
 
 
 #	def OnLeftClick(self, x, y, keys, attachment):
@@ -206,10 +206,22 @@ class ModuleShape(ogl.RectangleShape):
 			self.SetY(geometrics.y)
 			self.SetHeight(geometrics.h)
 			self.SetWidth(geometrics.w)
+			self.update_port_positions()
 		self.refresh()
 
 	def refresh(self):
-		self.GetCanvas().Refresh()
+		bx = self.GetX()
+		by = self.GetY()
+		bw, bh = self.GetBoundingBoxMax()
+		rect = wx.Rect(int(bx-bw/2)-1, int(by-bh/2)-1, int(bw)+2, int(bh)+2)
+
+		canvas = self.GetCanvas()
+		dc = wx.ClientDC(canvas)
+		canvas.PrepareDC(dc)
+		self.MoveLinks(dc)
+		canvas.Refresh(False, rect)
+		pass
+		#self.GetCanvas().Refresh()
 
 	def __del__(self):
 		log.debug("removing module shape for module : %s" % self.module)

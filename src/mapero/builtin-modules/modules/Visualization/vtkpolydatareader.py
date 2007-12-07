@@ -1,5 +1,6 @@
 from mapero.core.module import Module
 from mapero.core.port import OutputPort, InputPort
+from mapero.dataflow_editor.decorators.thread import invoke_later
 from enthought.traits.api import Range, Int, Instance, File
 from enthought.traits.ui.api import View, Group
 from enthought.pyface.tvtk.decorated_scene import DecoratedScene
@@ -12,9 +13,9 @@ module_info = {'name': 'Visualization.vtkpolydatareader',
 
 class vtkpolydatareader(Module):
     """ modulo de prueba visual """
-    VTK_File = File(filter=['*.vtk'])
+    vtk_file = File(filter=['*.vtk'])
 
-    view = Group('VTK_File')
+    view = Group('vtk_file')
 
 
     def __init__(self, **traitsv):
@@ -29,17 +30,20 @@ class vtkpolydatareader(Module):
         self.output_ports.append(self.out1)
 
 
-    def _process(self):
+    @invoke_later
+    def process(self):
+        print "processing ..."
         self.progress = 0
 
-        self.poly = tvtk.PolyDataReader(file_name = self.VTK_File )
+        self.poly = tvtk.PolyDataReader(file_name = self.vtk_file )
         print self.poly.file_name
         poly = self.poly.output
 
         self.progress = 100
         self.out1.data = self.poly.output
 
-    def _VTK_File_changed(self):
+    def _vtk_file_changed(self):
+        print "file changed "
         self.process()
 
 

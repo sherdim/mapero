@@ -1,5 +1,6 @@
 from mapero.core.module import Module
 from mapero.core.port import OutputPort, InputPort
+from mapero.dataflow_editor.decorators.thread import invoke_later, threaded_process
 from numpy.oldnumeric.precision import Float, Int
 from enthought.traits import api as traits
 from enthought.tvtk.api import tvtk
@@ -50,10 +51,11 @@ class direct_mapping(Module):
 		if input_port == self.ip_values_polydata:
 			self.i_values_polydata = input_port.data
 		if (self.i_input_polydata != None) and ( self.i_values_polydata != None):
-			self.process()
+			self.procesar()
 
 
-	def _process(self):
+
+	def procesar(self):
 		self.progress = 0
 		log.debug("starting process")
 		input = self.i_input_polydata

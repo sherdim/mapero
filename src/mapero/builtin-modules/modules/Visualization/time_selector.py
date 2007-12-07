@@ -1,5 +1,6 @@
 from mapero.core.module import VisualModule
 from mapero.core.port import OutputPort, InputPort
+from mapero.dataflow_editor.decorators.thread import threaded_process
 from enthought.util import numerix
 from numpy.oldnumeric.precision import Float
 from enthought.traits import api as traits
@@ -134,7 +135,8 @@ class time_selector(VisualModule):
         if (self.i_values != None) :
             self.process()
 
-    def _process(self):
+    @threaded_process
+    def process(self):
         i_values = self.i_values
         self.progress = 0
 
