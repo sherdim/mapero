@@ -5,10 +5,15 @@ from setuptools import setup, find_packages
 setup(
     name = "Mapero",
     version = "0.1a1",
-    packages = find_packages(),
     
     packages = find_packages('src', 'src/mapero/builtin-modules'),
     package_dir = {'':'src', 'builtin-modules':'src/mapero/builtin-modules'},
+    packages = find_packages(),
+
+    dependency_links = [
+        'http://code.enthought.com/enstaller/eggs/source',
+        'http://code.enthought.com/enstaller/eggs/source/unstable',
+        ],
 
     install_requires = ['enthought.chaco2>=2.0a1',
                         'enthought.tvtk>=2.0a1',
