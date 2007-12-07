@@ -1,5 +1,6 @@
 from mapero.core.module import Module
 from mapero.core.port import OutputPort, InputPort
+from mapero.dataflow_editor.decorators.thread import threaded_process
 from numpy.oldnumeric.precision import Float, Int
 from enthought.traits.api import Array, Enum
 from enthought.traits.ui.api import Group
@@ -55,10 +56,12 @@ class binary_operator(Module):
 			self.i_second_matrix = input_port.data
 		if (self.i_first_matrix != None)  \
 			and ( self.i_second_matrix != None) :
-			self.process()
+			self.processar()
 
-	def _process(self):
+	@threaded_process
+	def processar(self):
 		self.progress = 0
+		print "binary operator ..."
 		op1 = matrix(self.i_first_matrix)
 		op2 = matrix(self.i_second_matrix)
 		result = None

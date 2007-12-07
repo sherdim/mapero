@@ -1,5 +1,6 @@
 from mapero.core.module import Module
 from mapero.core.port import OutputPort, InputPort
+from mapero.dataflow_editor.decorators.thread import threaded_process
 from numpy.oldnumeric.precision import Float, Int
 from enthought.traits.api import Array, List, Str
 from numpy import ones, zeros, dot, take, argsort
@@ -47,8 +48,8 @@ class closest_point_finder(Module):
 		if (self.i_from_point_set != None) and ( self.i_to_point_set != None):
 			self.process()
 
-
-	def _process(self):
+	@threaded_process
+	def process(self):
 		from_point_set = self.i_from_point_set
 		to_point_set = self.i_to_point_set
 

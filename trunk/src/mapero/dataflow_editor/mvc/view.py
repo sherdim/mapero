@@ -14,17 +14,16 @@ from mapero.dataflow_editor.ui.interactor.mouse import MouseInteractor
 from mapero.dataflow_editor.ui.shape.module_shape import ModuleShape
 from enthought.traits.ui.menu import Menu, Action, Separator
 
-import logging
 log = logging.getLogger("mapero.logger.mvc");
 
 _ = wx.GetTranslation
 
 menu_titles = [ _("Remove"),
-                          _("-"),
-                          _("Refresh"),
-                          _("Edit Code"),
-                          _("Edit Code")
-                           ]
+                _("-"),
+                _("Refresh"),
+                _("Edit Code"),
+                _("Edit Code")
+            ]
 
 menu_title_by_id = {}
 for title in menu_titles:
@@ -64,8 +63,6 @@ class DataflowView(docview.View):
         
         return True
 
-    def remove_module(self, module):
-        self.doc.remove_module(module)
         
     def is_only_one_module_selected(self):
         if self.selected_modules != None and len(self.selected_modules)==1:
@@ -73,10 +70,6 @@ class DataflowView(docview.View):
         else:
             return False
 
-        
-    def refresh_module(self):
-        if self.selected_modules != None and len(self.selected_modules)==1:
-            self.doc.refresh_module(self.selected_modules[0])
     
     def edit_code(self):
         print "edit_code: "
@@ -189,14 +182,14 @@ class DataflowView(docview.View):
             connection_shape = diagram.get_connection_shape(connection)
             if connection_shape:
                 connection_shape.SetGeometrics(geometrics)
-                module_from = connection.output_port.module
-                module_to = connection.input_port.module
-                module_from_shape = diagram.get_module_shape(module_from)
-                module_to_shape = diagram.get_module_shape(module_to)
-                module_from_geometrics = controller.get_module_geometrics()[module_from]
-                module_to_geometrics = controller.get_module_geometrics()[module_to]
-                module_from_shape.SetGeometrics(module_from_geometrics)
-                module_to_shape.SetGeometrics(module_to_geometrics)
+#                module_from = connection.output_port.module
+#                module_to = connection.input_port.module
+#                module_from_shape = diagram.get_module_shape(module_from)
+#                module_to_shape = diagram.get_module_shape(module_to)
+#                module_from_geometrics = controller.get_module_geometrics()[module_from]
+#                module_to_geometrics = controller.get_module_geometrics()[module_to]
+#                module_from_shape.SetGeometrics(module_from_geometrics)
+#                module_to_shape.SetGeometrics(module_to_geometrics)
 
             else:
                 log.debug( "adding connection shape" )

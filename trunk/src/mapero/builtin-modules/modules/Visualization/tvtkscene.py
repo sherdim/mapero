@@ -1,5 +1,6 @@
 from mapero.core.module import VisualModule
 from mapero.core.port import MultiInputPort
+from mapero.dataflow_editor.decorators.thread import invoke_later
 from enthought.traits.api import Instance
 from enthought.traits.ui.api import Group, Item
 from enthought.pyface.gui import GUI
@@ -33,17 +34,18 @@ class tvtkscene(VisualModule):
     def update(self, input_port, old, new):
         if (new == None and old != None):
             self.input_actors = old
-            GUI.invoke_later( self._remove_actors )
+            self._remove_actors()
         if (old != new) :
             self.input_actors = input_port.data
-            GUI.invoke_later( self._add_actors )
+            self._add_actors()
 
-
+    @invoke_later
     def _add_actors(self):
         self.progress = 0
         self.scene.add_actors(self.input_actors)
         self.progress = 100
-
+        
+    @invoke_later
     def _remove_actors(self):
         self.progress = 0
         self.scene.remove_actors(self.input_actors)

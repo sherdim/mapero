@@ -1,10 +1,5 @@
-import sys
 import os.path
-cwd1 = os.path.realpath(__file__)
-cwd2 = os.path.split(cwd1)[0]
-cwd3 = os.path.split(cwd2)[0]
-mro_dir = os.path.split(cwd1)[0]
-print mro_dir
+from pkg_resources import resource_string, resource_stream
 
 #sys.path.append(mro_dir)
 import wx
@@ -107,6 +102,6 @@ class DataflowEditorApplication(pydocview.DocApp):
 # Run the DataflowEditorApplication and do not redirect output to the wxPython error dialog
 ogl.OGLInitialize()
 app = DataflowEditorApplication(redirect=False)
-logging_conf = os.path.join(cwd2, 'logging.conf')
+logging_conf = resource_stream(__name__, 'logging.conf')
 logging.config.fileConfig(logging_conf)
 app.MainLoop()

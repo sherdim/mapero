@@ -1,5 +1,6 @@
 from mapero.core.module import Module
 from mapero.core.port import InputPort
+from mapero.dataflow_editor.decorators.thread import threaded_process
 from enthought.traits import api as traits
 
 import logging
@@ -19,7 +20,8 @@ class modulo2(Module):
     def update(self, input_port, old=None, new=None):
         self.process()
         
-    def _process(self):
+    @threaded_process
+    def process(self):
         log.debug("processing")
         if (self.in1.data):
             self.progress = self.in1.data

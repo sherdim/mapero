@@ -1,5 +1,6 @@
 from mapero.core.module import Module
 from mapero.core.port import OutputPort, InputPort
+from mapero.dataflow_editor.decorators.thread import threaded_process
 from numpy.oldnumeric.precision import Int
 from enthought.traits.api import File, Array, List, Str
 from enthought.traits.ui.api import  Group
@@ -56,8 +57,8 @@ class electrodes_labeler(Module):
 		if (self.i_labels != None) and (self.i_map != None) and (self.file != ''):
 			self.process()
 
-
-	def _process(self):
+	@threaded_process
+	def process(self):
 		map = self.i_map
 		i_labels = self.i_labels
 		print "labels: ", i_labels

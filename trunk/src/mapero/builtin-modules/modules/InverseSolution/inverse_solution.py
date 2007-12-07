@@ -1,5 +1,6 @@
 from mapero.core.module import Module
 from mapero.core.port import OutputPort, InputPort
+from mapero.dataflow_editor.decorators.thread import threaded_process
 from numpy.oldnumeric.precision import Float, Int
 from enthought.traits.api import Array, Enum
 from enthought.traits.ui.api import Group
@@ -23,11 +24,6 @@ class inverse_solution(Module):
         super(inverse_solution, self).__init__(**traits)
         self.name = 'Inverse Solution'
 
-#        dipole_source_trait = Array(typecode=Float, shape=(None,None))
-#        self.ip_dipole_source = InputPort(dipole_source_trait, 'dipole source', self)
-#        self.input_ports.append(self.ip_dipole_source)
-#        self.i_dipole_source = None
-
         lead_field_trait = Array(typecode=Float, shape=(None,None))
         self.ip_lead_field_avg = InputPort(
                                            data_type = lead_field_trait,
@@ -47,16 +43,16 @@ class inverse_solution(Module):
 
 
     def update(self, input_port, old, new):
-#        if input_port == self.ip_dipole_source:
-#            self.i_dipole_source = input_port.data
         if input_port == self.ip_lead_field_avg:
             self.i_lead_field_avg = input_port.data
         if (self.i_lead_field_avg != None):
-#            and ( self.i_dipole_source != None) :
             self.process()
+            
 
-    def _process(self):
-        self.progress = 0
+
+    @threaded_process
+    def process(self):
+	self.progress = 0
         def calqomega_x_i(K):
             sum = K.sum(0)
             sum2 = array(square(sum))
@@ -73,14 +69,7 @@ class inverse_solution(Module):
                 print "max sum : " ,  sum.max()
                 print "min sum : " ,  sum.min()
                 sum[sum==0.0]=1
-#                for p in range(818):
-#                    tmps = 0
-#                    for i in range(3):
-#                        tmps += sum[0,p*3+i]
-#                    print "tmps ", p, ": ", tmps
-#                    for i in range(3):
-#                        sum[0,p*3+i] = tmps
-#                print "sum[0,0] : ", sum[0,0]
+
                 for r in range(K.shape[0]):
                     KW[r] = K[r]/sum
             return KW
@@ -91,10 +80,6 @@ class inverse_solution(Module):
             else:
                 m2 = M2
             return M1*m2.T
-
-
-
-
 
         K =  matrix(self.i_lead_field_avg)
         method = self.method
