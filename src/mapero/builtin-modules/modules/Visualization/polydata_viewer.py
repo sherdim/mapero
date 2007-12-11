@@ -49,16 +49,16 @@ class polydata_viewer(Module):
         self.high_scalar = 100
 
     def update(self, input_port, old, new):
-        if (input_port == self.get_input('polydata_input')):
+        if (input_port == self.ip_polydata):
             if (input_port.data != None and input_port.data != []):
                 self.process()
             else:
                 self.progress = 0
-                self.get_output('actors_output').data = None
+                self.op_actor.data = None
 
     @threaded_process
     def process(self):
-        input_array = self.get_input('polydata_input').data
+        input_array = self.ip_polydata.data
         self.progress = 0    
         self.mapper = tvtk.PolyDataMapper(input=input_array)
         if self.lookup_table:
