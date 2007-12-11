@@ -15,13 +15,15 @@ setup(
         ],
 
     install_requires = ['enthought.chaco2>=2.0a1',
-                        'enthought.tvtk>=2.0a1',
+                        'enthought.pyface[tvtk]>=2.0.1b1',
+                        'enthought.tvtk[wx]>=2.0b2',
                         'enthought.persistence>=2.0a1',
                         'threadec>=0.1',
                         'decorator>=2.2',
                         'wxPython>=2.6',
                         'numpy>=1.0.2',
-                        'scipy>0.5'],
+                        'scipy>=0.5',
+                        'vtk>=5.5'],
 
 
     entry_points = {
