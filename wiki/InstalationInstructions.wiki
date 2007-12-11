@@ -32,3 +32,4 @@ Here is resumed the process :
 = Windows XP/Vista =
   * Download and install a Python distribution from http://www.python.org/ftp/python/2.5.1/python-2.5.1.msi (x86 version)
   * Download and install enstaller using http://code.enthought.com/enstaller/ez_enstaller_setup.py
+  * Download and install a svn client http://subversion.tigris.org/files/documents/15/36797/svn-1.4.3-setup.exe
