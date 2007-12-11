@@ -20,8 +20,8 @@ setup(
                         'threadec>=0.1',
                         'decorator>=2.2',
                         'wxPython>=2.6',
-                        'numpy',
-                        'scipy'],
+                        'numpy>=1.0.2',
+                        'scipy>0.5'],
 
 
     entry_points = {
