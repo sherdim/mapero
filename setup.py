@@ -6,9 +6,8 @@ setup(
     name = "mapero",
     version = "0.1a1",
     
-    packages = find_packages('src', 'src/mapero/builtin-modules'),
     package_dir = {'':'src', 'builtin-modules':'src/mapero/builtin-modules'},
-    packages = find_packages(),
+    packages = find_packages('src', 'src/mapero/builtin-modules'),
 
     dependency_links = [
         'http://code.enthought.com/enstaller/eggs/source',
@@ -40,7 +39,9 @@ setup(
     description = "Python based framework for creation of dataflow networks to build algorithms graphically.",
     license = "new BSD",
     keywords = "hello world example examples",
-    url = "http://mapero.googlecode.com/",   # project home page, if any
+    url = "http://mapero.googlecode.com/",
+    download_url =   "http://mapero.googlecode.com/svn/trunk/dist",
     long_description = "The solution is modeled as an interconnected set of processing modules. Simplicity is the main objective, so the creation of new modules is as easy as create a python module",
+    zip_safe = False, 
     # could also include long_description, download_url, classifiers, etc.
 )
