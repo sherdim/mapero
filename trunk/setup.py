@@ -23,7 +23,7 @@ setup(
                         'wxPython>=2.6',
                         'numpy>=1.0.2',
                         'scipy>=0.5',
-                        'vtk>=5.5'],
+                        'VTK>=5.0'],
 
 
     entry_points = {
