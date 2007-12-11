@@ -28,3 +28,7 @@ Here is resumed the process :
     cd mapero/src
     python dvdataflow_editor_app.py
     }}}
+
+= Windows XP/Vista =
+  * Download and install a Python distribution from http://www.python.org/ftp/python/2.5.1/python-2.5.1.msi (x86 version)
+  * 
