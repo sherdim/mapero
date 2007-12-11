@@ -3,7 +3,7 @@
 
 from setuptools import setup, find_packages
 setup(
-    name = "Mapero",
+    name = "mapero",
     version = "0.1a1",
     
     packages = find_packages('src', 'src/mapero/builtin-modules'),
