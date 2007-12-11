@@ -13,7 +13,7 @@ from scipy.special import *
 
 from enthought.enable2.wx_backend.api import Window
 
-from multiline_plot import MultiLinePlot
+from mapero.multiline_plot import MultiLinePlot
 
 from enthought.util.numerix import linspace
 import threading
