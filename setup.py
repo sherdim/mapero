@@ -18,7 +18,8 @@ setup(
                         'enthought.tvtk>=2.0a1',
                         'enthought.persistence>=2.0a1',
                         'threadec>=0.1',
-                        'decorator>=2.2'],
+                        'decorator>=2.2',
+                        'wxPython>=2.6'],
 
 
     entry_points = {
