@@ -19,7 +19,9 @@ setup(
                         'enthought.persistence>=2.0a1',
                         'threadec>=0.1',
                         'decorator>=2.2',
-                        'wxPython>=2.6'],
+                        'wxPython>=2.6',
+                        'numpy',
+                        'scipy'],
 
 
     entry_points = {
