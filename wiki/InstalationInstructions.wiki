@@ -37,3 +37,5 @@ Here is resumed the process :
     {{{
     enstaller -f http://mapero.googlecode.com/svn/trunk/dist mapero
     }}}
+  * add the python's installation dir and Scripts to %PATH%
+  * run mapero-dfe-script.pyw
