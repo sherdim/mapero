@@ -97,7 +97,6 @@ class DataflowEditorFrame(pydocview.DocTabbedParentFrame):
         
         all_sizer = wx.BoxSizer(wx.VERTICAL)
         all_sizer.Add(self.split, 1 ,wx.EXPAND, 0)
-        self.SetBackgroundColour(wx.RED)
         self.SetSizer(all_sizer)
         #all_sizer.Fit(self)
         self.Layout()
