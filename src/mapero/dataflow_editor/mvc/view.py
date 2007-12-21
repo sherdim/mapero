@@ -13,6 +13,7 @@ from mapero.dataflow_editor.ui.interactor.keyboard import KeyboardInteractor
 from mapero.dataflow_editor.ui.interactor.mouse import MouseInteractor
 from mapero.dataflow_editor.ui.shape.module_shape import ModuleShape
 from enthought.traits.ui.menu import Menu, Action, Separator
+from mapero.dataflow_editor.ui.shape.connection_shape import ConnectionShape
 
 log = logging.getLogger("mapero.logger.mvc");
 
@@ -182,15 +183,10 @@ class DataflowView(docview.View):
             connection_shape = diagram.get_connection_shape(connection)
             if connection_shape:
                 connection_shape.SetGeometrics(geometrics)
-#                module_from = connection.output_port.module
-#                module_to = connection.input_port.module
-#                module_from_shape = diagram.get_module_shape(module_from)
-#                module_to_shape = diagram.get_module_shape(module_to)
-#                module_from_geometrics = controller.get_module_geometrics()[module_from]
-#                module_to_geometrics = controller.get_module_geometrics()[module_to]
-#                module_from_shape.SetGeometrics(module_from_geometrics)
-#                module_to_shape.SetGeometrics(module_to_geometrics)
-
+                if connection in self.selected_connections:
+                    connection_shape.Select(True)
+                else:
+                    connection_shape.Select(False)    
             else:
                 log.debug( "adding connection shape" )
                 diagram.add_connection_shape(connection)
@@ -289,6 +285,15 @@ class DataflowView(docview.View):
             module = module_shape.module
         return module
 
+    def get_connection(self, x, y):
+        diagram = self.get_diagram()
+        canvas = diagram.GetCanvas()
+        connection_shape = diagram.GetCanvas().FindShape(x, y)[0]
+        connection = None
+        if isinstance(connection_shape, ConnectionShape):
+            connection = connection_shape.connection
+        return connection
+
     def new_connection(self, module_from, port_from, module_to, port_to):
         doc = self.doc
         new_connection_command = NewConnectionCommand(doc, module_from, port_from, module_to, port_to)
@@ -304,7 +309,22 @@ class DataflowView(docview.View):
     
     def select_module(self, module):
         doc = self.doc
+        self.selected_connections = []
         self.selected_modules = [module]
+        doc.UpdateAllViews()
+        
+    def toggle_connection_selection(self, connection):
+        doc = self.doc
+        if connection in self.selected_connections:
+            self.selected_connections.remove(connection)
+        else:
+            self.selected_connections.append(connection)
+        doc.UpdateAllViews()
+    
+    def select_connection(self, connection):
+        doc = self.doc
+        self.selected_modules = []
+        self.selected_connections = [connection]
         doc.UpdateAllViews()
         
         

@@ -48,7 +48,7 @@ class DataflowEditorFrame(pydocview.DocTabbedParentFrame):
         self._catalog_tree = CatalogTree(self.split, root=catalog.modules)
         wx.EVT_MOTION(self._catalog_tree.control, self._on_catalog_tree_anytrait_changed)
         
-        self.networks_panel = wx.Panel(self.split)
+        self.networks_panel = wx.Panel(self.split, -1, style=wx.BORDER_RAISED)
         vbox_np = wx.BoxSizer()
         
         split.SplitVertically(self._catalog_tree.control, self.networks_panel, 220)

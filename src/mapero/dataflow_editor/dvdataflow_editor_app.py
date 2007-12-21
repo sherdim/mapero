@@ -22,6 +22,7 @@ _ = wx.GetTranslation
 class DataflowEditorApplication(pydocview.DocApp):
 
     SPLASH = resource_filename(__name__, "splash.png")
+    ICON = resource_filename(__name__, "mapero_logo.png")
 
     def OpenMainFrame(self):
         docManager = self.GetDocumentManager()
@@ -57,18 +58,18 @@ class DataflowEditorApplication(pydocview.DocApp):
                                                     _("Dataflow View"),
                                                     DataflowDocument,
                                                     DataflowView,
-                                                    icon=pydocview.getBlankIcon())
+                                                    icon=wx.Icon(DataflowEditorApplication.ICON, wx.BITMAP_TYPE_PNG))
         docManager.AssociateTemplate(textTemplate)
 
         # Install services - these can install menu and toolbar items
         windowMenuService     = self.InstallService(pydocview.WindowMenuService())
         filePropertiesService = self.InstallService(pydocview.FilePropertiesService())
-        optionsService        = self.InstallService(pydocview.DocOptionsService(supportedModes=docview.DOC_MDI))
         if os.path.exists(DataflowEditorApplication.SPLASH):
             aboutService      = self.InstallService(pydocview.AboutService(image=wx.Image(DataflowEditorApplication.SPLASH)))
         else:
             aboutService      = self.InstallService(pydocview.AboutService())
 
+        #optionsService        = self.InstallService(pydocview.DocOptionsService(supportedModes=docview.DOC_SDI))
         # Install the DataflowEditor's option panel into the OptionsService
         #optionsService.AddOptionsPanel(DataflowEditor.DataflowOptionsPanel)
 
