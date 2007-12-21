@@ -11,7 +11,7 @@ class KeyboardInteractor(BaseInteractor):
     action_ids = ['remove', 'add']
     def __init__(self, document, view):
         super(KeyboardInteractor, self).__init__(document, view, 'keyword_interactor')
-        self.map = {(False,False,False,True,'D'):'delete',
+        self.map = {(False,False,False,False,'\x7f'):'delete',
                              (False,False,False,False,'C'):'context_menu'}
         
     def on_event(self, event):

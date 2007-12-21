@@ -35,11 +35,18 @@ class MouseInteractor(BaseInteractor):
 
     def select_object(self,x,y,event):
         module = self.view.get_module(x, y)
+        connection = self.view.get_connection(x,y)
         if module != None:
             if (event.CmdDown()):
                 self.view.toggle_module_selection(module)
             else:
                 self.view.select_module(module)
+        if connection != None:
+            if (event.CmdDown()):
+                self.view.toggle_connection_selection(connection)
+            else:
+                self.view.select_connection(connection)
+            
                 
 
     def edit_module(self, module):

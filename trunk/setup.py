@@ -23,7 +23,7 @@ setup(
                         'wxPython>=2.6',
                         'numpy>=1.0.2',
                         'scipy>=0.5',
-                        'VTK>=5.0'],
+                        ],
 
 
     entry_points = {
@@ -37,6 +37,7 @@ setup(
         '': ['*.txt'],
         'mapero.dataflow_editor': ['*.conf'],
         'mapero.dataflow_editor.ui' : ['images/*.png'],
+        'mapero.dataflow_editor' : ['*.png'],
     },
 
     # metadata for upload to PyPI
