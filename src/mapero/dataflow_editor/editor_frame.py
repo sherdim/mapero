@@ -8,7 +8,7 @@ from mapero.dataflow_editor.ui.catalog_tree import CatalogTree
 
 class DataflowEditorFrame(pydocview.DocTabbedParentFrame):
     def __init__(self, docManager, frame, id, title, pos = wx.DefaultPosition,
-                size = wx.DefaultSize, style = wx.DEFAULT_FRAME_STYLE,
+                size = wx.DefaultSize, style = wx.DEFAULT_FRAME_STYLE | wx.CLIP_CHILDREN,
                 name = "DataflowEditorFrame",
                 embeddedWindows = 0, minSize=20):
 
@@ -39,19 +39,21 @@ class DataflowEditorFrame(pydocview.DocTabbedParentFrame):
         """
         print "creating notebook"
 
-        split = wx.SplitterWindow(self, -1, style=wx.SP_3D)
+        split = wx.SplitterWindow(self, -1, style=wx.SP_3D | wx.CLIP_CHILDREN)
         
         #split.SetMinimumPaneSize(20)
         self.split = split
 
+        self.catalog_panel = wx.Panel(self.split, -1, style=wx.BORDER_RAISED | wx.CLIP_CHILDREN)
+        vbox_cp = wx.BoxSizer()
         catalog = Catalog()
-        self._catalog_tree = CatalogTree(self.split, root=catalog.modules)
-        wx.EVT_MOTION(self._catalog_tree.control, self._on_catalog_tree_anytrait_changed)
+        self._catalog_tree = CatalogTree(self.catalog_panel, root=catalog.modules)
+        wx.EVT_MOUSE_EVENTS(self._catalog_tree.control, self._on_catalog_tree_anytrait_changed)
         
-        self.networks_panel = wx.Panel(self.split, -1, style=wx.BORDER_RAISED)
+        self.networks_panel = wx.Panel(self.split, -1, style=wx.BORDER_RAISED | wx.CLIP_CHILDREN)
         vbox_np = wx.BoxSizer()
         
-        split.SplitVertically(self._catalog_tree.control, self.networks_panel, 220)
+        split.SplitVertically(self.catalog_panel, self.networks_panel, 220)
     
         if wx.Platform != "__WXMAC__":
                 self._notebook = wx.Notebook(self.networks_panel, wx.NewId())
@@ -95,6 +97,9 @@ class DataflowEditorFrame(pydocview.DocTabbedParentFrame):
         vbox_np.Add(self._notebook, 1, wx.EXPAND, 0)
         self.networks_panel.SetSizer(vbox_np)
         
+        vbox_cp.Add(self._catalog_tree.control, 1, wx.EXPAND, 0)
+        self.catalog_panel.SetSizer(vbox_cp)
+
         all_sizer = wx.BoxSizer(wx.VERTICAL)
         all_sizer.Add(self.split, 1 ,wx.EXPAND, 0)
         self.SetSizer(all_sizer)
@@ -102,6 +107,8 @@ class DataflowEditorFrame(pydocview.DocTabbedParentFrame):
         self.Layout()
         
         
+
+             
 
 
     ###########################################################################

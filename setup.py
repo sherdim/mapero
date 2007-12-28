@@ -15,8 +15,8 @@ setup(
         ],
 
     install_requires = ['enthought.chaco2>=2.0a1',
-                        'enthought.pyface[tvtk]>=2.0.1b1',
-                        'enthought.tvtk[wx]>=2.0b2',
+                        'enthought.pyface[tvtk]>=2.0b1',
+                        'enthought.tvtk[wx]>=2.0b1',
                         'enthought.persistence>=2.0a1',
                         'threadec>=0.1',
                         'decorator>=2.2',
@@ -27,7 +27,7 @@ setup(
 
 
     entry_points = {
-        'gui_scripts': [
+        'console_scripts': [
             'mapero-dfe = mapero.dataflow_editor.dvdataflow_editor_app.py',
         ]
     },

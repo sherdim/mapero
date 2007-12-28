@@ -9,8 +9,6 @@ from enthought.pyface.tree.tree_model import TreeModel
 from enthought.traits.api import Instance
 from mapero.core.catalog import Categorie
 from mapero.core.catalog import ModuleInfo
-from compiler.ast import Node
-from platform import node
 
 class CatalogTreeModel(TreeModel):
     """ A tree model for local file systems. """

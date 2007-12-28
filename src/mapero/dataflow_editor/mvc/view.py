@@ -41,7 +41,7 @@ class DataflowView(docview.View):
         self._wordWrap = wx.ConfigBase_Get().ReadInt("DiagramEditorWordWrap", True)
         self.selected_modules = []
         self.selected_connections = []
-
+        self.frame = None
 
     def OnCreate(self, doc, flags):
         frame = wx.GetApp().CreateDocumentFrame(self, doc, flags)
@@ -62,6 +62,7 @@ class DataflowView(docview.View):
         wx.EVT_MOUSE_EVENTS(canvas, self.mouse_interactor.on_event)
         wx.EVT_CONTEXT_MENU(canvas, self.on_context)
         
+        self.frame = frame
         return True
 
         
@@ -195,7 +196,7 @@ class DataflowView(docview.View):
             if module not in controller.get_module_geometrics().keys():
                 self.selected_modules.remove(module)
                 
-        diagram.GetCanvas().Refresh()
+        #diagram.GetCanvas().Refresh()
 
 
 

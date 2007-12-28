@@ -7,7 +7,7 @@ class modulo1(Module):
     """ """
     param = traits.Range(0,100)
     
-    view = Group('param')
+    view = Group('param' )
     
     def __init__(self, **traits):
         super(modulo1, self).__init__(**traits)
