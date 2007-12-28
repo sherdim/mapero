@@ -50,6 +50,4 @@ class MouseInteractor(BaseInteractor):
                 
 
     def edit_module(self, module):
-        ui_selected = module.edit_traits(parent=None, kind='subpanel')
-        box = wx.BoxSizer( wx.VERTICAL )
-        box.Add( ui_selected.control, 0, wx.ALL | wx.EXPAND )
+        module.edit_traits(parent=self.view.frame, kind='livemodal')

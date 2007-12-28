@@ -35,7 +35,13 @@ class PortShape(ogl.PolygonShape):
 				x0, y0, x1, y1 = self.tmp_connection.GetEnds()
 				canvas = self.GetShape().GetCanvas()
 				self.tmp_connection.SetEnds(x0,y0,x,y)
-				canvas.Refresh()
+				xi = min(x0,x1,x)
+				yi = min(y0,y1,y)
+				xf = max(x0,x1,x)
+				yf = max(y0,y1,y)
+				(xr0,yr0,xr1,yr1)=(xi-10, yi-10, abs(xf-xi) + 20,  abs(yf-yi) + 20 )
+				rect = wx.Rect(xr0,yr0,xr1,yr1)
+				canvas.Refresh( False, rect)
 			else:
 				if self._previousHandler:
 					self._previousHandler.OnDragLeft(draw, x, y, keys, attachment)
@@ -77,6 +83,8 @@ class ModuleShape(ogl.RectangleShape):
 		self.input_port_shapes = []
 		self.output_port_shapes = []
 		self.p_width = 11
+		
+		self._drawBuffer = wx.EmptyBitmap(w, h)
 		
 		log.debug("creating module shape for module : %s" % module)
 
@@ -159,6 +167,7 @@ class ModuleShape(ogl.RectangleShape):
 
 	def OnMovePost(self, dc, x, y, old_x, old_y, display):
 		self.GetCanvas().GetDiagram().move_module(self.module,  x - old_x, y - old_y)
+		self.GetCanvas().Refresh()
 #		ogl.RectangleShape.OnMovePost(self, dc, x, y, old_x, old_y, display)
 
 
@@ -166,6 +175,7 @@ class ModuleShape(ogl.RectangleShape):
 #		self.GetCanvas().GetDiagram().edit_module(self.module)
 
 	def OnDraw(self, dc):
+		dc.BeginDrawing()
 		ogl.RectangleShape.OnDraw(self, dc)
 
 		padding = 5
@@ -199,6 +209,7 @@ class ModuleShape(ogl.RectangleShape):
 
 		self.update_port_positions()
 		self.DrawLinks(dc)
+		dc.EndDrawing()
 	
 	def SetGeometrics(self, geometrics):
 		if (geometrics):
@@ -213,7 +224,7 @@ class ModuleShape(ogl.RectangleShape):
 		bx = self.GetX()
 		by = self.GetY()
 		bw, bh = self.GetBoundingBoxMax()
-		rect = wx.Rect(int(bx-bw/2)-1, int(by-bh/2)-1, int(bw)+2, int(bh)+2)
+		rect = wx.Rect(int(bx-bw/2)-10, int(by-bh/2)-10, int(bw)+20, int(bh)+20)
 
 		canvas = self.GetCanvas()
 		dc = wx.ClientDC(canvas)
