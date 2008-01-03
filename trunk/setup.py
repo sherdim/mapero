@@ -35,9 +35,8 @@ setup(
     package_data = {
         # If any package contains *.txt or *.rst files, include them:
         '': ['*.txt'],
-        'mapero.dataflow_editor': ['*.conf'],
-        'mapero.dataflow_editor.ui' : ['images/*.png'],
-        'mapero.dataflow_editor' : ['*.png'],
+        'mapero.dataflow_editor' : ['*.conf' , '*.png' ],
+        'mapero.dataflow_editor.ui' : ['images/*.png' ],
     },
 
     # metadata for upload to PyPI
