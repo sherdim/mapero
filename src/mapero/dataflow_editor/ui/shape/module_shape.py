@@ -227,9 +227,14 @@ class ModuleShape(ogl.RectangleShape):
 		rect = wx.Rect(int(bx-bw/2)-10, int(by-bh/2)-10, int(bw)+20, int(bh)+20)
 
 		canvas = self.GetCanvas()
+		#size = wx.Size( rect.GetWidth(), rect.GetHeight() )
+		size = wx.Size( 2000, 2000 )
+		#dc = wx.BufferedDC(wx.ClientDC(canvas), size)
 		dc = wx.ClientDC(canvas)
 		canvas.PrepareDC(dc)
 		self.MoveLinks(dc)
+		#self.Draw(dc)
+		#dc.UnMask()
 		canvas.Refresh(False, rect)
 		pass
 		#self.GetCanvas().Refresh()
