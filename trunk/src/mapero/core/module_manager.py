@@ -2,7 +2,6 @@ from mapero.core.network import Network
 from mapero.core.connection import Connection
 from mapero.core.catalog import Catalog
 from enthought.traits import api as traits
-from enthought.persistence import state_pickler
 import gc
 import sys
 
@@ -90,10 +89,10 @@ class ModuleManager(traits.HasTraits):
         self.network.modules.remove(module)
         quedan = sys.getrefcount(module)
         if quedan > 2:
-                log.debug( "quedan: %s ", sys.getrefcount(module))
+                log.debug( "in memory: %s  instances of %s" % ( sys.getrefcount(module), module.__class__ ))
                 referrers = gc.get_referrers(module)
                 log.debug( "referrers: %s" , referrers )
-                garbage = gc.garbage
+#                garbage = gc.garbage
         #fbi()
 
     def reload(self, module_label): ## todavia no funciona
@@ -204,3 +203,21 @@ class ModuleManager(traits.HasTraits):
         self.network = network
         return network
         
+    def get_network_state(self, modules=None, connections=None):
+        network_states = {}
+        module_states = []
+        connection_states = []
+        if modules==None:
+            modules = self.network.modules
+        if connections==None:
+            connections = self.network.connections
+            
+        for module_key in modules:
+            module = self.get_module(module_key)
+            if module != None:
+                module_states.append(module.__get_pure_state__())
+                
+        for connection  in connections:
+            connections = self.network.connections
+            if module != None:
+                module_states.append(module.__get_pure_state__())

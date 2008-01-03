@@ -42,7 +42,7 @@ class DataflowEditorApplication(pydocview.DocApp):
 
         # Set the name and the icon
         self.SetAppName(_("Mapero DataflowEditor"))
-        self.SetDefaultIcon(pydocview.getBlankIcon())
+        self.SetDefaultIcon(wx.Icon(DataflowEditorApplication.ICON, wx.BITMAP_TYPE_PNG))
 
         # Initialize the document manager
         docManager = docview.DocManager(flags = self.GetDefaultDocManagerFlags())
@@ -51,7 +51,7 @@ class DataflowEditorApplication(pydocview.DocApp):
         # Create a template for text documents and associate it with the docmanager
         textTemplate = docview.DocTemplate(docManager,
                                                     _("Dataflow"),
-                                                    "*.mprd;*.mprd",
+                                                    "*.mprd",
                                                     _("Dataflow"),
                                                     _("mprd"),
                                                     _("Dataflow Document"),
