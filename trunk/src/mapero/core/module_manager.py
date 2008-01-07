@@ -2,6 +2,7 @@ from mapero.core.network import Network
 from mapero.core.connection import Connection
 from mapero.core.catalog import Catalog
 from enthought.traits import api as traits
+from enthought.persistence import state_pickler
 import gc
 import sys
 
@@ -204,20 +205,20 @@ class ModuleManager(traits.HasTraits):
         return network
         
     def get_network_state(self, modules=None, connections=None):
-        network_states = {}
-        module_states = []
-        connection_states = []
-        if modules==None:
-            modules = self.network.modules
-        if connections==None:
-            connections = self.network.connections
-            
-        for module_key in modules:
-            module = self.get_module(module_key)
-            if module != None:
-                module_states.append(module.__get_pure_state__())
-                
-        for connection  in connections:
-            connections = self.network.connections
-            if module != None:
-                module_states.append(module.__get_pure_state__())
+        network = self.network
+        network_state = state_pickler.get_state(network)
+        
+        if (modules != None):
+            for module_state in network_state.modules:
+                for module in modules:
+                    if module_state.id == module.id:
+                        network_state.modules.remove(module_state)
+        
+        if (connections != None):
+            for connection_state in network_state.connections:
+                for connection in connections:
+                    if connection_state.id == connection.id:
+                        network_state.connections.remove(connection_state)
+        
+        return network_state
+        
