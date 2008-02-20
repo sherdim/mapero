@@ -1,4 +1,5 @@
-import wx
+import wx.lib
+
 _ = wx.GetTranslation
 import logging
 
@@ -50,16 +51,16 @@ class DeleteSelectionCommand(SimpleDVCommand):
     def __init__(self, dataflow_document, selected_modules, selected_connections):
             SimpleDVCommand.__init__(self, "Delete Selection", dataflow_document)
             controller = self.controller
-            self.modules_with_geometrics = {}
-            for module, geometrics in controller.get_module_geometrics().items():
-                if module in selected_modules:
-                    self.modules_with_geometrics[module] = geometrics
-                    
+
+            self.states = controller.get_network_state(False,selected_modules, selected_connections)
 
     def SimpleDo(self):
             controller = self.controller
-            for module in self.modules_with_geometrics.keys():
-                controller.remove_module(module)
+            for module_state in self.states['network_state'].modules:
+                controller.remove_module(module_state.id)
+            for connection_state in self.states['network_state'].connections:
+                controller.remove_connection(connection_state.id)
+
             return True
 
     def SimpleUndo(self):

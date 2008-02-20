@@ -1,6 +1,6 @@
 import wx
 import wx.lib.ogl as ogl
-from wx.lib.ogl._oglmisc import CONTROL_POINT_ENDPOINT_TO, CONTROL_POINT_SIZE, CONTROL_POINT_LINE, CONTROL_POINT_ENDPOINT_FROM, ARROW_ARROW
+from wx.lib.ogl._oglmisc import CONTROL_POINT_ENDPOINT_TO, CONTROL_POINT_ENDPOINT_FROM, ARROW_ARROW
 
 import logging
 log = logging.getLogger("mapero.logger.diagram");
