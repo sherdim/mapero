@@ -38,6 +38,7 @@ class DataflowDocument(docview.Document):
         log.debug("creating dataflow from state")
         self.controller.create_dataflow_model(state)
         log.debug("dataflow created")
+        self.UpdateAllViews(self)
         
         return True
 

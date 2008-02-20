@@ -5,9 +5,11 @@
 # Author:       Zacarias Ojeda
 #
 #----------------------------------------------------------------------------
+import wx
 from wx.lib import docview
 
-from commands import *
+import logging
+from commands import AddModuleCommand, MoveCommand, NewConnectionCommand, DeleteSelectionCommand
 from mapero.dataflow_editor.ui.shape.diagram import DataflowDiagram
 from mapero.dataflow_editor.ui.interactor.keyboard import KeyboardInteractor
 from mapero.dataflow_editor.ui.interactor.mouse import MouseInteractor
@@ -36,7 +38,7 @@ class DataflowView(docview.View):
     #--- Overridden methods
 
     def __init__(self):
-        wx.lib.docview.View.__init__(self)
+        docview.View.__init__(self)
         self._diagramCtrl = None
         self._wordWrap = wx.ConfigBase_Get().ReadInt("DiagramEditorWordWrap", True)
         self.selected_modules = []
@@ -139,7 +141,7 @@ class DataflowView(docview.View):
     def OnActivateView(self, activate, activeView, deactiveView):
         if activate and self._diagramCtrl:
             # In MDI mode just calling set focus doesn't work and in SDI mode using CallAfter causes an endless loop
-            if self.GetDocumentManager().GetFlags() & wx.lib.docview.DOC_SDI:
+            if self.GetDocumentManager().GetFlags() & docview.DOC_SDI:
                 self._diagramCtrl.SetFocus()
             else:
                 def SetFocusToDiagramCtrl():
@@ -149,7 +151,7 @@ class DataflowView(docview.View):
 
 
     def OnUpdate(self, sender = None, hint = None):
-        if wx.lib.docview.View.OnUpdate(self, sender, hint):
+        if docview.View.OnUpdate(self, sender, hint):
             return
         log.debug( "updating view" )
         controller = self.controller
@@ -196,12 +198,12 @@ class DataflowView(docview.View):
             if module not in controller.get_module_geometrics().keys():
                 self.selected_modules.remove(module)
                 
-        #diagram.GetCanvas().Refresh()
+        diagram.GetCanvas().Refresh()
 
 
 
     def OnClose(self, deleteWindow = True):
-        if not wx.lib.docview.View.OnClose(self, deleteWindow):
+        if not docview.View.OnClose(self, deleteWindow):
             return False
         self.Activate(False)
         if deleteWindow and self.GetFrame():
@@ -251,7 +253,7 @@ class DataflowView(docview.View):
             self._diagramCtrl.SetSelection(-1, -1)
             return True
         else:
-            return wx.lib.docview.View.ProcessEvent(self, event)
+            return docview.View.ProcessEvent(self, event)
         event.Skip()
 
 
@@ -259,7 +261,7 @@ class DataflowView(docview.View):
         if not self._diagramCtrl:
             return False
 
-        return wx.lib.docview.View.ProcessUpdateUIEvent(self, event)
+        return docview.View.ProcessUpdateUIEvent(self, event)
 
 
     #--- Methods for DiagramDocument to call
@@ -279,7 +281,6 @@ class DataflowView(docview.View):
         
     def get_module(self, x, y):
         diagram = self.get_diagram()
-        canvas = diagram.GetCanvas()
         module_shape = diagram.GetCanvas().FindShape(x, y)[0]
         module = None
         if isinstance(module_shape, ModuleShape):
@@ -288,7 +289,6 @@ class DataflowView(docview.View):
 
     def get_connection(self, x, y):
         diagram = self.get_diagram()
-        canvas = diagram.GetCanvas()
         connection_shape = diagram.GetCanvas().FindShape(x, y)[0]
         connection = None
         if isinstance(connection_shape, ConnectionShape):

@@ -3,7 +3,7 @@ from enthought.util.numerix import around, array, transpose, compress, concatena
 
 # Enthought library imports
 from enthought.enable2.api import black_color_trait, LineStyle
-from enthought.traits.api import Any, Array, false, Float, Instance, Property, true, List, Int
+from enthought.traits.api import Any, Array, false, Float, Instance, Property, List, Int
 from enthought.traits.ui.api import View, Item
 
 
@@ -19,7 +19,8 @@ from enthought.chaco2.grid import PlotGrid
 from enthought.chaco2.plot_label import PlotLabel
 from enthought.chaco2.base import arg_find_runs
 
-import traceback
+import logging
+log = logging.getLogger("mapero.logger.module");
 
 class BaseMultiLinePlot(AbstractPlotRenderer):
 	"""
@@ -546,7 +547,7 @@ class MultiLinePlot(BaseMultiLinePlot):
 			lindex = len(index)            ##
 			lvalues = values.shape[1]      ## eliminar
 			if lindex == 0 or lvalues == 0 or lindex != lvalues:
-				logger.warn("Chaco2: using empty dataset; index_len=%d, value_len=%d." \
+				log.warn("Chaco2: using empty dataset; index_len=%d, value_len=%d." \
 														% (lindex, lvalues))
 				self._cached_data_pts = []
 				self._cache_valid = True

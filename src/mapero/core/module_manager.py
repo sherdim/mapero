@@ -16,6 +16,11 @@ class ModuleNotFoundInNetworkError(Exception):
     def __str__(self):
         return repr(self.value)
 
+class ConnectionNotFoundInNetworkError(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
 
 class ModuleManager(traits.HasTraits):
     """ Module Manager Class """
@@ -41,6 +46,13 @@ class ModuleManager(traits.HasTraits):
                 return module
             raise ModuleNotFoundInNetworkError(module_id)
 
+        
+    def get_connection_by_id(self, connection_id):
+        for connection in self.network.connections:
+            if connection.id == connection_id:
+                return connection
+            raise ConnectionNotFoundInNetworkError(connection_id)
+        
     def get_module(self, module_label):
         if isinstance(module_label,str):
             return self.get_module_by_label(module_label)
@@ -147,15 +159,18 @@ class ModuleManager(traits.HasTraits):
         return new_connection
 
 
-    def disconnect(self, module_label_from, module_port_form , module_label_to, module_port_to):
-        module_from = self.get_module(module_label_from)
-        module_to = self.get_module(module_label_to)
-        port_from = module_from.get_output(module_port_form)
-        port_to = module_to.get_input(module_port_to)
-        for connection in self.network.connections:
-            if (port_from == connection.output_port) and (port_to == connection.input_port):
-                self.network.connections.remove(connection)
+#    def disconnect(self, module_label_from, module_port_form , module_label_to, module_port_to):
+#        module_from = self.get_module(module_label_from)
+#        module_to = self.get_module(module_label_to)
+#        port_from = module_from.get_output(module_port_form)
+#        port_to = module_to.get_input(module_port_to)
+#        for connection in self.network.connections:
+#            if (port_from == connection.output_port) and (port_to == connection.input_port):
+#                self.network.connections.remove(connection)
 
+    def disconnect(self, connection):
+        self.network.connections.remove(connection)
+        
     def disconnect_module(self, module):
         connections = self.get_module_connections(module)
         for connection in connections:
@@ -204,21 +219,20 @@ class ModuleManager(traits.HasTraits):
         self.network = network
         return network
         
-    def get_network_state(self, modules=None, connections=None):
+    def get_network_state(self, all_network=True, modules=None, connections=None):
         network = self.network
         network_state = state_pickler.get_state(network)
         
-        if (modules != None):
-            for module_state in network_state.modules:
-                for module in modules:
-                    if module_state.id == module.id:
-                        network_state.modules.remove(module_state)
-        
-        if (connections != None):
-            for connection_state in network_state.connections:
-                for connection in connections:
-                    if connection_state.id == connection.id:
-                        network_state.connections.remove(connection_state)
+        if (all_network == False):
+
+            module_ids = [ module.id for module in modules ]
+            connection_ids = [ connection.id for connection in connections ]
+
+            module_states = [ module_state for module_state in network_state.modules if module_state.id in module_ids] 
+            connection_states = [ connection_state for connection_state in network_state.connections if connection_state.id in connection_ids]
+            
+            network_state.modules = module_states
+            network_state.connections = connection_states 
         
         return network_state
         
