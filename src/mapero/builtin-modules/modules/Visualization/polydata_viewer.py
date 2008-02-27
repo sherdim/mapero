@@ -3,6 +3,7 @@ from mapero.core.port import OutputPort, InputPort
 from mapero.dataflow_editor.decorators.thread import threaded_process
 from numpy.oldnumeric.precision import Float
 from enthought.traits import api as traits
+from enthought.enable2.traits import api as enable_traits  
 from enthought.traits.ui.api import Group, Item
 from enthought.traits.ui.api import ListEditor
 from enthought.tvtk.api import tvtk
@@ -17,10 +18,22 @@ module_info = {'name': 'Visualization.polydata_viewer',
 class polydata_viewer(Module):
     """ modulo de prueba uno """
 
-    lookup_color_list = traits.List(traits.RGBColor)
+#    lookup_color_list = traits.List(enable_traits.RGBAColor)
+    color_1 = enable_traits.RGBAColor('red')
+    color_2 = enable_traits.RGBAColor('white')
+    color_3 = enable_traits.RGBAColor('blue')
     low_scalar = traits.Float
     high_scalar = traits.Float
-    view = Group(Item('lookup_color_list', resizable=True, height=300), 'low_scalar' ,'high_scalar')
+    view = Group(
+                             Item('color_1',
+                                   style='custom'),
+                              Item('color_2',
+                                   style='custom'),
+                              Item('color_3',
+                                   style='custom'),
+                  'low_scalar' ,
+                  'high_scalar'
+                  )
     
     def __init__(self, **traitsv):
         super(polydata_viewer, self).__init__(**traitsv)
@@ -43,11 +56,12 @@ class polydata_viewer(Module):
         self.output_ports.append(self.op_actor)
         self.actor = None
         self.lookup_table = None
-        self.colors = []
+        self.colors = [(1.0, 0.0, 0.0, 1.0),(0.5, 0.5, 0.5, 1.0),(0.0, 0.0, 0.1, 1.0)]
         
         self.low_scalar = 0
         self.high_scalar = 100
-
+        self.recalc_lt()
+        
     def update(self, input_port, old, new):
         if (input_port == self.ip_polydata):
             if (input_port.data != None and input_port.data != []):
@@ -56,7 +70,6 @@ class polydata_viewer(Module):
                 self.progress = 0
                 self.op_actor.data = None
 
-    @threaded_process
     def process(self):
         input_array = self.ip_polydata.data
         self.progress = 0    
@@ -68,14 +81,27 @@ class polydata_viewer(Module):
         self.actor.mapper.scalar_range=(self.low_scalar, self.high_scalar)
         self.op_actor.data = self.actor
         self.progress = 100
-
-    def _lookup_color_list_changed(self, value):
-        self.colors = value
+    
+    def _color_1_changed(self, value):
+        print "color1: ",value
+        self.colors[0] = value
+        self.recalc_lt()
+    def _color_2_changed(self, value):
+        print "color2: ",value
+        self.colors[1] = value
+        self.recalc_lt()
+    def _color_3_changed(self, value):
+        print "color3: ",value
+        self.colors[2] = value
         self.recalc_lt()
         
-    def _lookup_color_list_items_changed(self, event):
-        self.recalc_lt()
-        
+#    def _lookup_color_list_changed(self, value):
+#        self.colors = value
+#        self.recalc_lt()
+#        
+#    def _lookup_color_list_items_changed(self, event):
+#        self.recalc_lt()
+#        
     def recalc_lt(self):
         number_of_colors = 256
          

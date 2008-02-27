@@ -5,6 +5,7 @@
 # Author:       Zacarias Ojeda
 #
 #----------------------------------------------------------------------------
+from mapero.dataflow_editor.module_editor import ModuleEditor
 import wx
 from wx.lib import docview
 
@@ -14,6 +15,8 @@ from mapero.dataflow_editor.ui.shape.diagram import DataflowDiagram
 from mapero.dataflow_editor.ui.interactor.keyboard import KeyboardInteractor
 from mapero.dataflow_editor.ui.interactor.mouse import MouseInteractor
 from mapero.dataflow_editor.ui.shape.module_shape import ModuleShape
+from enthought.traits.api import HasTraits, Code
+from enthought.traits.ui.api import Item, Group, View
 from enthought.traits.ui.menu import Menu, Action, Separator
 from mapero.dataflow_editor.ui.shape.connection_shape import ConnectionShape
 
@@ -76,8 +79,8 @@ class DataflowView(docview.View):
 
     
     def edit_code(self):
-        print "edit_code: "
-        pass
+        module_editor = ModuleEditor(self.selected_modules)
+        module_editor.configure_traits()
     
     def show_module_help(self):
         print "show_module_help: "
@@ -91,7 +94,7 @@ class DataflowView(docview.View):
                     Action( name = _('Paste'), enabled=False ),
                     Action( name = _('Delete'), enabled=delete_enabled, on_perform=self.delete_selection ),
                     Separator(),
-                    Action( name = _('Refresh'), on_perform=self.refresh_module , enabled=self.is_only_one_module_selected() ),
+#                    Action( name = _('Refresh'), on_perform=self.refresh_module , enabled=self.is_only_one_module_selected() ),
                     Action( name = _('Edit Code'), on_perform=self.edit_code, enabled=self.is_only_one_module_selected() ),
                     Separator(),
                     Action( name = _('Help'), on_perform=self.show_module_help, enabled=self.is_only_one_module_selected() )

@@ -10,12 +10,13 @@
 import wx
 
 from enthought.traits import api as traits
+from enthought.traits.api import Code
 
 from mapero.core.port import InputPort
 from mapero.core.port import OutputPort
-from mapero.dataflow_editor.decorators.thread import threaded_process, invoke_later
 
 from enthought.traits.ui.api import View, Group, Include
+import inspect
 
 import logging
 log = logging.getLogger("mapero.logger.module");
@@ -42,7 +43,9 @@ class Module(traits.HasTraits):
     id = traits.Int
     label = traits.Str
     progress = traits.Range(0,100)
-
+    
+    source_code_file = traits.Code()
+    
     input_ports = traits.List(InputPort)
     output_ports = traits.List(OutputPort)
 
@@ -61,6 +64,8 @@ class Module(traits.HasTraits):
 
     def __init__(self, **traits):
         super(Module, self).__init__(**traits)
+        c=inspect.currentframe()
+        self.source_code_file = c.f_code.co_filename
         log.debug( "creating module" )
         self.module_info = {}
 
@@ -115,7 +120,7 @@ class Module(traits.HasTraits):
     def __get_pure_state__(self):
         traits_names = self.class_trait_names()
         avoided_traits = ['input_ports', 'output_ports', 'trait_added',
-                           'trait_modified', 'progress', 'parent' ]
+                           'trait_modified', 'progress', 'parent', 'source_code' ]
         traits = [ trait for trait in traits_names if trait not in avoided_traits ]
         log.debug("returning state : %s for module [%s]" % (traits,self.__class__.__name__ ))
         result = self.get(traits)
