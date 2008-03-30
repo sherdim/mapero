@@ -20,7 +20,6 @@ class modulo2(Module):
     def update(self, input_port, old=None, new=None):
         self.process()
         
-    @threaded_process
     def process(self):
         log.debug("processing")
         if (self.in1.data):
