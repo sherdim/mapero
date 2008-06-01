@@ -21,7 +21,7 @@ class average_reference_operator(Module):
 
         registration_values_trait = traits.Array(typecode=Float, shape=(None,None))
         self.ip_registration_values = InputPort(
-                                                data_type = registration_values_trait,
+                                                data_types = registration_values_trait,
                                                 name = 'registration values',
                                                 module = self
                                                 )
@@ -30,7 +30,7 @@ class average_reference_operator(Module):
 
         electrode_names_trait =  traits.List(traits.Str)
         self.ip_registration_electrode_names = InputPort(
-                                                         data_type = electrode_names_trait,
+                                                         data_types = electrode_names_trait,
                                                          name = 'reg electrode names',
                                                          module = self
                                                          )
@@ -39,7 +39,7 @@ class average_reference_operator(Module):
 
         lead_field_trait = traits.Array(typecode=Float, shape=(None,None))
         self.ip_lead_field = InputPort(
-                                       data_type = lead_field_trait,
+                                       data_types = lead_field_trait,
                                        name = 'lead field',
                                        module = self
                                        )
@@ -47,7 +47,7 @@ class average_reference_operator(Module):
         self.i_lead_field = None
 
         self.ip_lead_field_electrode_names = InputPort(
-                                                       data_type = electrode_names_trait,
+                                                       data_types = electrode_names_trait,
                                                        name = 'lead field electrode names',
                                                        module = self
                                                        )
@@ -55,7 +55,7 @@ class average_reference_operator(Module):
         self.i_lead_field_electrode_names = None
 
         self.op_registration_values_avg = OutputPort(
-                                                     data_type = registration_values_trait,
+                                                     data_types = registration_values_trait,
                                                      name = 'registration values avg',
                                                      module = self
                                                      )
@@ -63,35 +63,30 @@ class average_reference_operator(Module):
 
         registration_metadata_trait = traits.Trait()
         self.op_registration_metadata = OutputPort(
-                                                   data_type = registration_metadata_trait,
+                                                   data_types = registration_metadata_trait,
                                                    name = 'registration metadata',
                                                    module = self
                                                    )
         self.output_ports.append(self.op_registration_metadata)
 
         self.op_lead_field_avg = OutputPort(
-                                            data_type = lead_field_trait,
+                                            data_types = lead_field_trait,
                                             name = 'lead field avg',
                                             module = self
                                             )
         self.output_ports.append(self.op_lead_field_avg)
 
-    def update(self, input_port, old, new):
-        if input_port == self.ip_registration_values:
-            self.i_registration_values = input_port.data
-        if input_port == self.ip_lead_field:
-            self.i_lead_field = input_port.data
-        if input_port == self.ip_registration_electrode_names:
-            self.i_registration_electrode_names = input_port.data
-        if input_port == self.ip_lead_field_electrode_names:
-            self.i_lead_field_electrode_names = input_port.data
+    def execute(self):
+        self.i_registration_values = self.ip_registration_values.data
+        self.i_lead_field = self.ip_lead_field.data
+        self.i_registration_electrode_names = self.ip_registration_electrode_names.data
+        self.i_lead_field_electrode_names = self.ip_lead_field_electrode_names.data
         if (self.i_registration_values != None)  \
             and ( self.i_lead_field != None) \
             and (self.i_registration_electrode_names != None) \
             and (self.i_lead_field_electrode_names != None):
             self.process()
 
-    @threaded_process
     def process(self):
         self.progress = 0
         i_registration_values = self.i_registration_values

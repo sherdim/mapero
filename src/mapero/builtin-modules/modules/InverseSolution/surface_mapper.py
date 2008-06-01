@@ -25,7 +25,7 @@ class surface_mapper(Module):
 
         dipole_sources_trait = traits.Array(typecode=Float, shape=(None,None))
         self.ip_dipole_sources = InputPort(
-                                           data_type = dipole_sources_trait,
+                                           data_types = dipole_sources_trait,
                                            name = 'dipole source',
                                            module = self
                                            )
@@ -34,7 +34,7 @@ class surface_mapper(Module):
         
         polydata_trait = traits.Trait(tvtk.PolyData)
         self.ip_cortex = InputPort(
-                                   data_type = polydata_trait,
+                                   data_types = polydata_trait,
                                    name = 'cortex',
                                    module = self
                                    )
@@ -42,22 +42,19 @@ class surface_mapper(Module):
         self.i_cortex = None
 
         self.op_polydata = OutputPort(
-                                      data_type = polydata_trait,
+                                      data_types = polydata_trait,
                                       name = 'mapped cortex',
                                       module = self
                                       )
         self.output_ports.append(self.op_polydata)
 
 
-    def update(self, input_port, old, new):
-        if input_port == self.ip_dipole_sources:
-            self.i_dipole_sources = input_port.data
-        if input_port == self.ip_cortex:
-            self.i_cortex = input_port.data
+    def execute(self):
+        self.i_dipole_sources = self.ip_dipole_sources.data
+        self.i_cortex = self.ip_cortex.data
         if ( self.i_cortex != None) :
             self.procesar()
 
-    @invoke_later
     def procesar(self):
         self.progress = 0
         ocortex = self.i_cortex

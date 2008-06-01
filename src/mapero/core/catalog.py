@@ -1,4 +1,4 @@
-import mapero
+from mapero.core.module import Module
 import mapero.modules
 import mapero.datatypes
 from enthought.traits import api as traits
@@ -7,6 +7,7 @@ import os
 import glob
 import sys
 import imp
+import inspect
 #TODO: verificar mejor los paths y los nombres que se dan a los modulos
 cwd1 = realpath(__file__)
 cwd2 = split(cwd1)[0]
@@ -20,6 +21,12 @@ builtin_modules = join(mapero_path, 'builtin-modules')
 import logging
 log = logging.getLogger("mapero.logger.engine");
 
+class MoreThanOneMaperoModuleInPythonFile(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
+    
 class NotFoundInCatalogError(Exception):
     def __init__(self, value):
         self.value = value
@@ -36,6 +43,7 @@ class ModuleInfo(traits.HasTraits):
     name = traits.Str
     description = traits.Str
     clazz = traits.Trait
+    py_module = traits.Trait
     canonical_name = traits.Property(traits.Str)
     
     def __init__(self, **traits):
@@ -43,13 +51,15 @@ class ModuleInfo(traits.HasTraits):
         if self.clazz != None:
             self.name = self.clazz.__name__
             self.description = self.clazz.__doc__
+            self.py_module = inspect.getmodule(self.clazz)
         
     def _get_canonical_name(self):
-        return self.clazz.__module__[len(mapero.modules.__name__)+1:]
+        return self.clazz.canonical_name
     
     def _clazz_changed(self, value):
         self.name = self.clazz.__name__
         self.description = self.clazz.__doc__
+        self.py_module = inspect.getmodule(self.clazz)
     
 class Categorie(traits.HasTraits):
     name = traits.Str
@@ -59,12 +69,11 @@ Categorie.add_class_trait('categories', traits.List(Categorie))
 
 class Catalog(traits.HasTraits):
     dirs = traits.List(traits.Directory)
-    modules = traits.List(Categorie)
+    categories = traits.List(Categorie)
 
     def __init__(self, **traits):
         super(Catalog, self).__init__(**traits)
         self.dirs.append(builtin_modules)
-        self._catalog = {'modules':({},{})}
 #        mapero.__path__ = mapero.__path__ + self.dirs
         for dir in self.dirs:
             mapero.modules.__path__.append( join(dir,'modules') )
@@ -72,6 +81,7 @@ class Catalog(traits.HasTraits):
         self.refresh()
 
     def refresh(self):
+        
         def _inspect_dir (arg, dir_name, names):
             for entry in dir_name.split(os.sep):
                 if entry.startswith("."):
@@ -100,30 +110,39 @@ class Catalog(traits.HasTraits):
             walk(dir, _inspect_dir, None)
 
     def load_module(self, module_name):
-        module_class = self._get_module_class(module_name)
-        module = module_class()
+        log.debug("loading module : " + module_name)
+        module_info = self._get_module_info(module_name)
+        module = module_info.clazz()
         return module
 
-    def _get_module_class(self, module_name):
+    def _get_module_info(self, module_name):
         def cross_catalog(categorie):
             for cat in categorie.categories:
                 returned_mod = cross_catalog(cat)
                 if returned_mod != None:
                     return returned_mod
-            for mod in categorie.modules:
-                if (mod.canonical_name == module_name):
-                    return mod.clazz
-        for categorie in self.modules:
+            for mod_info in categorie.modules:
+                if (mod_info.canonical_name == module_name):
+                    return mod_info
+        for categorie in self.categories:
             returned_mod = cross_catalog(categorie)
             if returned_mod != None:
                 return returned_mod
+        raise ModuleNotFoundInCatalogError("module not found in catalog : " + module_name)
         
         
-    def reload_module(self, module_name):
-        metadata = self.get_module_metadata(module_name)
-        f, fn, d = imp.find_module(metadata['module'], [metadata['path']])
-        metadata['python_module'] = imp.load_module(metadata['module'], f, fn, d)
-        return getattr(metadata['python_module'],metadata['module'])()
+    def reload_module(self, module_object):
+        module_info = self._get_module_info(module_object.canonical_name)
+        py_module = module_info.py_module
+        py_module = reload(py_module)
+        py_class = get_mapero_module(py_module)
+        module_info.py_module = py_module
+        module_object = py_class()
+        return module_object
+#        metadata = self.get_module_metadata(module_name)
+#        f, fn, d = imp.find_module(metadata['module'], [metadata['path']])
+#        metadata['python_module'] = imp.load_module(metadata['module'], f, fn, d)
+#        return getattr(metadata['python_module'],metadata['module'])()
 
     def recorrer(self):
         print "================ recorriendo =================="
@@ -133,7 +152,7 @@ class Catalog(traits.HasTraits):
                 cross_catalog(cat, ident+1)
             for mod in categorie.modules:
                 print '\t'*(ident+1) + str(mod.name)
-        for categorie in self.modules:
+        for categorie in self.categories:
             cross_catalog(categorie,0)
         print "================ recorrido =================="
     
@@ -151,7 +170,7 @@ class Catalog(traits.HasTraits):
     
     def __add_modules(self, py_module):
         def _recorrer_categories(current_cat, tail_cats, module):
-            if len(tail_cats)==0:
+            if len(tail_cats)==0 and module != None:
                 new_module_info = ModuleInfo(clazz = module)
                 current_cat.modules.append(new_module_info)
                 return
@@ -170,13 +189,13 @@ class Catalog(traits.HasTraits):
                         
             else:
                 other_cat_in_current_cat = False
-                for cat in self.modules:
+                for cat in self.categories:
                     if other_cat == cat.name:
                         other_cat_in_current_cat = True
                         _recorrer_categories(cat, tail_cats, module)
                 if not other_cat_in_current_cat:
                     new_categorie = Categorie(name = other_cat)
-                    self.modules.append(new_categorie)
+                    self.categories.append(new_categorie)
                     _recorrer_categories(new_categorie, tail_cats, module)
                  
         py_name = py_module.__name__
@@ -189,16 +208,17 @@ class Catalog(traits.HasTraits):
 #        print "module_name: ", module_name
 #        print "categories: ", categories 
 #        print "========"
-        mapero_module = getattr(py_module, module_name)
+        mapero_module = get_mapero_module(py_module)
         _recorrer_categories(None, categories, mapero_module)
     
-def import_module(partname, fqname, parent):
+def import_module(partname, fqname, parent, reload=False):
     log.debug( "import_module: partname: %s\t fqname:%s\t parent:%s" % (partname, fqname, parent) )
-    try:
-        m = sys.modules[fqname]
-        return m
-    except KeyError:
-        pass
+    if(not reload):
+        try:
+            m = sys.modules[fqname] 
+            return m
+        except KeyError:
+            pass
     try:
         fp, pathname, stuff = imp.find_module(partname, parent and parent.__path__)
     except ImportError:
@@ -210,3 +230,14 @@ def import_module(partname, fqname, parent):
     if parent:
         setattr(parent, partname, m)
     return m
+
+def get_mapero_module(py_module):
+    mapero_modules = [ getattr(py_module,mapero_module_class) for mapero_module_class in dir(py_module) if inspect.isclass(getattr(py_module,mapero_module_class)) and issubclass(getattr(py_module,mapero_module_class), Module) and mapero_module_class not in ('Module', 'VisualModule') ]
+    if len(mapero_modules) > 1:
+        raise MoreThanOneMaperoModuleInPythonFile("More Than One Mapero Module In Python File")
+    else:
+        if len(mapero_modules)==1:
+            return mapero_modules[0]
+        else:
+            return None 
+    

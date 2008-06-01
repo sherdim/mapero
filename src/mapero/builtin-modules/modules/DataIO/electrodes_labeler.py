@@ -22,7 +22,7 @@ class electrodes_labeler(Module):
 
 		list_string_trait = List(Str)
 		self.ip_labels = InputPort(
-								   data_type = list_string_trait,
+								   data_types = list_string_trait,
 								   name = 'labels',
 								   module = self
 								   )
@@ -31,7 +31,7 @@ class electrodes_labeler(Module):
 
 		point_set_trait = Array(typecode=Int, shape=(None,2))
 		self.ip_map = InputPort(
-							    data_type = point_set_trait,
+							    data_types = point_set_trait,
 							    name = 'map_point_set',
 							    module = self
 							    )
@@ -39,13 +39,13 @@ class electrodes_labeler(Module):
 		self.i_map = None
 
 		self.op_labels = OutputPort(
-								    data_type = list_string_trait,
+								    data_types = list_string_trait,
 								    name = 'labels',
 								    module = self
 								    )
 		self.output_ports.append(self.op_labels)
 
-	def update(self, input_port, old, new):
+	def execute(self):
 		if input_port == self.ip_labels:
 			self.i_labels = input_port.data
 		if input_port == self.ip_map:

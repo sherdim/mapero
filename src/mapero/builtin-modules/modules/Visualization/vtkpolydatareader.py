@@ -22,7 +22,7 @@ class vtkpolydatareader(Module):
         super(vtkpolydatareader, self).__init__(**traitsv)
         self.name = 'VTK Data Reader'
         self.out1 = OutputPort(
-                                data_type = None,
+                                data_types = None,
                                 name = 'out1',
                                 module = self
                                 )

@@ -1,16 +1,17 @@
-#!/usr/bin/env python
 """module.py
 """
+from IoC.ioc import IsInstanceOf
+from mapero.core.visual_module_window import VisualModuleWindowManager
+from mapero.core.port import Port
+import IoC
 
-# Author: Zacarias F. Ojeda <correo@zojeda.com.ar>
-# Copyright (c) 2005, Enthought, Inc.
-# License: BSD Style.
+# Author: Zacarias F. Ojeda <zojeda@gmail.com>
+# License: new BSD Style.
 
 # Standard library imports.
 import wx
 
 from enthought.traits import api as traits
-from enthought.traits.api import Code
 
 from mapero.core.port import InputPort
 from mapero.core.port import OutputPort
@@ -35,16 +36,50 @@ class InputPortNotFoundError(PortNotFoundError):
 class OutputPortNotFoundError(PortNotFoundError):
     pass
 
+
+class MetaModule ( traits.MetaHasTraits ):
+    def __init__ ( cls, name, bases, dict):
+        super(MetaModule, cls).__init__(name, bases, dict)
+        cls.module_class = cls.__class__
+#        canonical_name = cls.__module__.split('mapero.modules.')
+#        cls.canonical_name = len(canonical_name)==2 and canonical_name[1] or cls.__module__
+        cls.canonical_name = cls.__module__
+        print cls.canonical_name
+        cls.source_code_file = inspect.getsourcefile(cls)
+        
+    def __call__(cls, *args):
+        inst = super(MetaModule, cls).__call__( *args )
+        print inst
+        MetaModule.init_ports(inst)
+        return inst
+    
+    @staticmethod
+    def init_ports(module):
+        for attr_name in module.__class__.__dict__:
+            attr = getattr(module, attr_name)
+            if isinstance(attr, InputPort):
+                attr.name = attr_name
+                attr.module = module
+                module.input_ports.append(attr)
+            if isinstance(attr, OutputPort):
+                attr.name = attr_name
+                attr.module = module
+                module.output_ports.append(attr)
+        
+
 ######################################################################
 # `Module` class.
 ######################################################################
 class Module(traits.HasTraits):
     """ Base class for all modules in the mapero structure """
-    id = traits.Int
+    
+    __metaclass__ = MetaModule
+    
+    __version__ = 1.0
+    
+    id = traits.Int(None)
     label = traits.Str
     progress = traits.Range(0,100)
-    
-    source_code_file = traits.Code()
     
     input_ports = traits.List(InputPort)
     output_ports = traits.List(OutputPort)
@@ -64,8 +99,6 @@ class Module(traits.HasTraits):
 
     def __init__(self, **traits):
         super(Module, self).__init__(**traits)
-        c=inspect.currentframe()
-        self.source_code_file = c.f_code.co_filename
         log.debug( "creating module" )
         self.module_info = {}
 
@@ -74,6 +107,7 @@ class Module(traits.HasTraits):
 
     def __del__(self):
         log.debug( "Module %s deleted" % self.__class__.__name__)
+        print "MODULO ELIMINADO"
 
     def start_module(self):
         self.start()
@@ -91,11 +125,11 @@ class Module(traits.HasTraits):
 
     def update_module(self, input_port, old=None, new=None):
         log.debug( "Updating module  %s  from  %s" % (self.__class__.__name__, input_port.name))
-        self.update(input_port, old, new)
+        self.execute()
         #print 'module %s updated from input port: %s' % (self.name, input_port)
 
-    def update(self, input_port, old=None, new=None):
-        print 'datos actualizados'
+    def execute(self):
+        raise NotImplementedError
 
     def get_input(self, port):
         for input in self.input_ports:
@@ -120,7 +154,7 @@ class Module(traits.HasTraits):
     def __get_pure_state__(self):
         traits_names = self.class_trait_names()
         avoided_traits = ['input_ports', 'output_ports', 'trait_added',
-                           'trait_modified', 'progress', 'parent', 'source_code' ]
+                           'trait_modified', 'progress', 'window_manager','parent','win', 'source_code' ]
         traits = [ trait for trait in traits_names if trait not in avoided_traits ]
         log.debug("returning state : %s for module [%s]" % (traits,self.__class__.__name__ ))
         result = self.get(traits)
@@ -129,27 +163,27 @@ class Module(traits.HasTraits):
     
 
 class VisualModule(Module):
-    parent = traits.Any
+    win = traits.Any
+    window_manager = IoC.ManagedRequirement("visual_module_window_manager", IsInstanceOf(VisualModuleWindowManager))
 
     def __init__(self, **traits):
         super(VisualModule, self).__init__(**traits)
 
-
     def start_module(self):
-        if not self.parent:
-            self.parent = wx.Frame(None, -1, self.name)
-            self.win = self._create_window()
+        self.parent = self.window_manager.create_window(self) 
+        self.win = self._create_window()
 
-            sizer = wx.BoxSizer(wx.HORIZONTAL)
-            sizer.Add(self.win, 1, wx.EXPAND)
-            self.parent.SetSizer(sizer)
-            super(VisualModule, self).start_module()
-            self.parent.Show( True )
+        sizer = wx.BoxSizer(wx.HORIZONTAL)
+        sizer.Add(self.win, 1, wx.EXPAND)
+        self.parent.SetSizer(sizer)
+        super(VisualModule, self).start_module()
+        self.parent.Show(True)
 
     def stop_module(self):
-        if self.parent:
-            self.parent.Destroy()
-            super(VisualModule, self).stop_module()
+        pass
+#        if self.parent:
+#            self.parent.Destroy()
+#            super(VisualModule, self).stop_module()
 
     def _create_window(self):
         "Subclasses should override this method and return an enable.wx.Window"

@@ -1,7 +1,6 @@
 """ A file system tree. """
 
 
-# Standard library imports.
 # Enthought library imports.
 from enthought.pyface.image_resource import ImageResource
 from enthought.pyface.tree.tree import Tree

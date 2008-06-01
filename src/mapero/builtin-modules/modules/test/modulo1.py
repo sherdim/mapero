@@ -4,20 +4,16 @@ from enthought.traits import api as traits
 from enthought.traits.ui.api import Group
 
 class modulo1(Module):
-    """ """
+    """  """
     param = traits.Range(0,100)
     
     view = Group('param' )
     
-    def __init__(self, **traits):
-        super(modulo1, self).__init__(**traits)
-        self.out1 = OutputPort(
-                                   data_type = None,
-                                   name = 'out1',
-                                   module = self 
+    out1 = OutputPort(
+                                   data_types = None
                                )
-        self.output_ports.append(self.out1)
         
     def _param_changed(self, value):
         self.out1.data = value
+        self.progress = value
 

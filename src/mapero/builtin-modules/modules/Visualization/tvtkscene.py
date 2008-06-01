@@ -24,28 +24,25 @@ class tvtkscene(VisualModule):
         self.name = 'TVTK Scene'
         self.actors_pattern = "actors1"
         self.input1 = MultiInputPort(
-                                     data_type = types.IntType,
+                                     data_types = types.IntType,
                                      name = self.actors_pattern,
                                      module = self
                                      )
         self.input_ports.append(self.input1)
         self.input_actors = None
 
-    def update(self, input_port, old, new):
-        if (new == None and old != None):
-            self.input_actors = old
+    def execute(self):
+        self.input_actors = self.input1.data
+        if ( not self.input_actors ):
             self._remove_actors()
-        if (old != new) :
-            self.input_actors = input_port.data
+        else:
             self._add_actors()
 
-    @invoke_later
     def _add_actors(self):
         self.progress = 0
         self.scene.add_actors(self.input_actors)
         self.progress = 100
         
-    @invoke_later
     def _remove_actors(self):
         self.progress = 0
         self.scene.remove_actors(self.input_actors)

@@ -21,7 +21,7 @@ class cone_source(Module):
         super(cone_source, self).__init__(**traitsv)
         self.name = 'ConeSources'
         self.out1 = OutputPort(
-							   data_type = types.IntType,
+							   data_types = types.IntType,
 							   name = 'salida1',
 							   module = self
 							   )

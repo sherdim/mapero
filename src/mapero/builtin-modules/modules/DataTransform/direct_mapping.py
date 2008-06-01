@@ -22,7 +22,7 @@ class direct_mapping(Module):
 		polydata_trait = traits.Trait(tvtk.PolyData)
 
 		self.ip_values_polydata = InputPort(
-										    data_type = polydata_trait,
+										    data_types = polydata_trait,
 										    name = 'values',
 										    module = self
 										    )
@@ -30,7 +30,7 @@ class direct_mapping(Module):
 		self.i_values_polydata = None
 
 		self.ip_input_polydata = InputPort(
-										   data_type = polydata_trait,
+										   data_types = polydata_trait,
 										   name = 'geometry', 
 										   module = self
 										   )
@@ -38,14 +38,14 @@ class direct_mapping(Module):
 		self.i_input_polydata = None
 
 		self.op_polydata = OutputPort(
-									  data_type = polydata_trait,
+									  data_types = polydata_trait,
 									  name = 'polydata', 
 									  module = self
 									  )
 		self.output_ports.append(self.op_polydata)
 
 
-	def update(self, input_port, old, new):
+	def execute(self):
 		if input_port == self.ip_input_polydata:
 			self.i_input_polydata = input_port.data
 		if input_port == self.ip_values_polydata:

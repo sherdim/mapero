@@ -42,15 +42,12 @@ class DataflowEditorController(traits.HasTraits):
 
             
         
-    def create_dataflow_model(self, state):
-        network = self.module_manager.create_network_instance( state.network )
+    def set_network_state(self, state, create_elements = True):
+        network = self.module_manager.set_network_state( state.network, create_elements )
         network.on_trait_event( self._network_updated, 'updated' )
-        state_setter = StateSetter()
-        state_setter.set( network, state.network )
         module_geometrics = []
         connection_geometrics = []
-        self.connection_geometrics_dict = {}
-        self.module_geometrics_dict = {}
+
         
         for module_geometric_state in state.module_geometrics:
             module_geometric = ModuleGeometrics()
@@ -125,7 +122,11 @@ class DataflowEditorController(traits.HasTraits):
         self.network_updated = True
         
     def refresh_module(self, module):
-        self.module_manager.reload(module)
+        connections = self.module_manager.get_module_connections( module )
+        module_with_state = self.get_network_state(False, [module], connections)
+        module = self.module_manager.reload(module)
+        self.set_network_state(module_with_state, False)
+        return module
         
     #TODO: eliminate this code ASAP
     def get_module_geometrics(self):
@@ -140,31 +141,38 @@ class DataflowEditorController(traits.HasTraits):
         self.network_updated = True
         
     def get_network_state(self, all_network=True, modules=None, connections=None):
-        network_state = self.module_manager.get_network_state( all_network, modules, connections )
-        connection_geometrics_states = []
-        module_geometrics_states = []
-        if all_network == True:
-            connections = self.module_manager.network.connections
-        for connection in connections:
-            s = state_pickler.dumps( connection )
-            connection_state = state_pickler.loads_state( s )
-            connection_geometrics_states.append( connection_state )
-        if all_network == True:
-            modules = self.module_manager.network.modules
-
-        for module in modules:
-            s = state_pickler.dumps( module )
-            module_state = state_pickler.loads_state( s )
-            module_geometrics_states.append( module_state )
-            
-        network_with_geometrics = { 
-                                   'network_state' : network_state,
-                                   'module_geometrics_states' : module_geometrics_states,
-                                   'connection_geometrics_states': connection_geometrics_states
-                                   }
+        #network_state = self.module_manager.get_network_state( all_network, modules, connections )
         
-        return network_with_geometrics
+        s = state_pickler.dumps( self.dataflow_editor_model )
+        dataflow_editor_model_state = state_pickler.loads_state( s )
+        
+        all_connections = dataflow_editor_model_state['network']['connections']
+        all_modules = dataflow_editor_model_state['network']['modules']
+        all_module_geometrics = dataflow_editor_model_state['module_geometrics']
+        
+        if all_network == True or connections==None:  
+            connection_ids = [connection['id'] for connection in connections]
+        else:
+            connection_ids = [connection.id for connection in connections]
             
+        connections_state = [ m_s for m_s in all_connections if  m_s['id'] in connection_ids ]
+        dataflow_editor_model_state['network']['connections'] = connections_state
+        
+        if all_network == True or modules==None:  
+            module_ids = [module['id'] for module in modules]
+        else:
+            module_ids = [module.id for module in modules]
+
+        modules_state = [ m_s for m_s in all_modules if  m_s['id'] in module_ids ]
+
+        dataflow_editor_model_state['network']['modules'] = modules_state
+        
+        module_geometrics = [mg_s for mg_s in all_module_geometrics if mg_s.module_id in module_ids]
+        dataflow_editor_model_state['module_geometrics'] = module_geometrics
+       
+        return dataflow_editor_model_state
+    
+  
             
         
         

@@ -36,7 +36,7 @@ class DataflowDocument(docview.Document):
         log.debug("loading state from file: ")
         state = state_pickler.load_state(fileObject)
         log.debug("creating dataflow from state")
-        self.controller.create_dataflow_model(state)
+        self.controller.set_network_state(state, True)
         log.debug("dataflow created")
         self.UpdateAllViews(self)
         

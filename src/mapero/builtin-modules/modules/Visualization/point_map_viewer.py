@@ -20,7 +20,7 @@ class point_map_viewer(Module):
 
 		point_set_trait = Array(typecode=Float, shape=(None,3))
 		self.ip_from_point_set = InputPort(
-										   data_type = point_set_trait,
+										   data_types = point_set_trait,
 										   name = 'from_point_set',
 										   module = self
 										   )
@@ -28,7 +28,7 @@ class point_map_viewer(Module):
 		self.i_to_point_set = None
 
 		self.ip_to_point_set = InputPort(
-										 data_type = point_set_trait,
+										 data_types = point_set_trait,
 										 name = 'to_point_set',
 										 module = self
 										 )
@@ -37,7 +37,7 @@ class point_map_viewer(Module):
 
 		point_set_trait = Array(typecode=Int, shape=(None,2))
 		self.ip_map = InputPort(
-							    data_type = point_set_trait,
+							    data_types = point_set_trait,
 							    name = 'map_point_set',
 							    module = self
 							    )
@@ -45,7 +45,7 @@ class point_map_viewer(Module):
 		self.i_map = None
 
 		self.op_actors = OutputPort(
-								    data_type = point_set_trait,
+								    data_types = point_set_trait,
 								    name = 'actors_output',
 								    module = self
 								    )
@@ -54,7 +54,7 @@ class point_map_viewer(Module):
 		self.line_sources = []
 		self.properties = []
 
-	def update(self, input_port, old, new):
+	def execute(self):
 		if input_port == self.ip_from_point_set:
 			self.i_from_point_set = input_port.data
 		if input_port == self.ip_to_point_set:

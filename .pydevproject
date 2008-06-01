@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <?eclipse-pydev version="1.0"?>
 
 <pydev_project>
@@ -110,5 +110,6 @@
 
 <pydev_pathproperty name="org.python.pydev.PROJECT_EXTERNAL_SOURCE_PATH">
 <path>/home/zaca/python</path>
+<path>/home/zaca/bin/python</path>
 </pydev_pathproperty>
 </pydev_project>

@@ -17,7 +17,7 @@ class array_reader(Module):
 		super(array_reader, self).__init__(**traits)
 		self.name = 'Array Reader'
 		self.array_output = OutputPort(
-									   data_type=list,
+									   data_types=list,
 									   name = 'array_output',
 									   module = self)
 		self.output_ports.append(self.array_output)

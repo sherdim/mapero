@@ -19,7 +19,7 @@ class position_label_electrodes_separator(Module):
 		self.name = 'Position-Label Separator'
 		point_set_trait = Array(typecode=Float, shape=(None,3))
 		self.op_point_set = OutputPort(
-									   data_type = point_set_trait,
+									   data_types = point_set_trait,
 									   name = 'array_output',
 									   module = self
 									   )
@@ -27,7 +27,7 @@ class position_label_electrodes_separator(Module):
 
 		list_string_trait = List(Str)
 		self.op_labels = OutputPort(
-								    data_type = list_string_trait,
+								    data_types = list_string_trait,
 								    name = 'labels',
 								    module = self
 								    )
@@ -35,14 +35,14 @@ class position_label_electrodes_separator(Module):
 
 		electrode_names_trait = List(Str)
 		self.ip_registration_electrode_names = InputPort(
-														 data_type = electrode_names_trait,
+														 data_types = electrode_names_trait,
 														 name = 'reg electrode names',
 														 module = self
 														 )
 		self.input_ports.append(self.ip_registration_electrode_names)
 		self.i_registration_electrode_names = None
 
-	def update(self, input_port, old, new):
+	def execute(self):
 		if (new != old):
 			self.i_registration_electrode_names = input_port.data
 			self.process()

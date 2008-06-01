@@ -21,14 +21,14 @@ class pointset_viewer(Module):
 
 		point_set_trait = traits.Array(typecode=Float, shape=(None,3))
 		self.ip_point_set = InputPort(
-									  data_type = point_set_trait,
+									  data_types = point_set_trait,
 									  name = 'array_input',
 									  module = self
 									  )
 		self.input_ports.append(self.ip_point_set)
 
 		self.op_actors = OutputPort(
-								    data_type = point_set_trait,
+								    data_types = point_set_trait,
 								    name = 'actors_output',
 								    module = self
 								    )
@@ -36,7 +36,7 @@ class pointset_viewer(Module):
 		self.sphere_sources = []
 		self.properties = []
 
-	def update(self, input_port, old, new):
+	def execute(self):
 		if (input_port == self.get_input('array_input')):
 			if (input_port.data != None and input_port.data != []):
 				self.process()
@@ -44,7 +44,6 @@ class pointset_viewer(Module):
 				self.progress = 0
 				self.get_output('actors_output').data = None
 
-	@threaded_process
 	def process(self):
 		input_array = self.get_input('array_input').data
 		self.progress = 0

@@ -42,14 +42,14 @@ class polydata_viewer(Module):
         polydata_trait = traits.Trait(tvtk.PolyData)
         polydata_trait = None
         self.ip_polydata = InputPort(
-                                     data_type = polydata_trait,
+                                     data_types = polydata_trait,
                                      name = 'polydata_input',
                                      module = self
                                      )
         self.input_ports.append(self.ip_polydata)
 
         self.op_actor = OutputPort(
-                                   data_type = polydata_trait,
+                                   data_types = polydata_trait,
                                    name = 'actors_output',
                                    module = self
                                    )
@@ -62,13 +62,12 @@ class polydata_viewer(Module):
         self.high_scalar = 100
         self.recalc_lt()
         
-    def update(self, input_port, old, new):
-        if (input_port == self.ip_polydata):
-            if (input_port.data != None and input_port.data != []):
-                self.process()
-            else:
-                self.progress = 0
-                self.op_actor.data = None
+    def execute(self):
+        if (self.ip_polydata.data != None and self.ip_polydata.data != []):
+            self.process()
+        else:
+            self.progress = 0
+            self.op_actor.data = None
 
     def process(self):
         input_array = self.ip_polydata.data
