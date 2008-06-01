@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # Author: Zacarias F. Ojeda <correo@zojeda.com.ar>
-# Copyright (c) 2005, Enthought, Inc.
-# License: BSD Style.
+# License: new BSD.
 
 from enthought.traits import api as traits
 

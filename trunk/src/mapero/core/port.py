@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 """port.py
 """
-# Author: Zacarias F. Ojeda <correo@zojeda.com.ar>
+# Author: Zacarias F. Ojeda <zojeda@gmail.com>
 # Copyright (c) 2005, Enthought, Inc.
-# License: BSD Style.
+# License: new BSD Style.
 
 # Standard library imports.
 import re
 
 from enthought.traits.api import Str, Trait, HasTraits, Any, List, WeakRef
 
+import logging
+log = logging.getLogger("mapero.logger.engine");
 ######################################################################
 # `Port` class.
 ######################################################################
@@ -22,11 +24,11 @@ class PortNameError(Exception):
 class Port(HasTraits):
 	#TODO: hacer comprobacion de los tipos cuando cambia data
 	#TODO:
-	data_type = Trait
+	data_types = Trait
 	name = Str
 	data = Any
 	connection = Any
-	module = Any
+	module = WeakRef(klass = 'mapero.core.module.Module')
 	#FIXME: debiera ser module = Instance(Module) pero no funciona :(
 
 	def __init__(self, **traits):
@@ -37,13 +39,13 @@ class Port(HasTraits):
 		"""Method used by the state_pickler.
 		"""
 		d = self.__dict__.copy()
-		for attr in ('data', 'data_type', 'type'):
+		for attr in ('data', 'data_types', 'type'):
 			d.pop(attr, None)
 		return d
 
 
 	def __del__(self):
-		print "   port: ", self.name, " deleted !!!"
+		log.debug( "   port: "+ self.name + " deleted !!!" )
 		pass
 
 class OutputPort(Port):
@@ -74,7 +76,7 @@ class InputPort(Port):
 		pass
 
 	def update_data(self, old, new):
-		print "updating module: ",self.module.name
+		log.debug( "updating module: " + self.module.name)
 		self.module.update_module(self, old, new)
 
 	def _data_changed (self, old, new):
@@ -95,7 +97,7 @@ class MultiInputPort(InputPort):
 			complete_name = pattern.search(self.name).groups()
 			base_name = complete_name[0]
 			port_number = str(int(complete_name[1]) + 1)
-			self.module.input_ports.append(MultiInputPort(self.data_type, base_name + port_number, self.module))
+			self.module.input_ports.append(MultiInputPort(self.data_types, base_name + port_number, self.module))
 		except AttributeError:
 			raise PortNameError("port's name don't follow the naming rules")
 

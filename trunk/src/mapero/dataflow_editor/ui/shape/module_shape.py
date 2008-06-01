@@ -1,3 +1,5 @@
+from enthought.traits  import api as traits
+from mapero.core.module import Module
 import wx
 import wx.lib.ogl as ogl
 from wx.lib.ogl._oglmisc import ATTACHMENT_MODE_EDGE, SHADOW_RIGHT
@@ -70,7 +72,9 @@ class PortShape(ogl.PolygonShape):
 				if self._previousHandler:
 					self._previousHandler.OnEndDragLeft(x, y, keys, attachment)
 
-class ModuleShape(ogl.RectangleShape):
+class ModuleShape(ogl.RectangleShape, traits.HasTraits):
+	module = traits.WeakRef(Module)
+	
 	def __init__(self, module, w = 151, h = 91, x = 100, y = 50):
 		ogl.RectangleShape.__init__(self, w, h)
 		self.module = module
@@ -206,7 +210,10 @@ class ModuleShape(ogl.RectangleShape):
 
 		dc.SetBrush(wx.Brush(wx.Colour(16,198,140), wx.SOLID))
 		dc.DrawRectangle(xprogress -1, y, (progresswidth*self.module.progress/100)-1, texth-1)
-
+		
+		id_text = "[ %s ]" % self.module.id 
+		textw, texth = dc.GetTextExtent(id_text)
+		dc.DrawText(id_text, self.GetX() + self._width / 2 - textw - padding , self.GetY() + self._height / 2 - texth - padding)
 		self.update_port_positions()
 		self.DrawLinks(dc)
 		dc.EndDrawing()

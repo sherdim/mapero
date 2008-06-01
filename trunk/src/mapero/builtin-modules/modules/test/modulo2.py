@@ -7,23 +7,17 @@ import logging
 log = logging.getLogger("mapero.logger.module");
 
 class modulo2(Module):
-    """ """
-    def __init__(self, **traits):
-        super(modulo2, self).__init__(**traits)
-        self.in1 = InputPort(
-                                   data_type = None,
-                                   name = 'in1',
-                                   module = self 
-                               )
-        self.input_ports.append(self.in1)
+    """ aaaaaaa  """
+    in1 = InputPort(
+                                   data_types = None, 
+                                   name = 'in1' 
+                            )
 
-    def update(self, input_port, old=None, new=None):
-        self.process()
-        
-    def process(self):
-        log.debug("processing")
+    def execute(self):
+        log.debug("processin  g")
         if (self.in1.data):
             self.progress = self.in1.data
+            pass
         else:
             self.progress = 0
-        print "modulo2: ", self.progress
+        print "id: %s \t progress : %s" % (id(self), self.progress)

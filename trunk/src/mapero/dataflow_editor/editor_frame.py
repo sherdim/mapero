@@ -1,12 +1,17 @@
 from mapero.core.catalog import ModuleInfo
+from mapero.core.visual_module_window import VisualModuleWindowManager
+
 import wx
-#import wx.aui
+import wx.aui
+import IoC
+
+_ = wx.GetTranslation
 
 import wx.lib.pydocview as pydocview
 from mapero.core.catalog import Catalog
 from mapero.dataflow_editor.ui.catalog_tree import CatalogTree
 
-class DataflowEditorFrame(pydocview.DocTabbedParentFrame):
+class DataflowEditorFrame(pydocview.DocTabbedParentFrame, VisualModuleWindowManager):
     def __init__(self, docManager, frame, id, title, pos = wx.DefaultPosition,
                 size = wx.DefaultSize, style = wx.DEFAULT_FRAME_STYLE | wx.CLIP_CHILDREN,
                 name = "DataflowEditorFrame",
@@ -16,11 +21,25 @@ class DataflowEditorFrame(pydocview.DocTabbedParentFrame):
                         size, style, name, embeddedWindows )
 
 
-#        self.mgr = wx.aui.AuiManager(self)
-#        self.mgr.AddPane(self.networks_panel, wx.CENTER, 'Networks')
-#        self.mgr.AddPane(self._catalog_tree.control, wx.LEFT, 'Catalog')
-#        self.mgr.Update()
+        self.mgr = wx.aui.AuiManager(self, wx.aui.AUI_MGR_ALLOW_FLOATING | wx.aui.AUI_MGR_RECTANGLE_HINT )
+        self.mgr.AddPane(self.networks_panel, wx.CENTER, 'Networks')
+        self.module_properties_inspector = wx.Panel(self, -1, size=wx.Size(200,150), style=wx.BORDER_RAISED | wx.CLIP_CHILDREN)
+        pi_sizer = wx.BoxSizer()
+        self.module_properties_inspector.SetSizer(pi_sizer)
+        
+        
+        self.mgr.AddPane(self.module_properties_inspector,wx.LEFT, 'Properties')
+#        self.mgr.AddPane(self.catalog_panel,auiPaneInfo, wx.DefaultPosition)
+        self.mgr.AddPane(self.catalog_panel, wx.LEFT, 'Catalog')
 
+        self.ui = None
+        
+        
+        sl = IoC.ServiceLocator()
+        sl.provide("module_properties_inspector", self)
+        sl.provide("visual_module_window_manager", self)
+        
+        self.mgr.Update()
 
 #    def _LayoutWindow(self):
 #        """
@@ -39,21 +58,21 @@ class DataflowEditorFrame(pydocview.DocTabbedParentFrame):
         """
         print "creating notebook"
 
-        split = wx.SplitterWindow(self, -1, style=wx.SP_3D | wx.CLIP_CHILDREN)
+#        split = wx.SplitterWindow(self, -1, style=wx.SP_3D | wx.CLIP_CHILDREN)
         
         #split.SetMinimumPaneSize(20)
-        self.split = split
+#        self.split = split
 
-        self.catalog_panel = wx.Panel(self.split, -1, style=wx.BORDER_RAISED | wx.CLIP_CHILDREN)
+        self.catalog_panel = wx.Panel(self, -1, size=wx.Size(200,150), style=wx.BORDER_RAISED | wx.CLIP_CHILDREN)
         vbox_cp = wx.BoxSizer()
         catalog = Catalog()
-        self._catalog_tree = CatalogTree(self.catalog_panel, root=catalog.modules)
+        self._catalog_tree = CatalogTree(self.catalog_panel, root=catalog.categories)
         wx.EVT_MOUSE_EVENTS(self._catalog_tree.control, self._on_catalog_tree_anytrait_changed)
         
-        self.networks_panel = wx.Panel(self.split, -1, style=wx.BORDER_RAISED | wx.CLIP_CHILDREN)
+        self.networks_panel = wx.Panel(self, -1, style=wx.BORDER_RAISED | wx.CLIP_CHILDREN)
         vbox_np = wx.BoxSizer()
         
-        split.SplitVertically(self.catalog_panel, self.networks_panel, 220)
+#        split.SplitVertically(self.catalog_panel, self.networks_panel, 220)
     
         if wx.Platform != "__WXMAC__":
                 self._notebook = wx.Notebook(self.networks_panel, wx.NewId())
@@ -100,11 +119,11 @@ class DataflowEditorFrame(pydocview.DocTabbedParentFrame):
         vbox_cp.Add(self._catalog_tree.control, 1, wx.EXPAND, 0)
         self.catalog_panel.SetSizer(vbox_cp)
 
-        all_sizer = wx.BoxSizer(wx.VERTICAL)
-        all_sizer.Add(self.split, 1 ,wx.EXPAND, 0)
-        self.SetSizer(all_sizer)
-        #all_sizer.Fit(self)
-        self.Layout()
+#        all_sizer = wx.BoxSizer(wx.VERTICAL)
+#        all_sizer.Add(self.split, 1 ,wx.EXPAND, 0)
+#        self.SetSizer(all_sizer)
+#        all_sizer.Fit(self)
+#        self.Layout()
         
         
 
@@ -136,4 +155,22 @@ class DataflowEditorFrame(pydocview.DocTabbedParentFrame):
 
             return
         evt.Skip()
+        
+        
+    def create_window(self, module):
+        module_panel = wx.Panel(self, -1, size=wx.Size(200,200), style=wx.BORDER_RAISED | wx.CLIP_CHILDREN)
+        self.mgr.AddPane(module_panel, wx.RIGHT, module.label)
+        self.mgr.Update()
+        return module_panel
+    
+    
+    def edit_module_properties(self, module):
+        if (self.ui):
+            self.ui.dispose()
+            self.ui = None
+
+        self.ui = module.edit_traits(parent = self.module_properties_inspector, kind='subpanel')
+        self.module_properties_inspector.GetSizer().Add(self.ui.control, 1, wx.EXPAND, 0)
+            
+        self.module_properties_inspector.GetSizer().Layout()
 

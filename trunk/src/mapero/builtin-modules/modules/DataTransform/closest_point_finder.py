@@ -16,7 +16,7 @@ class closest_point_finder(Module):
 		self.name = 'Closest Point Finder'
 		map_trait = Array(typecode=Int, shape=(None,2))
 		self.op_map = OutputPort(
-								 data_type = map_trait,
+								 data_types = map_trait,
 								 name = 'array_output',
 								 module = self
 								 )
@@ -24,7 +24,7 @@ class closest_point_finder(Module):
 
 		point_set_trait = Array(typecode=Float, shape=(None,3))
 		self.ip_from_point_set = InputPort(
-										   data_type = point_set_trait,
+										   data_types = point_set_trait,
 										   name = 'point_set1',
 										   module = self
 										   )
@@ -32,7 +32,7 @@ class closest_point_finder(Module):
 		self.i_to_point_set = None
 
 		self.ip_to_point_set = InputPort(
-										 data_type = point_set_trait,
+										 data_types = point_set_trait,
 										 name = 'point_set2',
 										 module = self
 										 )
@@ -40,7 +40,7 @@ class closest_point_finder(Module):
 		self.i_from_point_set = None
 
 
-	def update(self, input_port, old, new):
+	def execute(self):
 		if input_port == self.ip_from_point_set:
 			self.i_from_point_set = input_port.data
 		if input_port == self.ip_to_point_set:

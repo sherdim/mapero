@@ -18,7 +18,7 @@ class pointset_reader(Module):
 		self.name = 'PointSet Reader'
 		point_set_trait = Array(typecode=Float, shape=(None,3))
 		self.op_point_set = OutputPort(
-									   data_type = point_set_trait,
+									   data_types = point_set_trait,
 									   name = 'array_output',
 									   module = self
 									   )

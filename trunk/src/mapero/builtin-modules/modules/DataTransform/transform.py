@@ -14,7 +14,7 @@ class transform(Module):
 		super(transform, self).__init__(**traits)
 		self.name = 'Geometric Mapper'
 		self.op_point_set = OutputPort(
-									   data_type = list,
+									   data_types = list,
 									   name = 'array_output',
 									   module = self
 									   )
@@ -22,7 +22,7 @@ class transform(Module):
 
 		matrix_trait = Array(typecode=Float, shape=(4,4))
 		self.ip_matrix = InputPort(
-								   data_type = matrix_trait,
+								   data_types = matrix_trait,
 								   name = 'matrix_map',
 								   module = self
 								   )
@@ -31,14 +31,14 @@ class transform(Module):
 
 		point_set_trait = Array(typecode=Float, shape=(None,3))
 		self.ip_point_set = InputPort(
-									  data_type = point_set_trait,
+									  data_types = point_set_trait,
 									  name = 'point_set',
 									  module = self
 									  )
 		self.input_ports.append(self.ip_point_set)
 		self.i_point_set = None
 
-	def update(self, input_port, old, new):
+	def execute(self):
 		if input_port == self.ip_point_set:
 			self.i_point_set = input_port.data
 		if input_port == self.ip_matrix:

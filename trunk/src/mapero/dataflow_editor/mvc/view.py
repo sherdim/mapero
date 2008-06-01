@@ -15,8 +15,6 @@ from mapero.dataflow_editor.ui.shape.diagram import DataflowDiagram
 from mapero.dataflow_editor.ui.interactor.keyboard import KeyboardInteractor
 from mapero.dataflow_editor.ui.interactor.mouse import MouseInteractor
 from mapero.dataflow_editor.ui.shape.module_shape import ModuleShape
-from enthought.traits.api import HasTraits, Code
-from enthought.traits.ui.api import Item, Group, View
 from enthought.traits.ui.menu import Menu, Action, Separator
 from mapero.dataflow_editor.ui.shape.connection_shape import ConnectionShape
 
@@ -79,7 +77,7 @@ class DataflowView(docview.View):
 
     
     def edit_code(self):
-        module_editor = ModuleEditor(self.selected_modules)
+        module_editor = ModuleEditor(self.selected_modules, self.controller)
         module_editor.configure_traits()
     
     def show_module_help(self):
@@ -94,7 +92,7 @@ class DataflowView(docview.View):
                     Action( name = _('Paste'), enabled=False ),
                     Action( name = _('Delete'), enabled=delete_enabled, on_perform=self.delete_selection ),
                     Separator(),
-#                    Action( name = _('Refresh'), on_perform=self.refresh_module , enabled=self.is_only_one_module_selected() ),
+                    Action( name = _('Refresh'), on_perform=self.refresh_module , enabled=self.is_only_one_module_selected() ),
                     Action( name = _('Edit Code'), on_perform=self.edit_code, enabled=self.is_only_one_module_selected() ),
                     Separator(),
                     Action( name = _('Help'), on_perform=self.show_module_help, enabled=self.is_only_one_module_selected() )
@@ -113,8 +111,7 @@ class DataflowView(docview.View):
 
 
     def _BuildDiagramCtrl(self, parent, font, color = wx.BLACK, value = "", selection = [0, 0]):
-        module_manager = self.controller.module_manager
-        diagramCtrl = DataflowDiagram(parent, module_manager, None, self)
+        diagramCtrl = DataflowDiagram(parent, None, self)
         return diagramCtrl
 
 
@@ -349,4 +346,6 @@ class DataflowView(docview.View):
         delete_selection_command = DeleteSelectionCommand(doc, self.selected_modules, self.selected_connections)
         doc.GetCommandProcessor().Submit(delete_selection_command)
 
+    def refresh_module(self):
+        self.controller.refresh_module(self.selected_modules[0]) 
 

@@ -20,7 +20,7 @@ class text_file_reader(Module):
 
 		list_string_trait = List(Str)
 		self.op_lines = OutputPort(
-								   data_type =  list_string_trait,
+								   data_types =  list_string_trait,
 								   name = 'lines', 
 								   module = self
 								   )

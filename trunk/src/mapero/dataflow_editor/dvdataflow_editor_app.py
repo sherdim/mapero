@@ -33,12 +33,13 @@ class DataflowEditorApplication(pydocview.DocApp):
 
 
     def OnInit(self):
-        # Call the super - this is important!!!
-        pydocview.DocApp.OnInit(self)
 
         # Show the splash dialog while everything is loading up
         if os.path.exists(DataflowEditorApplication.SPLASH):
                 self.ShowSplash(DataflowEditorApplication.SPLASH)
+
+        # Call the super - this is important!!!
+        pydocview.DocApp.OnInit(self)
 
         # Set the name and the icon
         self.SetAppName(_("Mapero DataflowEditor"))
@@ -71,7 +72,7 @@ class DataflowEditorApplication(pydocview.DocApp):
 
         #optionsService        = self.InstallService(pydocview.DocOptionsService(supportedModes=docview.DOC_SDI))
         # Install the DataflowEditor's option panel into the OptionsService
-        #optionsService.AddOptionsPanel(DataflowEditor.DataflowOptionsPanel)
+        #optionsService.AddOptionsPanel(pydocview.FilePropertiesService())
 
         # If it is an MDI app open the main frame
         self.OpenMainFrame()

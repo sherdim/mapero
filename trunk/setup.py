@@ -11,7 +11,7 @@ setup(
 
     dependency_links = [
         'http://code.enthought.com/enstaller/eggs/source',
-        'http://code.enthought.com/enstaller/eggs/source/unstable',
+        #'http://code.enthought.com/enstaller/eggs/source/unstable',
         ],
 
     install_requires = ['enthought.chaco2>=2.0a1',
@@ -20,9 +20,10 @@ setup(
                         'enthought.persistence>=2.0a1',
                         'threadec>=0.1',
                         'decorator>=2.2',
-                        'wxPython>=2.6',
-                        'numpy>=1.0.2',
+#                        'wxPython>=2.6',
+#                        'numpy>=1.0.2',
                         'scipy>=0.5',
+                        'IoC',
                         ],
 
 

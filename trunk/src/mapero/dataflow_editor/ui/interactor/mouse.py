@@ -1,12 +1,15 @@
 
 from base import BaseInteractor
 import mapero.dataflow_editor.mvc.commands as commands
+import IoC
 
 import wx
 import logging
 log = logging.getLogger("mapero.logger.mvc");
 
 class MouseInteractor(BaseInteractor):
+    module_properties_inspector = IoC.ManagedRequirement("module_properties_inspector")
+
     def __init__(self, document, view):
         super(MouseInteractor, self).__init__(document, view, 'mouse_interactor')
         
@@ -50,4 +53,4 @@ class MouseInteractor(BaseInteractor):
                 
 
     def edit_module(self, module):
-        module.edit_traits(parent=self.view.frame, kind='livemodal')
+        self.module_properties_inspector.edit_module_properties(module)

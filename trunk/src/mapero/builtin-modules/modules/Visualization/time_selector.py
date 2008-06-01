@@ -64,7 +64,7 @@ class Timer:
         self.__alive = False
         
 class time_selector(VisualModule):
-    """ modulo de prueba uno """
+    """ modulo de prueba uno a"""
 
     h = traits.Range(2,100)
     a = traits.Float(2.0)
@@ -82,7 +82,7 @@ class time_selector(VisualModule):
 
         values_trait = traits.Array(typecode=Float, shape=(None,None))
         self.ip_values = InputPort(
-                                   data_type = values_trait,
+                                   data_types = values_trait,
                                    name = 'values',
                                    module = self
                                    )
@@ -90,7 +90,7 @@ class time_selector(VisualModule):
         self.i_values = None
 
         self.ip_metadata = InputPort(
-                                     data_type = traits.Str,
+                                     data_types = traits.Str,
                                      name = 'metadata',
                                      module = self
                                      )
@@ -99,7 +99,7 @@ class time_selector(VisualModule):
 
         selected_values_trait =  traits.Array(typecode=Float, shape=(None,1))
         self.op_selected_values = OutputPort(
-                                             data_type = selected_values_trait,
+                                             data_types = selected_values_trait,
                                              name = 'selected values',
                                              module = self
                                              )
@@ -122,20 +122,18 @@ class time_selector(VisualModule):
     def update_ranges(self):
         log.debug(" fm: %s   time_factor: %s" % (self.fm, self.time_factor))
         selection = self.range_selection.selection
-        self.range_selection.selection = (selection[0] +10, selection[1] +10)
+        self.range_selection.selection = (selection[0] +1, selection[1] +1)
         print " selection:  ", selection
         
     def _column_changed(self, value):
         if self.range_selection != None:
             self.range_selection.selection = (value,value)
 
-    def update(self, input_port, old, new):
-        if input_port == self.ip_values:
-            self.i_values = input_port.data
+    def execute(self):
+        self.i_values = self.ip_values.data
         if (self.i_values != None) :
             self.process()
 
-    @threaded_process
     def process(self):
         i_values = self.i_values
         self.progress = 0

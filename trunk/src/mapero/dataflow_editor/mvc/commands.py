@@ -1,16 +1,17 @@
-import wx.lib
+import wx
+from wx.lib import docview 
 
 _ = wx.GetTranslation
 import logging
 
 log = logging.getLogger('mapero.logger.mvc')
 
-class SimpleDVCommand(wx.lib.docview.Command):
+class SimpleDVCommand(docview.Command):
     def __init__(self, name, dataflow_document):
         self.dataflow_document = dataflow_document
         self.controller = dataflow_document.controller
 
-        wx.lib.docview.Command.__init__(self, True, _(name))
+        docview.Command.__init__(self, True, _(name))
 
     def Do(self):
         doc = self.dataflow_document
@@ -56,17 +57,18 @@ class DeleteSelectionCommand(SimpleDVCommand):
 
     def SimpleDo(self):
             controller = self.controller
-            for module_state in self.states['network_state'].modules:
-                controller.remove_module(module_state.id)
-            for connection_state in self.states['network_state'].connections:
+            for connection_state in self.states['network'].connections:
                 controller.remove_connection(connection_state.id)
-
+            for module_state in self.states['network'].modules:
+                controller.remove_module(module_state.id)
+                
             return True
 
     def SimpleUndo(self):
             controller = self.controller
-            for module, geometrics in self.modules_with_geometrics.items():
-                controller.add_module(module, geometrics.x, geometrics.y, geometrics.w, geometrics.h)
+            
+            controller.set_network_state(self.states, create_elements = True)
+                
             return True
 
 class SimpleDVModuleCommand(SimpleDVCommand):

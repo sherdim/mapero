@@ -26,7 +26,7 @@ class inverse_solution(Module):
 
         lead_field_trait = Array(typecode=Float, shape=(None,None))
         self.ip_lead_field_avg = InputPort(
-                                           data_type = lead_field_trait,
+                                           data_types = lead_field_trait,
                                            name = 'lead field avg',
                                            module = self
                                            )
@@ -35,24 +35,22 @@ class inverse_solution(Module):
 
         inverse_solution_trait = Array(typecode=Float, shape=(None,None))
         self.op_inverse_solution = OutputPort(
-                                              data_type = inverse_solution_trait,
+                                              data_types = inverse_solution_trait,
                                               name = 'inverse solution',
                                               module = self
                                               )
         self.output_ports.append(self.op_inverse_solution)
 
 
-    def update(self, input_port, old, new):
-        if input_port == self.ip_lead_field_avg:
-            self.i_lead_field_avg = input_port.data
+    def execute(self):
+        self.i_lead_field_avg = self.ip_lead_field_avg.data
         if (self.i_lead_field_avg != None):
             self.process()
             
 
 
-    @threaded_process
     def process(self):
-	self.progress = 0
+        self.progress = 0
         def calqomega_x_i(K):
             sum = K.sum(0)
             sum2 = array(square(sum))

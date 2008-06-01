@@ -25,7 +25,7 @@ class binary_operator(Module):
 
 		matrix_trait = Array(typecode=Float, shape=(None,None))
 		self.ip_first_matrix = InputPort(
-										 data_type = matrix_trait,
+										 data_types = matrix_trait,
 										 name = 'first matrix',
 										 module = self
 										 )
@@ -33,7 +33,7 @@ class binary_operator(Module):
 		self.i_first_matrix = None
 
 		self.ip_second_matrix = InputPort(
-										  data_type = matrix_trait,
+										  data_types = matrix_trait,
 										  name = 'second matrix',
 										  module = self
 										  )
@@ -42,23 +42,20 @@ class binary_operator(Module):
 
 
 		self.op_output_matrix = OutputPort(
-										   data_type = matrix_trait,
+										   data_types = matrix_trait,
 										   name = 'output matrix',
 										   module = self
 										   )
 		self.output_ports.append(self.op_output_matrix)
 
 
-	def update(self, input_port, old, new):
-		if input_port == self.ip_first_matrix:
-			self.i_first_matrix = input_port.data
-		if input_port == self.ip_second_matrix:
-			self.i_second_matrix = input_port.data
+	def execute(self):
+		self.i_first_matrix = self.ip_first_matrix.data
+		self.i_second_matrix = self.ip_second_matrix.data
 		if (self.i_first_matrix != None)  \
 			and ( self.i_second_matrix != None) :
 			self.processar()
 
-	@threaded_process
 	def processar(self):
 		self.progress = 0
 		print "binary operator ..."
