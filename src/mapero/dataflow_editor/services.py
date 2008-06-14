@@ -1,0 +1,2 @@
+
+ICATALOG = 'service://mapero.catalog'
