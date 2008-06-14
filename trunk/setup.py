@@ -24,12 +24,18 @@ setup(
 #                        'numpy>=1.0.2',
                         'scipy>=0.5',
                         'IoC',
+                        'enthought.envisage>=2.0.3',
+			'enthought.plugins.python_shell>=2.0.3',
+			'enthought.plugins.text_editor>=2.0.4',
+			'enthought.plugins.debug>=2.0.3',
+			'enthought.mayavi>=2.1',
                         ],
 
 
     entry_points = {
         'console_scripts': [
             'mapero-dfe = mapero.dataflow_editor.dvdataflow_editor_app.py',
+            'env-mapero-dfe = mapero.dataflow_editor.run',
         ]
     },
 
