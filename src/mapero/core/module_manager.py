@@ -1,3 +1,4 @@
+from mapero.core.network import MoreThanOneModuleInNetworkWithTheSameIDError
 from mapero.core.network import Network
 from mapero.core.connection import Connection
 from mapero.core.catalog import Catalog
@@ -5,35 +6,19 @@ from enthought.traits import api as traits
 from enthought.persistence import state_pickler
 from enthought.persistence.state_pickler import StateSetterError
 #from enthought.developer.helper.fbi import fbi
-import gc
+#import gc
 import sys
 
 import logging
 log = logging.getLogger("mapero.logger.engine");
 
 
-class ModuleNotFoundInNetworkError(Exception):
-    def __init__(self, value):
-        self.value = value
-    def __str__(self):
-        return repr(self.value)
 
-class MoreThanOneModuleInNetworkWithTheSameIDError(Exception):
-    def __init__(self, value):
-        self.value = value
-    def __str__(self):
-        return repr(self.value)
-    
-class ConnectionNotFoundInNetworkError(Exception):
-    def __init__(self, value):
-        self.value = value
-    def __str__(self):
-        return repr(self.value)
 
 class ModuleManager(traits.HasTraits):
     """ Module Manager Class """
 
-    catalog = traits.Instance(Catalog, Catalog())
+    catalog = traits.Instance(Catalog)
     network = traits.Instance(Network)
     
     def __init__(self, **traits):
@@ -42,40 +27,7 @@ class ModuleManager(traits.HasTraits):
             self.network = Network()
         self.catalog.refresh()
 
-    def get_module_by_label(self, module_label):
-        for module in self.network.modules:
-            if module.label == module_label:
-                return module
-        raise ModuleNotFoundInNetworkError(module_label)
-        
-    def get_module_by_id(self, module_id):
-        for module in self.network.modules:
-            if module.id == module_id:
-                return module
-        raise ModuleNotFoundInNetworkError(module_id)
 
-        
-    def get_connection_by_id(self, connection_id):
-        for connection in self.network.connections:
-            if connection.id == connection_id:
-                return connection
-        raise ConnectionNotFoundInNetworkError(connection_id)
-        
-    def get_module(self, module):
-        if isinstance(module,str):
-            return self.get_module_by_label(module)
-        else:
-            if self.network.modules.index(module) > -1:
-                return module
-            else:
-                raise ModuleNotFoundInNetworkError(str(module))
-
-
-    def has_module(self, module_label):
-        for module in self.network.modules:
-            if module.label == module_label:
-                return True
-        return False
 
     def add(self, module_canonical_name, label = '', module = None):
         log.debug( 'module_canonical_name: %s - label: %s ' % ( module_canonical_name, label) )
@@ -90,8 +42,8 @@ class ModuleManager(traits.HasTraits):
             module.start_module()
             module_prefix_key = label and label or module.label
             module_key = module_prefix_key
-            if self.has_module(module_key):
-                while (self.has_module(module_key)):
+            if self.network.has_module(module_key):
+                while (self.network.has_module(module_key)):
                     module_number+=1
                     module_key = module_prefix_key+str(module_number)
             module.label = module_key
@@ -102,7 +54,7 @@ class ModuleManager(traits.HasTraits):
             print "asdcasdca"
         
     def remove(self, module_label):
-        module = self.get_module(module_label)
+        module = self.network.get_module(module_label)
         self.disconnect_module(module_label)
         module.stop_module()
         self.network.modules.remove(module)
@@ -118,7 +70,7 @@ class ModuleManager(traits.HasTraits):
     def reload(self, module): ## todavia no funciona
         module_connections = []
 
-        module = self.get_module(module)
+        module = self.network.get_module(module)
         if module:
             for connection in self.network.connections:
                 if connection.input_port.module == module or connection.output_port.module == module:
@@ -146,8 +98,8 @@ class ModuleManager(traits.HasTraits):
             return new_module
 
     def connect(self, module_label_from, module_port_form , module_label_to, module_port_to):
-        module_from = self.get_module(module_label_from)
-        module_to = self.get_module(module_label_to)
+        module_from = self.network.get_module(module_label_from)
+        module_to = self.network.get_module(module_label_to)
         port_from = module_from.get_output(module_port_form)
         port_to = module_to.get_input(module_port_to)
 
@@ -166,8 +118,8 @@ class ModuleManager(traits.HasTraits):
 
 
 #    def disconnect(self, module_label_from, module_port_form , module_label_to, module_port_to):
-#        module_from = self.get_module(module_label_from)
-#        module_to = self.get_module(module_label_to)
+#        module_from = self.network.get_module(module_label_from)
+#        module_to = self.network.get_module(module_label_to)
 #        port_from = module_from.get_output(module_port_form)
 #        port_to = module_to.get_input(module_port_to)
 #        for connection in self.network.connections:
@@ -178,23 +130,11 @@ class ModuleManager(traits.HasTraits):
         self.network.connections.remove(connection)
         
     def disconnect_module(self, module):
-        connections = self.get_module_connections(module)
+        connections = self.network.get_module_connections(module)
         for connection in connections:
             self.network.connections.remove(connection)
             
-    def get_module_connections(self, module):
-        module = self.get_module(module)
 
-        def filter_connections(connection):
-            if (connection.input_port.module == module            \
-                        or connection.output_port.module == module):
-                return True
-            else:
-                return False
-
-        connections = filter(filter_connections, self.network.connections)
-        return connections
-    
     def set_network_state(self, state, create_elements=True):
         network = self.network
         def get_module(module_id):

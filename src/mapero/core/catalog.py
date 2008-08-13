@@ -1,6 +1,6 @@
-from mapero.core.module import Module
 import mapero.modules
 import mapero.datatypes
+from mapero.core.module import Module
 from enthought.traits import api as traits
 from os.path import abspath, join, split, isfile, realpath, walk
 import os 
@@ -72,6 +72,7 @@ class Catalog(traits.HasTraits):
     categories = traits.List(Categorie)
 
     def __init__(self, **traits):
+        print "__init__"
         super(Catalog, self).__init__(**traits)
         self.dirs.append(builtin_modules)
 #        mapero.__path__ = mapero.__path__ + self.dirs
@@ -81,7 +82,7 @@ class Catalog(traits.HasTraits):
         self.refresh()
 
     def refresh(self):
-        
+        print "refreshing ..."
         def _inspect_dir (arg, dir_name, names):
             for entry in dir_name.split(os.sep):
                 if entry.startswith("."):
@@ -199,15 +200,15 @@ class Catalog(traits.HasTraits):
                     _recorrer_categories(new_categorie, tail_cats, module)
                  
         py_name = py_module.__name__
-        modules_name =mapero. modules.__name__
+        modules_name = mapero. modules.__name__
         i = py_name.rfind('.')
         module_name = py_name[i+1:]
         categories = py_name[len(modules_name)+1:i].split('.')
         
-#        print "========"
-#        print "module_name: ", module_name
-#        print "categories: ", categories 
-#        print "========"
+        print "========"
+        print "module_name: ", module_name
+        print "categories: ", categories 
+        print "========"
         mapero_module = get_mapero_module(py_module)
         _recorrer_categories(None, categories, mapero_module)
     
