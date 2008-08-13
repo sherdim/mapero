@@ -49,7 +49,7 @@ class MetaModule ( traits.MetaHasTraits ):
         
     def __call__(cls, *args):
         inst = super(MetaModule, cls).__call__( *args )
-        print inst
+        print "inst", inst
         MetaModule.init_ports(inst)
         return inst
     
@@ -61,10 +61,12 @@ class MetaModule ( traits.MetaHasTraits ):
                 attr.name = attr_name
                 attr.module = module
                 module.input_ports.append(attr)
+                print "attr.name" , attr.name
             if isinstance(attr, OutputPort):
                 attr.name = attr_name
                 attr.module = module
                 module.output_ports.append(attr)
+                print "attr.name" , attr.name
         
 
 ######################################################################
@@ -78,11 +80,11 @@ class Module(traits.HasTraits):
     __version__ = 1.0
     
     id = traits.Int(None)
-    label = traits.Str
+    label = traits.Str('None')
     progress = traits.Range(0,100)
     
-    input_ports = traits.List(InputPort)
-    output_ports = traits.List(OutputPort)
+    input_ports = traits.List(InputPort, [])
+    output_ports = traits.List(OutputPort, [])
 
     #logs = Dict(Str, Str)
 
