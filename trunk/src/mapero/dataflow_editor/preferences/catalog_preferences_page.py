@@ -10,8 +10,8 @@ from enthought.traits.api import Color, Bool, Font, List, Directory, Str
 from enthought.traits.ui.api import View, Item, Group
 
 # Local imports.
-from mapero.dataflow_editor.services import ICATALOG
-from mapero.dataflow_editor.mapero_dataflow_plugin import DataflowEditorPlugin
+from env_mapero.dataflow_editor.services import ICATALOG
+from env_mapero.dataflow_editor.mapero_dataflow_plugin import DataflowEditorPlugin
 
 ##############################################################################
 # `CatalogPreferencesPage` class.
