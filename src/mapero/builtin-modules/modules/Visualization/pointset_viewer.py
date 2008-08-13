@@ -1,6 +1,5 @@
 from mapero.core.module import Module
 from mapero.core.port import OutputPort, InputPort
-from mapero.dataflow_editor.decorators.thread import threaded_process
 from numpy.oldnumeric.precision import Float
 from enthought.traits import api as traits
 from enthought.traits.ui.api import Group
@@ -10,7 +9,7 @@ from enthought.tvtk.tvtk_base import vtk_color_trait
 module_info = {'name': 'Visualization.pointset_viewer',
 				 'desc': "read an array of points in its array_input port and generate sphere actors in its actors_output"}
 
-class pointset_viewer(Module):
+class PointsetViewer(Module):
 	""" modulo de prueba uno """
 	radius = traits.Range(1.0, 10.0, 2.0)
 	color = vtk_color_trait((1.0, 1.0, 1.0))

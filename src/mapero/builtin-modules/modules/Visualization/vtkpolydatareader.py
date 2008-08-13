@@ -1,9 +1,7 @@
 from mapero.core.module import Module
 from mapero.core.port import OutputPort, InputPort
-from mapero.dataflow_editor.decorators.thread import invoke_later
 from enthought.traits.api import Range, Int, Instance, File
 from enthought.traits.ui.api import View, Group
-from enthought.pyface.tvtk.decorated_scene import DecoratedScene
 from enthought.tvtk.api import tvtk
 
 import types
@@ -30,7 +28,6 @@ class vtkpolydatareader(Module):
         self.output_ports.append(self.out1)
 
 
-    @invoke_later
     def process(self):
         print "processing ..."
         self.progress = 0

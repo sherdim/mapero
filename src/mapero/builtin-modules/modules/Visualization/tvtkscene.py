@@ -1,10 +1,9 @@
 from mapero.core.module import VisualModule
 from mapero.core.port import MultiInputPort
-from mapero.dataflow_editor.decorators.thread import invoke_later
 from enthought.traits.api import Instance
 from enthought.traits.ui.api import Group, Item
 from enthought.pyface.gui import GUI
-from enthought.pyface.tvtk.decorated_scene import DecoratedScene
+from enthought.tvtk.pyface.decorated_scene import DecoratedScene
 
 import types
 
