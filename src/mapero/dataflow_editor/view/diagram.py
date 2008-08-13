@@ -1,177 +1,260 @@
-from mapero.dataflow_editor.ui.shape.module_shape import ModuleShape
-from mapero.dataflow_editor.ui.shape.module_shape import PortShape
-from mapero.dataflow_editor.ui.shape.connection_shape import ConnectionShape
+from mapero.dataflow_editor.view.graphic_dataflow_model import GraphicDataflowModel
+from mapero.dataflow_editor.view.module_geometrics import ModuleGeometrics
+from math import pi
+from enthought.traits.api import Bool, Float,Instance, on_trait_change, TraitListEvent, Dict, WeakRef, List, Str, Any
+from enthought.enable.api import Label, Component, Container, Canvas, Viewport, Window, Scrolled, Pointer, str_to_font
+from enthought.enable.tools.api import MoveTool, ViewportPanTool
 
-import wx
-import wx.lib.ogl as ogl
-import logging
+CURRENT_SELECTION_VIEW = 'mapero.dataflow_editor.view.current_selection'
 
-log = logging.getLogger('mapero.logger.diagram')
+def round_rect(gc, radio=5, position=[100,100], bounds=[100,60], inset=3):
+    dx, dy = bounds
+    x, y = position
+    x+=inset
+    y+=inset
+    dx-=2*inset
+    dy-=2*inset
+    gc.move_to( x+radio, y+dy)
+    gc.line_to( x+dx-radio, y+dy)
+    gc.arc_to( x+dx, y+dy, x+dx, y+dy-radio, radio )
+    gc.line_to( x+dx, y+radio)
+    gc.arc_to(x+dx, y, x+dx-radio, y, radio)
+    gc.line_to( x+radio, y)
+    gc.arc_to( x, y, x, y+radio, radio)
+    gc.line_to( x, y+dy-radio )
+    gc.arc_to( x, y+dy, x+radio, y+dy, radio)
 
-ID_MOUSE_MOVE = 101
+class PortComponent(Component):
+    fill_color = (0.5, 0.5, 0.5, 1.0)
+    text_color = (0.0, 0.0, 0.0, 1.0)
+    padding = 0
+    bgcolor = 'transparent'
+    bounds=[10,10]
+    port = WeakRef()
+    angle = Float(0.0)
+    port_name = Str
+    _font = Any
+    def _draw_mainlayer(self, gc, view_bounds=None, mode="default"):
+        dx, dy = self.bounds
+        x, y = self.position
+        gc.save_state()
+        gc.translate_ctm(x+dx/2, y+dy/2)
+        if (self.angle != 0.0):
+            gc.rotate_ctm(self.angle)
+        gc.set_fill_color(self.fill_color)
+        gc.move_to(dx/2, dy/2)
+        gc.line_to(dx/2, -dy/2)
+        gc.line_to(dx*0.1, -dy*0.30)
+        gc.line_to(-dx/2, -dy*0.30)
+        gc.line_to(-dx/2, dy*0.30)
+        gc.line_to(dx*0.1, dy*0.30)
+        gc.line_to(dx/2, dy/2)
+        gc.fill_path()
 
+        if self.port_name:
+            if not self._font:
+                self._font = str_to_font(None, None, "modern 8")
+            gc.set_font(self._font)
+            (x,y,w,h) = gc.get_text_extent(self.port_name)
+            if self.angle > pi/2:
+                gc.translate_ctm((-2*dx -w), 0)
+                gc.rotate_ctm(self.angle)
+            gc.set_fill_color(self.text_color)
+            gc.set_text_position(-dx -w, -h/2)
+            gc.show_text(self.port_name)
 
-class ModuleNameDropTarget(wx.TextDropTarget):
-    def __init__(self, parent):
-        wx.TextDropTarget.__init__(self)
-        self.parent = parent
-
-    def OnDropText(self, x, y, data):
-        print data
-        self.parent.add_module(x, y, data.strip())
-
-
-class DataflowDiagram(ogl.Diagram):
-    def __init__(self, parent, module_manager=None, prop_editor=None, view=None):
-        ogl.Diagram.__init__(self)
-        canvas = ogl.ShapeCanvas(parent)
-        self.SetCanvas(canvas)
-        canvas.SetDiagram(self)
-        canvas.SetBackgroundColour(wx.Colour(233,221,175))
-        canvas.SetDropTarget(ModuleNameDropTarget(self))
-        wx.EVT_MOUSE_EVENTS(canvas, self.OnMouseEvent)
-        #self.view = view
-
-
-        canvas.SetScrollbars(20,20,2000,1000,0,0,True)
-        self.ui_selected = None
-
-        self.prop_editor = prop_editor
-
-        self.module_shapes= []
-        self.connection_shapes = []
-        self.from_here = False
-        self.module_selected = None
-        log.debug( "starting diagram !!!" )
+        gc.restore_state()
+        return
+    
+    def normal_mouse_enter(self, event):
+        self.port_name = self.port.name
+        self.request_redraw()
         
-    def OnMouseEvent(self, evt):
-        canvas = self.GetCanvas()
-        dc = wx.ClientDC(canvas)
-        canvas.PrepareDC(dc)
-        x, y = evt.GetLogicalPosition(dc)
-        (winx, winy) = evt.GetPositionTuple()
-        shape = canvas.FindShape(x, y)[0]
-
-#        if shape != None:
-#            if not hasattr(self, "popup"):
-#                popup = InformationPopup(canvas, shape)
-#                self.popup = popup
-#                pos = canvas.ClientToScreen((winx,winy))
-#                print pos
-#                popup.Position(pos, (0,-10))
-#                popup.Show()
-#        else:
-#            if hasattr(self, "popup"):
-#                self.popup.Destroy()
-#                del self.popup
-
-        canvas.OnMouseEvent(evt)
-
-    def move_module(self, module, mx, my):
-        pass
-        #self.view.move_module(module, mx, my)
-
-    def get_port_shape(self, port):
-        for module_gui in self.modules_gui:
-            for input_port_shape in module_gui.module_shape.input_port_shapes:
-                if port == input_port_shape.port:
-                    return input_port_shape
-        for output_port_shape in module_gui.module_shape.output_port_shapes:
-                if port == output_port_shape.port:
-                    return output_port_shape
-
-    def get_module_shape(self, module):
-        for module_shape in self.module_shapes:
-            if module_shape.module == module:
-                return module_shape
-        return None
-
-    def get_connection_shape(self, connection):
-        for connection_shape in self.connection_shapes:
-            if connection_shape.connection == connection:
-                return connection_shape
-        return None
-
-
-
-    def add_module(self, x, y, module_name):
-        cx, cy = self.GetCanvas().CalcUnscrolledPosition(x,y)
-        print cx,cy
-        #self.view.add_module(module_name, cx, cy)
-
-    def add_module_shape(self, module, geometrics):
-        module_shape = ModuleShape(module)
-        module_shape.SetCanvas(self.GetCanvas())
-        module_shape.Show(True)
-        self.AddShape(module_shape)
-        self.module_shapes.append(module_shape)
-        module_shape.UpdateModule()
-        module_shape.SetGeometrics(geometrics)
+    def normal_mouse_leave(self, event):
+        self.port_name = ''
+        self.request_redraw()
         
-    def remove_module_shape(self, module):
-        log.debug("removing module_shape for module : %s " % (module))
-        module_shape = self.get_module_shape(module)
-        for input_port_shape in module_shape.input_port_shapes:
-            self.RemoveShape(input_port_shape)
-        for output_port_shape in module_shape.output_port_shapes:
-            self.RemoveShape(output_port_shape)
 
-        self.RemoveShape(module_shape)
-        self.module_shapes.remove(module_shape)
+class ModuleComponent(Container):
+
+    normal_pointer = Pointer("arrow")
+    moving_pointer = Pointer("hand")
+  
+    fill_color = (0.9, 0.77, 0.14, 1.0)
+    moving_color = (0.0, 0.8, 0.1, 1.0)
+    line_color = (0.1, 0.1, 0.1, 0.5)
+    
+
+    selected = Bool(False)
+    
+    padding = 10
+    resizable = ""
+    bgcolor = 'transparent'
+    
+    diagram = Any
+    module_geom = WeakRef(ModuleGeometrics)
+    port_components = List(PortComponent, [])
+    label = Label
+    
+    port_min_separation = 5
+    
+    def __init__(self, module_geom , **traits):
+        super(ModuleComponent, self).__init__(**traits)
+        self.position = [module_geom.x, module_geom.y]
+        self.bounds = [module_geom.w, module_geom.h]
+        self.module_geom = module_geom
+        self.label = Label(text="Module", 
+                           position = [self.bounds[0]/7, self.bounds[1]/1.4],
+                           bounds=self.bounds )
+        self.add( self.label )
+
+        self.tools.append(MoveTool(self))
+        self._set_ports()
+        self._set_label()
         
-    def remove_connection_shape(self, connection):
-        log.debug("removing connection_shape for connection : %s " % (connection))
-        connection_shape = self.get_connection_shape(connection)
-        module_shape_from = self.get_module_shape(connection.output_port.module)
-        module_shape_from.RemoveLine(connection_shape)
+
+    @on_trait_change('module_geom.module.input_ports_items')
+    def module_input_ports_changed(self, event):
+        print "module_input_ports_changed", event
         
-        log.debug("connection_shape founded : %s " % (connection_shape) )
- 
-        self.RemoveShape(connection_shape)
-        self.connection_shapes.remove(connection_shape)
+    @on_trait_change('module_geom.module.output_ports_items')
+    def module_output_ports_changed(self, event):
+        print "module_out_ports_changed", event
 
-    def add_connection_shape(self, connection):
-        connection_shape = ConnectionShape(connection)
-        connection_shape.SetCanvas(self.GetCanvas())
+    @on_trait_change('module_geom.module.label')
+    def module_label_changed(self, label):
+        self.label.text = label
+        self.request_redraw()
+    
+    @on_trait_change('module_geom.module.progress')
+    def module_progress_changed(self, event):
+        print "module_progress_changed", event
+        
+    def _set_ports(self):
+        for port in self.port_components:
+            self.remove(port)
+        self.port_components = []
+        
+        ## input ports
+        input_ports_len = len(self.module_geom.module.input_ports)
+        sep = self.height / ( input_ports_len + 1)
+        y_port = sep
+        for input_port in self.module_geom.module.input_ports:
+            self.add(PortComponent(port = input_port,
+                                   position=[0 ,y_port],
+                                   angle=pi
+                                   ))
+            y_port += sep
+            
+        ## output ports
+        output_ports_len = len(self.module_geom.module.output_ports)
+        sep = self.height / ( output_ports_len + 1)
+        y_port = sep
+        for output_port in self.module_geom.module.output_ports:
+            self.add(PortComponent(port = output_port,
+                                   position=[self.width-10 ,y_port]
+                                   )) #TODO: port width is hardcoded
+            y_port += sep
 
-        module_shape_to = self.get_module_shape(connection.input_port.module)
-        module_shape_from = self.get_module_shape(connection.output_port.module)
+        self.request_redraw()
+        
+    def _set_label(self):
+        self.label.text = self.module_geom.module.label
+        self.request_redraw()
+        
+        
+        
+        
+        
+    def _draw_container_mainlayer(self, gc, view_bounds=None, mode="default"):
+        gc.save_state()
+        gc.set_fill_color(self.fill_color)
+        gc.set_stroke_color(self.line_color)
+        round_rect(gc, radio=5, position=self.position, bounds=self.bounds)
+        gc.draw_path()
+        gc.restore_state()
+        return
+    
+    def _draw_container_overlay(self, gc, view_bounds=None, mode="default"):
+        if self.event_state=="selected":
+            self.draw_select_box(gc, self.position, self.bounds,
+                                 1, (0.7,0.3,0.7,0.3), 0,
+                                 (0.0,0.0,0.0), (0.0,0.0,0.0), 2)
+    
+    def normal_left_down(self, event):
+        self.event_state = "selected"
+        view = self.diagram.editor.window.get_view_by_id(CURRENT_SELECTION_VIEW)
+        if view:
+            view.obj = self.module_geom.module
+            view.ui.reset()
+            #view.create_control(view.ui.control)
+            self.module_geom.module.edit_traits(parent=view.ui.control, kind='subpanel')
+        self.request_redraw()
+    
+    def selected_left_down(self, event):
+        if event.control_down:
+            self.event_state = "normal"
+            self.request_redraw()
+        
+        
+       
+class MyCanvas(Canvas):
+    bgcolor = (1.0, 0.95, 0.71, 1.0)
+    draw_axes=True
+    
+    def normal_dropped_on(self, event):
+        position = [event.x,event.y]
+        self.window.editor.add_module( event.obj.module_info.clazz.canonical_name, position=position  )
+        
+    def normal_drag_over(self, event):
+        self.window.set_drag_result('copy')
+            
+    
+class Diagram(Window):
+    
+    dataflow_with_geom = Instance(GraphicDataflowModel)
+    
+    canvas = Instance(Canvas)
+    
+    module_geom_component_map = Dict(ModuleGeometrics, ModuleComponent)
+    
+    def normal_drag_over(self, event):
+        print "normal_drag_over"
+    
+    def __init__ ( self, parent, wid = -1, pos = None, size = None, **traits ):
+        super(Diagram, self).__init__(parent, wid, pos, size, **traits)
+        
+        
+        self.canvas = MyCanvas(window=self)
+        viewport = Viewport(component=self.canvas, enable_zoom=True)
+        viewport.view_position = [0,0]
+        viewport.tools.append(ViewportPanTool(viewport))
 
-        attach_to = module_shape_to.get_port_attachment(connection.input_port)
-        attach_from = module_shape_from.get_port_attachment(connection.output_port)
+        # Uncomment the following to enforce limits on the zoom
+        viewport.min_zoom = 0.2
+        viewport.max_zoom = 2.0
 
-        module_shape_from.AddLine(connection_shape, module_shape_to, attach_from, attach_to)
+        scrolled = Scrolled(self.canvas, fit_window = True,
+                            inside_padding_width = 0,
+                            mousewheel_scroll = False,
+                            viewport_component = viewport,
+                            always_show_sb = True,
+                            continuous_drag_update = True)
+        
+        self.component = scrolled
+        
+    @on_trait_change('dataflow_with_geom.module_geometrics_items')
+    def modules_changed(self, event):
+        if isinstance(event, TraitListEvent): ## odd
+            for module_geometrics in event.added:
+                mod_component = self.add_module_component(module_geometrics)
+                self.module_geom_component_map[module_geometrics] = mod_component
+            
+    def add_module_component(self, module_geometrics):
+        module_component = ModuleComponent(module_geometrics, diagram=self)
+        self.canvas.add(module_component)
+        self.canvas.invalidate_and_redraw()
+        return module_component
+        
 
-        self.connection_shapes.append(connection_shape)
-        self.AddShape(connection_shape)
-        connection_shape.Show(True)
-
-        self.GetCanvas().Refresh()
-
-    def new_connection(self, x0, y0, x1, y1):
-        port_shape_from = self.GetCanvas().FindShape(x0, y0)[0]
-        port_shape_to = self.GetCanvas().FindShape(x1, y1)[0]
-#        if isinstance(port_shape_from, PortShape) and isinstance(port_shape_to, PortShape) \
-#            and (port_shape_from.isoutput) and not(port_shape_to.isoutput):
-#                self.view.new_connection( \
-#                            port_shape_from.port.module, port_shape_from.port,
-#                port_shape_to.port.module, port_shape_to.port)
-
-    def disconnect(self, module_from, port_name_from, module_to, port_name_to):
-        self.Refresh()
-
-    def edit_module(self, module):
-        self.select_module(module)
-
-    def select_module(self, module):
-#        if self.ui_selected:
-#            self.ui_selected.dispose()
-        self.module_selected = module
-        for module_shape in self.module_shapes:
-            if module_shape.module == module:
-                module_shape.Select(True)
-            else:
-                module_shape.Select(False)
-
-
-            self.GetCanvas().Refresh()
+        

@@ -1,60 +1,124 @@
-#import ez_setup
-#ez_setup.use_setuptools()
+#!/usr/bin/env python
+#
+#
 
-from setuptools import setup, find_packages
+"""
+Mapero
+======
+
+Mapero is a python based framework for creation of dataflow networks
+to build algorithms graphically.
+
+The solution is modeled as an interconnected set of processing modules.
+Simplicity is the main objective, so the creation of new modules is as
+easy as create a python module 
+"""
+
+
+# NOTE: Setuptools must be imported BEFORE numpy.distutils or else
+# numpy.distutils does the Wrong(TM) thing.
+import setuptools
+
+
+from distutils.command.clean import clean
+
+from numpy.distutils import log
+from numpy.distutils.command.build import build as distbuild
+from numpy.distutils.command.install_data import install_data
+from numpy.distutils.core import setup
+from pkg_resources import DistributionNotFound, parse_version, require, \
+    VersionConflict
+from setup_data import INFO
+from setuptools.command.sdist import sdist
+from setuptools.command.develop import develop
+from setuptools.command.install_scripts import install_scripts
+from traceback import print_exc
+import os
+import shutil
+import zipfile
+
+
+##############################################################################
+# Pull the description values for the setup keywords from our file docstring.
+##############################################################################
+DOCLINES = __doc__.split("\n")
+
+
+class my_install_scripts(install_scripts):
+    """ Hook to rename the  mapero script to a Mapero.pyw script on win32.
+    """
+    def run(self):
+        install_scripts.run(self)
+        if os.name != 'posix':
+            # Rename <script> to <script>.pyw. Executable bits
+            # are already set in install_scripts.run().
+            for file in self.get_outputs():
+                if file[-4:] != '.pyw':
+                    if file[-7:] == 'mapero':
+                        new_file = file[:-7] + 'Mapero.pyw'
+                    else:
+                        new_file = os.path.splitext(file)[0] + '.pyw'
+                    self.announce("renaming %s to %s" % (file, new_file))
+                    if not self.dry_run:
+                        if os.path.exists(new_file):
+                            os.remove (new_file)
+                        os.rename (file, new_file)
+
+
+##############################################################################
+# The actual setup call
+##############################################################################
 setup(
-    name = "mapero",
-    version = "0.1a1",
-    
-    package_dir = {'':'src', 'builtin-modules':'src/mapero/builtin-modules'},
-    packages = find_packages('src', 'src/mapero/builtin-modules'),
-
-    dependency_links = [
-        'http://code.enthought.com/enstaller/eggs/source',
-        #'http://code.enthought.com/enstaller/eggs/source/unstable',
-        ],
-
-    install_requires = ['enthought.chaco2>=2.0a1',
-                        'enthought.pyface[tvtk]>=2.0b1',
-                        'enthought.tvtk[wx]>=2.0b1',
-                        'enthought.persistence>=2.0a1',
-                        'threadec>=0.1',
-                        'decorator>=2.2',
-#                        'wxPython>=2.6',
-#                        'numpy>=1.0.2',
-                        'scipy>=0.5',
-                        'IoC',
-                        'enthought.envisage>=2.0.3',
-			'enthought.plugins.python_shell>=2.0.3',
-			'enthought.plugins.text_editor>=2.0.4',
-			'enthought.plugins.debug>=2.0.3',
-			'enthought.mayavi>=2.1',
-                        ],
-
-
-    entry_points = {
-        'console_scripts': [
-            'mapero-dfe = mapero.dataflow_editor.dvdataflow_editor_app.py',
-            'env-mapero-dfe = mapero.dataflow_editor.run',
-        ]
-    },
-
-    package_data = {
-        # If any package contains *.txt or *.rst files, include them:
-        '': ['*.txt'],
-        'mapero.dataflow_editor' : ['*.conf' , '*.png' ],
-        'mapero.dataflow_editor.ui' : ['images/*.png' ],
-    },
-
-    # metadata for upload to PyPI
     author = "Zacarias F. Ojeda",
     author_email = "zojeda@gmail.com",
-    description = "Python based framework for creation of dataflow networks to build algorithms graphically.",
+    classifiers = [c.strip() for c in """\
+        Development Status :: 4 - Beta
+        Intended Audience :: Developers
+        Intended Audience :: Science/Research
+        License :: OSI Approved :: new BSD License
+        Operating System :: MacOS
+        Operating System :: Microsoft :: Windows
+        Operating System :: OS Independent
+        Operating System :: POSIX
+        Operating System :: Unix
+        Programming Language :: Python
+        Topic :: Scientific/Engineering
+        Topic :: Software Development
+        Topic :: Software Development :: Libraries
+        """.splitlines() if len(c.split()) > 0],
+    cmdclass = {
+        # Work around a numpy distutils bug by forcing the use of the
+        # setuptools' sdist command.
+        'sdist': sdist,
+
+        'install_scripts': my_install_scripts,
+        },
+    
+    package_dir = {'':'src'},
+    packages = setuptools.find_packages('src'),
+        
+    dependency_links = [
+        'http://code.enthought.com/enstaller/eggs/source',
+        ],
+    description = DOCLINES[1],
+    entry_points = {
+        'console_scripts': [
+            'env-mapero-dfe = mapero.dataflow_editor.dataflow_editor_app:main',
+            ],
+
+        },
+    extras_require = INFO['extras_require'],
+    include_package_data = True,
+    install_requires = INFO['install_requires'] + INFO['nonets'],
     license = "new BSD",
-    keywords = "hello world example examples",
+    long_description = '\n'.join(DOCLINES[3:]),
+    name = INFO['name'],
+#    namespace_packages = [
+#        "mapero",
+#        ],
+    platforms = ["Windows", "Linux", "Mac OS-X", "Unix", "Solaris"],
     url = "http://mapero.googlecode.com/",
     download_url =   "http://mapero.googlecode.com/svn/trunk/dist",
-    long_description = "The solution is modeled as an interconnected set of processing modules. Simplicity is the main objective, so the creation of new modules is as easy as create a python module",
-    zip_safe = False, 
-    # could also include long_description, download_url, classifiers, etc.
-)
+    version = INFO['version'],
+    zip_safe = False,
+    )

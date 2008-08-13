@@ -1,17 +1,17 @@
-""" A file system tree. """
+""" Catalog tree. """
 
 
 # Enthought library imports.
-from enthought.pyface.image_resource import ImageResource
-from enthought.traits.api import Instance, HasTraits, HasPrivateTraits
+#from enthought.pyface.image_resource import ImageResource
+from enthought.traits.api import Instance, HasPrivateTraits
 
 
 from mapero.core.catalog import Catalog, Categorie, ModuleInfo
-from enthought.envisage.workbench.traits_ui_view import TraitsUIView
-from enthought.traits.ui.api import TreeEditor, TreeNodeObject, ObjectTreeNode, View, Item, Group
+from enthought.traits.ui.api import TreeEditor, TreeNodeObject, ObjectTreeNode, View, Item
 
 
 from mapero.dataflow_editor.services import ICATALOG
+from enthought.pyface.workbench.api import TraitsUIView
 
 class CatalogNode (TreeNodeObject):
     catalog = Instance(Catalog)
@@ -84,7 +84,7 @@ class CategorieNode ( TreeNodeObject ):
                 children.append( CategorieNode(categorie = categorie)  ) 
 
             for module in self.categorie.modules:
-                children.append( ModuleNode(module = module)  ) 
+                children.append( ModuleNode(module_info = module)  ) 
                  
         return children
 #-------------------------------------------------------------------------------
@@ -92,12 +92,12 @@ class CategorieNode ( TreeNodeObject ):
 #-------------------------------------------------------------------------------
         
 class ModuleNode ( TreeNodeObject ):
-    module = Instance(ModuleInfo)
+    module_info = Instance(ModuleInfo)
     #---------------------------------------------------------------------------
     #  Returns whether chidren of this object are allowed or not:  
     #---------------------------------------------------------------------------
     def tno_get_label( self, node ):
-        return self.module.name
+        return self.module_info.name
     
     def tno_allows_children ( self, node ):
         """ Returns whether chidren of this object are allowed or not.
@@ -138,18 +138,14 @@ class CatalogView (HasPrivateTraits):
     )
     
 class CatalogTreeView(TraitsUIView):
-    
     uol = ICATALOG
-    
-
-
-
+    name = 'Catalog'
+    id = 'mapero.dataflow_editor.view.catalog_tree_view'
     
     def create_ui(self, parent):
         """ Creates the traits UI that represents the view. """
-
-        catalog = self._get_target_object()
-        catalog_view = CatalogView(catalog=catalog)
-        return catalog_view.edit_traits(parent=parent, kind='subpanel')
+        catalog = self.obj
+        catalog_view = CatalogView( catalog=catalog )
+        return catalog_view.edit_traits( parent=parent, kind='subpanel' )
     
 ##### EOF #####################################################################
