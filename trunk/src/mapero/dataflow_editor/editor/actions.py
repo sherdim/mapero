@@ -5,9 +5,7 @@
 # License: new BSD Style.
 
 # Enthought library imports.
-from enthought.pyface.api import FileDialog, OK
 from enthought.pyface.action.api import Action
-from enthought.traits.api import Str
 
 # Local imports.
 import logging
@@ -48,8 +46,8 @@ class NewNetwork(Action):
     
     def perform(self, event):
         """ Performs the action. """        
-        from mapero.dataflow_editor.view.dataflow_diagram_editor import DataflowDiagramEditor
-        from mapero.dataflow_editor.view.graphic_dataflow_model import GraphicDataflowModel
+        from mapero.dataflow_editor.editor.api import DataflowDiagramEditor
+        from mapero.dataflow_editor.editor.model.api import GraphicDataflowModel
         editor = self.window.edit(GraphicDataflowModel(), kind=DataflowDiagramEditor)
         
         shell_bind(self.window, editor.id, editor)

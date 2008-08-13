@@ -1,5 +1,8 @@
+# Author: Zacarias Ojeda <zojeda@gmail.com>
+# License: new BSD Style.
+
 # Enthought library imports.
-from enthought.envisage.ui.action.api import Action, ActionSet, Group, Menu
+from enthought.envisage.ui.action.api import Action, ActionSet, Group
 
 #### Groups ###################################################################
 
@@ -19,7 +22,7 @@ view_group = Group(
 #### Actions ##################################################################
 
 new_network = Action(
-    class_name = 'mapero.dataflow_editor.actions.NewNetwork',
+    class_name = 'mapero.dataflow_editor.editor.actions.NewNetwork',
     path       = 'MenuBar/File', group = 'DataflowEditorFileGroup'
 )
 

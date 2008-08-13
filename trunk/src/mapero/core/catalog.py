@@ -72,7 +72,6 @@ class Catalog(traits.HasTraits):
     categories = traits.List(Categorie)
 
     def __init__(self, **traits):
-        print "__init__"
         super(Catalog, self).__init__(**traits)
         self.dirs.append(builtin_modules)
 #        mapero.__path__ = mapero.__path__ + self.dirs
@@ -205,10 +204,10 @@ class Catalog(traits.HasTraits):
         module_name = py_name[i+1:]
         categories = py_name[len(modules_name)+1:i].split('.')
         
-        print "========"
-        print "module_name: ", module_name
-        print "categories: ", categories 
-        print "========"
+#        print "========"
+#        print "module_name: ", module_name
+#        print "categories: ", categories 
+#        print "========"
         mapero_module = get_mapero_module(py_module)
         _recorrer_categories(None, categories, mapero_module)
     
