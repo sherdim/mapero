@@ -1,21 +1,18 @@
 from mapero.core.module import VisualModule
 from mapero.core.port import OutputPort, InputPort
-from mapero.dataflow_editor.decorators.thread import threaded_process
-from enthought.util import numerix
 from numpy.oldnumeric.precision import Float
 from enthought.traits import api as traits
 from enthought.traits.ui.api import Group
-from enthought.chaco2.api import   add_default_axes, add_default_grids, LinearMapper,  ArrayDataSource, MultiArrayDataSource, DataRange1D
-from enthought.chaco2.tools.api import RangeSelection, RangeSelectionOverlay
-from enthought.chaco2.plot_containers import OverlayPlotContainer
-from enthought.util.numerix import array, ArrayType, transpose, cos, sin, matrix
+from enthought.chaco.api import   add_default_axes, add_default_grids, LinearMapper,  ArrayDataSource, MultiArrayDataSource, DataRange1D
+from enthought.chaco.tools.api import RangeSelection, RangeSelectionOverlay
+from enthought.chaco.plot_containers import OverlayPlotContainer
 from scipy.special import *
 
-from enthought.enable2.wx_backend.api import Window
+#from enthought.enable2.wx_backend.api import Window
 
-from mapero.multiline_plot import MultiLinePlot
+#from mapero.multiline_plot import MultiLinePlot
 
-from enthought.util.numerix import linspace
+#from enthought.util.numerix import linspace
 import threading
 
 import wx
@@ -168,7 +165,7 @@ class time_selector(VisualModule):
                 fill_padding = True)
 
         #FIXME: el tiempo esta en duro, tiene que utilizarse la metadata de la senal
-        self.window = Window(self.parent, -1, component=self.container)
+        #self.window = Window(self.parent, -1, component=self.container)
         return self.window.control
 
 

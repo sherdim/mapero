@@ -1,6 +1,5 @@
 from mapero.core.module import Module
 from mapero.core.port import OutputPort, InputPort
-from mapero.dataflow_editor.decorators.thread import threaded_process
 from numpy.oldnumeric.precision import Float
 from enthought.traits.api import File, Array, List, Str
 from enthought.traits.ui.api import  Group
@@ -39,7 +38,6 @@ class text_file_reader(Module):
 
 
 	#TODO: verify the correctness file format and add other formats
-	@threaded_process
 	def process(self):
 		self.progress = 0
 		f = open(self.file, "r", 0)

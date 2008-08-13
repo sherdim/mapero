@@ -1,6 +1,5 @@
 from mapero.core.module import Module
 from mapero.core.port import OutputPort, InputPort
-from mapero.dataflow_editor.decorators.thread import threaded_process
 from numpy.oldnumeric.precision import Float
 from enthought.traits import api as traits
 from enthought.enable2.traits import api as enable_traits  

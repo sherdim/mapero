@@ -1,6 +1,5 @@
 from mapero.core.module import Module
 from mapero.core.port import InputPort
-from mapero.dataflow_editor.decorators.thread import threaded_process
 from enthought.traits import api as traits
 
 import logging

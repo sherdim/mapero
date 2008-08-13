@@ -1,6 +1,5 @@
 from mapero.core.module import Module
 from mapero.core.port import OutputPort
-from mapero.dataflow_editor.decorators.thread import threaded_process
 from enthought.traits.api import File
 from enthought.traits.ui.api import Group
 
@@ -30,7 +29,6 @@ class array_reader(Module):
 	view = Group('file')
 
 
-	@threaded_process
 	def process(self):
 		f = open(self.file, "r", 0)
 		index = 0
