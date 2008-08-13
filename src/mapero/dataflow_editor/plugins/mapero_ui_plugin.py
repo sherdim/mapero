@@ -1,4 +1,4 @@
-"""The Mapero plugin.
+"""The Mapero UI plugin.
 """
 # Author: Zacarias F. Ojeda <zojeda@gmail.com>
 # License: new BSD Style.
@@ -6,8 +6,9 @@
 from mapero.core.catalog import Catalog
 
 from enthought.traits.api import List, on_trait_change, HasTraits
-from enthought.traits.ui.api import View, Item
 from enthought.envisage.api import Plugin
+from mapero.dataflow_editor.service.api import CurrentSelection
+
 
 # This module's package.
 PKG = '.'.join(__name__.split('.')[:-1])
@@ -28,14 +29,7 @@ class NoneTraits(HasTraits):
 ###############################################################################
 # `MaperoPlugin` class.
 ###############################################################################
-
-current_selection_view = View(Item(
-                                   style='custom', springy=True,
-                                   show_label=False,),
-                              resizable=True,
-                              scrollable=True
-                              )
-
+    
 class MaperoUIPlugin(Plugin):
 
     # Extension point Ids.
@@ -55,7 +49,7 @@ class MaperoUIPlugin(Plugin):
     def _action_sets_default(self):
         """ Trait initializer. """
 
-        from mapero.dataflow_editor.action_set import (
+        from mapero.dataflow_editor.editor.action_set import (
             MaperoUIActionSet
         )
         
@@ -100,14 +94,15 @@ class MaperoUIPlugin(Plugin):
         from enthought.pyface.workbench.traits_ui_view import \
                 TraitsUIView
         
-        noneTrait = NoneTraits()
+        current_selection = CurrentSelection(workbench=window.workbench)
+        print "workbench : ", window.workbench
+        #print editor.selection
         tui_current_view = TraitsUIView(
-                                       obj = noneTrait,
-                                       #view=current_selection_view,
-                                       id=CURRENT_SELECTION_VIEW,
-                                       name='Mapero object editor',
+                                       obj = current_selection,
+                                       view = 'view_selection', 
+                                       id = CURRENT_SELECTION_VIEW,
+                                       name = "Mapero Object Editor",
                                        window=window,
-                                       position='bottom',
                                        relative_to=CATALOG_TREE_VIEW,
                                        **traits
                                        )

@@ -53,9 +53,9 @@ class binary_operator(Module):
 		self.i_second_matrix = self.ip_second_matrix.data
 		if (self.i_first_matrix != None)  \
 			and ( self.i_second_matrix != None) :
-			self.processar()
+			self.process()
 
-	def processar(self):
+	def process(self):
 		self.progress = 0
 		print "binary operator ..."
 		op1 = matrix(self.i_first_matrix)
@@ -79,4 +79,4 @@ class binary_operator(Module):
 
 
 	def _operator_changed(self):
-		self.process()
+		self.execute()

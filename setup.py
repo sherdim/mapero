@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 #
-#
+# Author: Zacarias F. Ojeda <zojeda@gmail.com>
+# License: new BSD Style.
+
 
 """
 Mapero
@@ -103,7 +105,7 @@ setup(
     description = DOCLINES[1],
     entry_points = {
         'console_scripts': [
-            'env-mapero-dfe = mapero.dataflow_editor.dataflow_editor_app:main',
+            'mapero-dfe = mapero.dataflow_editor.dataflow_editor_app:main',
             ],
 
         },

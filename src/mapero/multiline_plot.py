@@ -1,3 +1,6 @@
+# Author: Zacarias F. Ojeda <zojeda@gmail.com>
+# License: new BSD Style.
+
 from enthought.util.numerix import around, array, transpose, compress, concatenate, zeros, take
 
 

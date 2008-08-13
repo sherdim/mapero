@@ -1,7 +1,10 @@
+# Author: Zacarias F. Ojeda <zojeda@gmail.com>
+# License: new BSD Style.
+
 from enthought.pyface.workbench.api import Editor
 from enthought.traits.api import Instance, Property
 
-from mapero.dataflow_editor.view.diagram import Diagram 
+from mapero.dataflow_editor.editor.diagram.diagram_window import DiagramWindow 
 from mapero.core.catalog import Catalog
 
 #### Handy functions ##########################################################
@@ -18,7 +21,7 @@ _id_generator = _id_generator()
 
 class DataflowDiagramEditor(Editor):
 
-    dataflow_diagram = Instance(Diagram)
+    dataflow_diagram = Instance(DiagramWindow)
     
     dataflow_with_geom = Property()
     
@@ -52,9 +55,9 @@ class DataflowDiagramEditor(Editor):
 
     
     def _create_dataflow_diagram(self, parent):
-        dataflow_diagram = Diagram(parent = parent,
-                                   dataflow_with_geom = self.dataflow_with_geom,
-                                   editor = self)
+        dataflow_diagram = DiagramWindow(parent = parent,
+                                         dataflow_with_geom = self.dataflow_with_geom,
+                                         editor = self)
         return dataflow_diagram
     
     
