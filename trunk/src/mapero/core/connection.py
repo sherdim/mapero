@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # Author: Zacarias F. Ojeda <correo@zojeda.com.ar>
 # License: new BSD.
 

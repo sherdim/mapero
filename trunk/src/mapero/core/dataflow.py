@@ -3,33 +3,33 @@ from mapero.core.module import Module
 from enthought.traits import api as traits
 import sys
 
-class RepeatedModuleIDInNetworkError(Exception):
+class RepeatedModuleIDInDataflowError(Exception):
 	def __init__(self, value):
 		self.value = value
 	def __str__(self):
 		return repr(self.value)
 	
-class ModuleNotFoundInNetworkError(Exception):
+class ModuleNotFoundInDataflowError(Exception):
 	def __init__(self, value):
 		self.value = value
 	def __str__(self):
 		return repr(self.value)
 
-class MoreThanOneModuleInNetworkWithTheSameIDError(Exception):
+class MoreThanOneModuleInDataflowWithTheSameIDError(Exception):
 	def __init__(self, value):
 		self.value = value
 	def __str__(self):
 		return repr(self.value)
 
-class ConnectionNotFoundInNetworkError(Exception):
+class ConnectionNotFoundInDataflowError(Exception):
 	def __init__(self, value):
 		self.value = value
 	def __str__(self):
 		return repr(self.value)
 
 
-class Network(Module):
-	""" Network Class """
+class Dataflow(Module):
+	""" Dataflow Class """
 
 	modules = traits.List(Module)
 	connections = traits.List(Connection)
@@ -39,25 +39,25 @@ class Network(Module):
 	updated = traits.Event
 
 	def __init__(self, **traits):
-		super(Network, self).__init__(**traits)
+		super(Dataflow, self).__init__(**traits)
 		
 	def get_module_by_label(self, module_label):
 		for module in self.modules:
 			if module.label == module_label:
 				return module
-		raise ModuleNotFoundInNetworkError(module_label)
+		raise ModuleNotFoundInDataflowError(module_label)
 
 	def get_module_by_id(self, module_id):
 		for module in self.modules:
 			if module.id == module_id:
 				return module
-		raise ModuleNotFoundInNetworkError(module_id)
+		raise ModuleNotFoundInDataflowError(module_id)
 
 	def get_connection_by_id(self, connection_id):
-		for connection in self.network.connections:
+		for connection in self.Dataflow.connections:
 			if connection.id == connection_id:
 				return connection
-		raise ConnectionNotFoundInNetworkError(connection_id)
+		raise ConnectionNotFoundInDataflowError(connection_id)
 
 	def get_module(self, module):
 		if isinstance(module, str):
@@ -66,7 +66,7 @@ class Network(Module):
 			if self.modules.index(module) > -1:
 				return module
 			else:
-				raise ModuleNotFoundInNetworkError(str(module))
+				raise ModuleNotFoundInDataflowError(str(module))
 
 
 	def has_module(self, module_label):
@@ -126,6 +126,10 @@ class Network(Module):
 		
 	def _connections_items_changed(self, event):
 		for connection in event.added:
+			if connection.input_port.module not in self.modules or \
+			   connection.output_port.module not in self.modules:
+				self.connections.remove(connection)
+				raise ModuleNotFoundInDataflowError  
 			self._max_connection_id = self._max_connection_id + 1
 			connection.id = self._max_connection_id
 			

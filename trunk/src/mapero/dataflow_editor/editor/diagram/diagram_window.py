@@ -5,6 +5,7 @@ from mapero.core.module import Module
 from mapero.dataflow_editor.editor.model.api import GraphicDataflowModel
 
 from mapero.dataflow_editor.editor.diagram.module_component import ModuleComponent
+from mapero.dataflow_editor.editor.diagram.connection_component import ConnectionComponent
 
 
 from enthought.traits.api import Instance, on_trait_change, TraitListEvent, Dict
@@ -82,18 +83,32 @@ class DiagramWindow(Window):
                     self.module_geom_component_map[removed].event_state = 'normal'
 
             
-    @on_trait_change('dataflow_with_geom.module_geometrics_items')
+    @on_trait_change('dataflow_with_geom:module_geometrics')
     def modules_changed(self, event):
         if isinstance(event, TraitListEvent): ## odd
             for module_geometrics in event.added:
-                mod_component = self.add_module_component(module_geometrics)
-                self.module_geom_component_map[module_geometrics.module] = mod_component
+                self.add_module_component(module_geometrics)
             
+    @on_trait_change('dataflow_with_geom:connection_geometrics')
+    def connections_changed(self, event):
+        if isinstance(event, TraitListEvent): ## odd
+            for connection_geometrics in event.added:
+                self.add_connection_component(connection_geometrics)
+            
+
     def add_module_component(self, module_geometrics):
         module_component = ModuleComponent(module_geometrics, diagram=self)
         self.canvas.add(module_component)
         self.canvas.invalidate_and_redraw()
+        self.module_geom_component_map[module_geometrics.module] = module_component
         return module_component
+        
+    def add_connection_component(self, connection_geometrics):
+        connection_component = ConnectionComponent(connection_geometrics, diagram=self)
+        self.canvas.add(connection_component)
+        self.canvas.invalidate_and_redraw()
+        self.connection_geom_component_map[connection_geometrics.connection] = connection_component
+        return connection_component
         
 
         

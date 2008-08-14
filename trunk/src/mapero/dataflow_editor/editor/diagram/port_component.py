@@ -60,12 +60,3 @@ class PortComponent(Component):
         self.port_name = ''
         self.request_redraw()
         
-    def dragging_mouse_move(self, event):
-        print "dragging"
-
-    def dragging_left_up(self):
-        self.event_state = "normal" 
-
-    def normal_left_down(self, event):
-        print "click left"
-        self.event_state = "dragging"
