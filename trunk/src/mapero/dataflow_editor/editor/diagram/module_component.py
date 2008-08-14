@@ -9,6 +9,7 @@ from mapero.dataflow_editor.editor.diagram.port_component import PortComponent
 from enthought.traits.api import Bool, on_trait_change, WeakRef, List, Any, Delegate
 from enthought.enable.api import Label, Container, Pointer
 from enthought.enable.tools.api import MoveTool
+from enthought.kiva.traits.api import KivaFont
 
 from math import pi
 
@@ -27,7 +28,8 @@ class ModuleComponent(Container):
     padding = 10
     resizable = ""
     bgcolor = 'transparent'
-    
+    font = KivaFont("DEFAULT 16")
+     
     diagram = Any #Instance(DiagramWindow) 
     module_geom = WeakRef(ModuleGeometrics)
     port_components = List(PortComponent, [])
@@ -41,15 +43,15 @@ class ModuleComponent(Container):
         self.position = [module_geom.x, module_geom.y]
         self.bounds = [module_geom.w, module_geom.h]
         self.module_geom = module_geom
-        #self.label = Label(text="Module", 
-        #                   position = [self.bounds[0]/7, self.bounds[1]/1.4],
-        #                   bounds=self.bounds )
-        #self.add( self.label )
+#        self.label = Label(text="Module", 
+#                           position = [self.bounds[0]/7, self.bounds[1]/1.4],
+#                           bounds=self.bounds, 
+#                           font = self.font)
+#        self.add( self.label )
 
         self.tools.append(MoveTool(self))
         self._set_ports()
-        #self._set_label()
-        
+#        self._set_label()        
 
     @on_trait_change('module_geom.module.input_ports_items')
     def module_input_ports_changed(self, event):
