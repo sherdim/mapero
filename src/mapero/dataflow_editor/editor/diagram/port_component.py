@@ -69,4 +69,3 @@ class PortComponent(Component):
     def normal_left_down(self, event):
         print "click left"
         self.event_state = "dragging"
-        self.
