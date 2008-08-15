@@ -6,7 +6,7 @@ from mapero.dataflow_editor.editor.model.api import ModuleGeometrics
 from mapero.dataflow_editor.editor.diagram import round_rect
 from mapero.dataflow_editor.editor.diagram.port_component import PortComponent
 
-from enthought.traits.api import Bool, on_trait_change, WeakRef, List, Any, Delegate
+from enthought.traits.api import Bool, on_trait_change, WeakRef, Any, Delegate, Dict
 from enthought.enable.api import Label, Container, Pointer
 from enthought.enable.tools.api import MoveTool
 from enthought.kiva.traits.api import KivaFont
@@ -28,12 +28,13 @@ class ModuleComponent(Container):
     padding = 10
     resizable = ""
     bgcolor = 'transparent'
-    font = KivaFont("DEFAULT 16")
+    font = KivaFont("Modern 10")
      
     diagram = Any #Instance(DiagramWindow) 
     module_geom = WeakRef(ModuleGeometrics)
-    port_components = List(PortComponent, [])
     label = Label
+    
+    port_component_dict = Dict(Any, PortComponent)
     
     editor = Delegate('diagram')
     port_min_separation = 5
@@ -43,15 +44,15 @@ class ModuleComponent(Container):
         self.position = [module_geom.x, module_geom.y]
         self.bounds = [module_geom.w, module_geom.h]
         self.module_geom = module_geom
-#        self.label = Label(text="Module", 
-#                           position = [self.bounds[0]/7, self.bounds[1]/1.4],
-#                           bounds=self.bounds, 
-#                           font = self.font)
-#        self.add( self.label )
+        self.label = Label(text="Module", 
+                           position = [self.bounds[0]/7, self.bounds[1]/1.4],
+                           bounds=self.bounds, 
+                           font = self.font)
+        self.add( self.label )
 
         self.tools.append(MoveTool(self))
         self._set_ports()
-#        self._set_label()        
+        self._set_label()        
 
     @on_trait_change('module_geom.module.input_ports_items')
     def module_input_ports_changed(self, event):
@@ -71,19 +72,21 @@ class ModuleComponent(Container):
         print "module_progress_changed", event
         
     def _set_ports(self):
-        for port in self.port_components:
-            self.remove(port)
-        self.port_components = []
+        for port in self.port_component_dict:
+            self.remove(self.port_component_dict[port])
+        self.port_component_dict = {}
         
         ## input ports
         input_ports_len = len(self.module_geom.module.input_ports)
         sep = self.height / ( input_ports_len + 1)
         y_port = sep
         for input_port in self.module_geom.module.input_ports:
-            self.add(PortComponent(port = input_port,
+            port_component = PortComponent(port = input_port,
                                    position=[0 ,y_port],
                                    angle=pi
-                                   ))
+                                   )
+            self.add(port_component)
+            self.port_component_dict[input_port] = port_component
             y_port += sep
             
         ## output ports
@@ -91,9 +94,11 @@ class ModuleComponent(Container):
         sep = self.height / ( output_ports_len + 1)
         y_port = sep
         for output_port in self.module_geom.module.output_ports:
-            self.add(PortComponent(port = output_port,
+            port_component = PortComponent(port = output_port,
                                    position=[self.width-10 ,y_port]
-                                   )) #TODO: port width is hardcoded
+                                   ) #TODO: port width is hardcoded
+            self.add(port_component)
+            self.port_component_dict[output_port] = port_component
             y_port += sep
 
         self.request_redraw()
