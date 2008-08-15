@@ -1,11 +1,11 @@
 # Author: Zacarias F. Ojeda <zojeda@gmail.com>
 # License: new BSD Style.
 
-from enthought.traits.api import Float, WeakRef, Str, Any, Delegate
+from enthought.traits.api import Float, WeakRef, Str, Any, Property, on_trait_change 
 from enthought.enable.api import Component, str_to_font
+from enthought.enable.enable_traits import coordinate_trait
 
 from math import pi
-from mapero.dataflow_editor.editor.diagram.connection_component import ConnectionComponent
 
 class PortComponent(Component):
     fill_color = (0.5, 0.5, 0.5, 1.0)
@@ -16,9 +16,13 @@ class PortComponent(Component):
     port = WeakRef()
     angle = Float(0.0)
     port_name = Str
+    
+    absolute_position = Property
     _font = Any
     
-    #container = Delegate('container')
+    
+    _absolute_position = coordinate_trait
+
     
     def _draw_mainlayer(self, gc, view_bounds=None, mode="default"):
         dx, dy = self.bounds
@@ -51,12 +55,14 @@ class PortComponent(Component):
 
         gc.restore_state()
         return
-    
-    def normal_mouse_enter(self, event):
-#        self.port_name = self.port.name
-        self.request_redraw()
+
+    @on_trait_change('container:position')
+    def on_position_change(self, position):
+        old = self._absolute_position
+        self._absolute_position = [position[0]+self.position[0], 
+                        position[1]+self.position[1]]
+        self.trait_property_changed('absolute_position', old, self._absolute_position)
+
         
-    def normal_mouse_leave(self, event):
-        self.port_name = ''
-        self.request_redraw()
-        
+    def _get_absolute_position(self):
+        return self._absolute_position

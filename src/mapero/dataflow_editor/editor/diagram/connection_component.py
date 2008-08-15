@@ -5,26 +5,28 @@ from mapero.dataflow_editor.editor.model.api import ConnectionGeometrics
 
 from enthought.traits.api import Instance, Delegate, Any
 from enthought.enable.api import Component
-from enthought.kiva import EOF_FILL_STROKE, FILL_STROKE
+from enthought.kiva import FILL_STROKE
 
 class ConnectionComponent(Component):
     
-    bg_color = "transparent"
+    bgcolor = "transparent"
 
-    connection_geometrics = Instance(ConnectionGeometrics, ConnectionGeometrics())
+    connection_geometrics = Instance(ConnectionGeometrics)
     
     points = Delegate('connection_geometrics')
     
     vertex_size = 3
     
-    from_port_component = Any
-    to_port_component = Any
+    output_port_component = Any
+    input_port_component = Any
+    resizable = "hv"
     
     def _draw_mainlayer(self, gc, view_bounds=None, mode="default"):
         self._draw_connection(gc)
         
     def _draw_connection(self, gc):
-        start_point = self.from_port_component.position
+        print "_draw_connection"
+        start_point = self.output_port_component.absolute_position
         start_point[0] -= self.x
         start_point[1] += self.y
 
@@ -34,7 +36,12 @@ class ConnectionComponent(Component):
         if self.points:
             offset_points = [(x - self.x, y + self.y) for x, y in self.points ]
             gc.lines(offset_points)
-        gc.line_to(100,100)
+            
+        end_point = self.input_port_component.absolute_position
+        end_point[0] -= self.x
+        end_point[1] += self.y
+        
+        gc.line_to(end_point[0],end_point[1])
         gc.draw_path()
 
         # Draw the vertices.
