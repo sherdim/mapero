@@ -10,22 +10,48 @@ from mapero.dataflow_editor.editor.diagram.connection_component import Connectio
 
 
 from enthought.traits.api import Instance, on_trait_change, TraitListEvent, Dict
-from enthought.enable.api import Canvas, Viewport, Window, Scrolled
+from enthought.enable.api import Canvas, Viewport, Window, Scrolled, BaseTool
 from enthought.enable.drawing.api import DrawingCanvas
 from enthought.enable.tools.api import ViewportPanTool
 from enthought.pyface.workbench.api import IEditor
+from enthought.enable.drawing.drag_line import DragLine
+from enthought.traits.trait_types import Any
+from enthought.enable.drawing.drag_box import DragBox
 
 CURRENT_SELECTION_VIEW = 'mapero.dataflow_editor.view.current_selection'
 
         
 
+
+class PortAddingTool(BaseTool):
+    visible = True
+    draw_mode = "overlay"
+    
+    def draw(self, gc, view_bounds=None):
+        print "draw"
+        gc.begin_path()
+        gc.move_to(100,100)
+        gc.line_to(300,300)
+        gc.draw_path()
+
+
+    
+    def normal_left_down(self, event):
+        self.event_state = "selecting_input_port"
         
+    def selecting_input_port_left_up(self, event):
+        self.event_state = "normal"
+        print "port selected"        
         
        
-class MyCanvas(Canvas):
+class MyCanvas(Canvas, DrawingCanvas):
     bgcolor = (1.0, 0.95, 0.71, 1.0)
     draw_axes=True
     diagram = Window
+    
+    def __init__(self, diagram):
+        self.diagram = diagram
+        self.activate(DragBox( container = self, draw_mode="exclusive"))
     
     def normal_dropped_on(self, event):
         position = [event.x,event.y]
@@ -39,7 +65,7 @@ class DiagramWindow(Window):
     
     dataflow_with_geom = Instance(GraphicDataflowModel)
     
-    canvas = Instance(Canvas)
+    canvas = Any#Instance(Canvas)
     
     module_geom_component_map = Dict(Module, ModuleComponent)
     connection_geom_component_map = Dict(Connection, ConnectionComponent)

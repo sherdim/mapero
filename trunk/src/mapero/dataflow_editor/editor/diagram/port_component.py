@@ -58,10 +58,14 @@ class PortComponent(Component):
 
     @on_trait_change('container:position')
     def on_position_change(self, position):
-        old = self._absolute_position
-        self._absolute_position = [position[0]+self.position[0], 
-                        position[1]+self.position[1]]
-        self.trait_property_changed('absolute_position', old, self._absolute_position)
+        old_pos = self._absolute_position
+        new_pos = [position[0]+self.position[0], 
+                   position[1]+self.position[1] ]
+        new_pos[0] += self.bounds[0]/2
+        new_pos[1] += self.bounds[1]/2
+        
+        self._absolute_position = new_pos
+        self.trait_property_changed('absolute_position', old_pos, new_pos)
 
         
     def _get_absolute_position(self):
