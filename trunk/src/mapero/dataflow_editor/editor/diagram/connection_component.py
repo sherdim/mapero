@@ -9,8 +9,6 @@ from enthought.kiva import FILL_STROKE
 
 class ConnectionComponent(Component):
     
-    draw_layer = "overlay"
-    
     bgcolor = "transparent"
 
     connection_geometrics = Instance(ConnectionGeometrics)
@@ -23,7 +21,7 @@ class ConnectionComponent(Component):
     input_port_component = Any
     resizable = "hv"
     
-    def _draw_overlaylayer(self, gc, view_bounds=None, mode="default"):
+    def _draw_mainlayer(self, gc, view_bounds=None, mode="default"):
         self._draw_connection(gc)
         
     def _draw_connection(self, gc):

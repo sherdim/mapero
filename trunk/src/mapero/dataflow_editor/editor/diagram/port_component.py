@@ -1,19 +1,21 @@
 # Author: Zacarias F. Ojeda <zojeda@gmail.com>
 # License: new BSD Style.
 
-from enthought.traits.api import Float, WeakRef, Str, Any, Property, on_trait_change 
+from enthought.traits.api import Float, WeakRef, Str, Any, Property, Enum, on_trait_change 
 from enthought.enable.api import Component, str_to_font
 from enthought.enable.enable_traits import coordinate_trait
 
 from math import pi
 
 class PortComponent(Component):
+    
+    type = Enum("input", "output")
     fill_color = (0.5, 0.5, 0.5, 1.0)
     text_color = (0.0, 0.0, 0.0, 1.0)
     padding = 0
     bgcolor = 'transparent'
     bounds=[10,10]
-    port = WeakRef()
+    port = Any
     angle = Float(0.0)
     port_name = Str
     
@@ -67,6 +69,9 @@ class PortComponent(Component):
         self._absolute_position = new_pos
         self.trait_property_changed('absolute_position', old_pos, new_pos)
 
+        
+    def normal_left_down(self, event):
+        event.handled
         
     def _get_absolute_position(self):
         return self._absolute_position
