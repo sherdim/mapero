@@ -6,6 +6,7 @@ from enthought.traits.api import Instance, Property
 
 from mapero.dataflow_editor.editor.diagram.diagram_window import DiagramWindow 
 from mapero.core.catalog import Catalog
+from mapero.core.connection import Connection
 
 #### Handy functions ##########################################################
 
@@ -73,6 +74,11 @@ class DataflowDiagramEditor(Editor):
         print "module added"
         
         
+    def add_connection(self, output_port, input_port, points = []):
+        #print "output_port: ", output_port
+        #print "input_port: ", input_port
+        connection = Connection(output_port = output_port, input_port = input_port)
+        self.dataflow_with_geom.dataflow.connections.append(connection)
         
     def _get_dataflow_with_geom(self):
         return self.obj

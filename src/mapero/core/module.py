@@ -58,15 +58,15 @@ class MetaModule ( traits.MetaHasTraits ):
         for attr_name in module.__class__.__dict__:
             attr = getattr(module, attr_name)
             if isinstance(attr, InputPort):
-                attr.name = attr_name
-                attr.module = module
-                module.input_ports.append(attr)
-                print "attr.name" , attr.name
+                port = type(attr)(name = attr_name, module=module)
+                module.__dict__[attr_name] = port
+                module.input_ports.append(port)
+                print "port: " , port
             if isinstance(attr, OutputPort):
-                attr.name = attr_name
-                attr.module = module
-                module.output_ports.append(attr)
-                print "attr.name" , attr.name
+                port = type(attr)(name = attr_name, module=module)
+                module.__dict__[attr_name] = port
+                module.output_ports.append(port)
+                print "port: " , port
         
 
 ######################################################################

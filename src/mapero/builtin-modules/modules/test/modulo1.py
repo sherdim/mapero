@@ -9,10 +9,11 @@ class modulo1(Module):
     
     view = Group('param' )
     
-    out1 = OutputPort(
-                                   data_types = None
-                               )
-        
+    out1 = OutputPort(data_types = None)
+    
+    def __init__(self, **traits):
+        super(modulo1, self).__init__(**traits)
+
     def _param_changed(self, value):
         self.out1.data = value
         self.progress = value

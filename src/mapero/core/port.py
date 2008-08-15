@@ -31,10 +31,6 @@ class Port(HasTraits):
 	module = WeakRef(klass = 'mapero.core.module.Module')
 	#FIXME: debiera ser module = Instance(Module) pero no funciona :(
 
-	def __init__(self, **traits):
-		super(Port, self).__init__(**traits)
-
-		
 	def __get_pure_state__(self):
 		"""Method used by the state_pickler.
 		"""
@@ -51,9 +47,6 @@ class Port(HasTraits):
 class OutputPort(Port):
 	connections = List(WeakRef)
 
-	def __init__(self, **traits):
-		super(OutputPort, self).__init__(**traits)
-
 	def __del__(self):
 		pass
 
@@ -69,9 +62,6 @@ class OutputPort(Port):
 class InputPort(Port):
 	connection = Any
 
-	def __init__(self, **traits):
-		super(InputPort, self).__init__(**traits)
-
 	def __del__(self):
 		pass
 
@@ -84,9 +74,6 @@ class InputPort(Port):
 
 class MultiInputPort(InputPort):
 	base_name = Str
-
-	def __init__(self, **traits):
-		super(MultiInputPort, self).__init__(**traits)
 
 	#TODO: fix the automatic naming port system
 	def _set_output_port(self, output_port):
