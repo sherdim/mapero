@@ -44,11 +44,11 @@ class ModuleComponent(Container):
         self.position = [module_geom.x, module_geom.y]
         self.bounds = [module_geom.w, module_geom.h]
         self.module_geom = module_geom
-        self.label = Label(text="Module", 
-                           position = [self.bounds[0]/7, self.bounds[1]/1.4],
-                           bounds=self.bounds, 
-                           font = self.font)
-        self.add( self.label )
+#        self.label = Label(text="Module", 
+#                           position = [self.bounds[0]/7, self.bounds[1]/1.4],
+#                           bounds=self.bounds, 
+#                           font = self.font)
+#        self.add( self.label )
 
         self.tools.append(MoveTool(self))
         self._set_ports()
@@ -64,7 +64,7 @@ class ModuleComponent(Container):
 
     @on_trait_change('module_geom.module.label')
     def module_label_changed(self, label):
-        self.label.text = label
+#        self.label.text = label
         self.request_redraw()
     
     @on_trait_change('module_geom.module.progress')
