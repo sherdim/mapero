@@ -59,7 +59,6 @@ class MaperoDataflowEditorWorkbenchApplication(WorkbenchApplication):
                 image             = ImageResource('splash.jpg',
                                                   search_path=[IMG_DIR]),
                 show_log_messages = True,
-                text = 'Welcome to Mapero Dataflow Editor',
             )
         else:
             splash_screen = None

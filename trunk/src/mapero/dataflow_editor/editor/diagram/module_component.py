@@ -56,12 +56,11 @@ class ModuleComponent(Container):
 
     @on_trait_change('module_geom.module.input_ports_items')
     def module_input_ports_changed(self, event):
-        print "module_input_ports_changed", event
+        pass
         
     @on_trait_change('module_geom.module.output_ports_items')
     def module_output_ports_changed(self, event):
-        print "module_out_ports_changed", event
-
+        pass
     @on_trait_change('module_geom.module.label')
     def module_label_changed(self, label):
         self.label.text = label

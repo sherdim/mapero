@@ -65,7 +65,6 @@ class ConnectionAddingTool(DrawingTool):
     def drawing_left_down(self, event):
         input_port_comp = self._is_port_type_at(event.x, event.y, "input")
         if (input_port_comp):
-            print "input_port ", input_port_comp.port
             self._input_port_comp = input_port_comp
             self.editor.add_connection(self._output_port_comp.port, self._input_port_comp.port)
         self.reset()
@@ -74,9 +73,8 @@ class ConnectionAddingTool(DrawingTool):
     def normal_left_down(self, event):
         output_port_comp = self._is_port_type_at(event.x, event.y, "output")
         if (output_port_comp):
-            print "output_port ", output_port_comp.port
-            self.start = [event.x, event.y]
-            self.end = [event.x, event.y]
+            self.start = output_port_comp.absolute_position
+            self.end =  output_port_comp.absolute_position
             self.event_state = "drawing"
             self._output_port_comp = output_port_comp
             self.request_redraw()
@@ -87,9 +85,7 @@ class ConnectionAddingTool(DrawingTool):
         port_components = []
         for mod_comp in module_components:
             port_components += mod_comp.components_at(x, y)
-        print port_components
         port_comps = [port_comp for port_comp in port_components if isinstance(port_comp, PortComponent) and port_comp.type==type]
-        print port_comps
         if len(port_comps)==1:
             return port_comps[0]
         else:
@@ -130,18 +126,18 @@ class DiagramWindow(Window):
         
         
         self.canvas = MyCanvas(window = self)
-#        viewport = Viewport(component=self.canvas, enable_zoom=True)
-#        viewport.view_position = [0,0]
-#        viewport.tools.append(ViewportPanTool(viewport))
-#
-#        # Uncomment the following to enforce limits on the zoom
-#        viewport.min_zoom = 0.2
-#        viewport.max_zoom = 1.5
+        viewport = Viewport(component=self.canvas, enable_zoom=True)
+        viewport.view_position = [0,0]
+        viewport.tools.append(ViewportPanTool(viewport))
+
+        # Uncomment the following to enforce limits on the zoom
+        viewport.min_zoom = 0.2
+        viewport.max_zoom = 1.5
 
         scrolled = Scrolled(self.canvas, fit_window = True,
                             inside_padding_width = 0,
                             mousewheel_scroll = False,
-#                            viewport_component = viewport,
+                            viewport_component = viewport,
                             always_show_sb = True,
                             continuous_drag_update = True)
         
@@ -185,7 +181,6 @@ class DiagramWindow(Window):
         return module_component
         
     def add_connection_component(self, connection_geometrics):
-        print "add_connection_component"
         
         input_port = connection_geometrics.connection.input_port
         in_mod_comp = self.module_geom_component_map[input_port.module]

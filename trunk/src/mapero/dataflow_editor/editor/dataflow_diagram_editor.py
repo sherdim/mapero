@@ -71,14 +71,13 @@ class DataflowDiagramEditor(Editor):
 #        dataflow_with_geom = self.obj
         self.dataflow_with_geom.add_module(module, position[0], position[1],
                                             bounds[0], bounds[1])
-        print "module added"
         
         
     def add_connection(self, output_port, input_port, points = []):
         #print "output_port: ", output_port
         #print "input_port: ", input_port
         connection = Connection(output_port = output_port, input_port = input_port)
-        self.dataflow_with_geom.dataflow.connections.append(connection)
+        self.dataflow_with_geom.add_connection(connection)
         
     def _get_dataflow_with_geom(self):
         return self.obj

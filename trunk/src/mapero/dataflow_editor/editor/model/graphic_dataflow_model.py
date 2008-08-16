@@ -15,11 +15,21 @@ class GraphicDataflowModel(HasTraits):
     
     def __init__(self, **traits):
         super(GraphicDataflowModel, self).__init__(**traits)
+        self.dataflow.on_trait_change(self.on_dataflow_connections_changes, 'connections')
+        self.dataflow.on_trait_change(self.on_dataflow_modules_changes, 'modules')
     
     def add_module(self, module, x=200, y=200, w=200, h=100):
+        self.dataflow.on_trait_change(self.on_dataflow_modules_changes, 'modules', remove=True)
         self.dataflow.modules.append( module )
-    
-    @on_trait_change('dataflow:connections')
+        self._add_module_geom(module, x, y, w, h)
+        self.dataflow.on_trait_change(self.on_dataflow_modules_changes, 'modules')
+
+    def add_connection(self, connection, points=[]):
+        self.dataflow.on_trait_change(self.on_dataflow_connections_changes, 'connections', remove=True)
+        self.dataflow.connections.append( connection )
+        self._add_connection_geom(connection, points)
+        self.dataflow.on_trait_change(self.on_dataflow_connections_changes, 'connections')
+        
     def on_dataflow_connections_changes(self, event):
         for connection in event.added:
             self._add_connection_geom(connection)
@@ -27,7 +37,6 @@ class GraphicDataflowModel(HasTraits):
         for connection in event.removed:
             self._remove_connection_geom(connection)
 
-    @on_trait_change('dataflow:modules')
     def on_dataflow_modules_changes(self, event):
         for module in event.added:
             self._add_module_geom(module)
