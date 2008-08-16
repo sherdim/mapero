@@ -6,7 +6,7 @@ from mapero.dataflow_editor.editor.model.api import ModuleGeometrics
 from mapero.dataflow_editor.editor.diagram import round_rect
 from mapero.dataflow_editor.editor.diagram.port_component import PortComponent
 
-from enthought.traits.api import Bool, on_trait_change, WeakRef, Any, Delegate, Dict
+from enthought.traits.api import Bool, on_trait_change, WeakRef, Any, Delegate, Dict, Range
 from enthought.enable.api import Label, Container, Pointer
 from enthought.enable.tools.api import MoveTool
 from enthought.kiva.traits.api import KivaFont
@@ -33,6 +33,7 @@ class ModuleComponent(Container):
     diagram = Any #Instance(DiagramWindow) 
     module_geom = WeakRef(ModuleGeometrics)
     label = Label
+    progress = Range(0,100)
     
     port_component_dict = Dict(Any, PortComponent)
     
@@ -67,8 +68,9 @@ class ModuleComponent(Container):
         self.request_redraw()
     
     @on_trait_change('module_geom.module.progress')
-    def module_progress_changed(self, event):
-        print "module_progress_changed", event
+    def module_progress_changed(self, progress):
+        self.progress=progress
+        self.request_redraw()
         
     def _set_ports(self):
         for port in self.port_component_dict:
@@ -120,6 +122,20 @@ class ModuleComponent(Container):
         gc.set_stroke_color(self.line_color)
         round_rect(gc, radio=5, position=self.position, bounds=self.bounds)
         gc.draw_path()
+        
+        #drawing progress
+        gc.set_fill_color((0.5,0.5,0.5,1.0))
+        bar_height = self.height*0.25
+        bar_width = self.width*0.7
+        round_rect(gc, radio=2, position=[self.x+10,self.y+10], bounds=[bar_width, bar_height])
+        gc.fill_path()
+        gc.set_fill_color((0.2,0.2,1.0,1.0))
+        bar_height -= 2
+        bar_width = (bar_width-2)*self.progress/100
+        round_rect(gc, radio=2, position=[self.x+11,self.y+11], bounds=[bar_width, bar_height])
+        gc.fill_path()
+
+        
         gc.restore_state()
         return
     

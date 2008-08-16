@@ -9,6 +9,7 @@ def round_rect(gc, radio=5, position=[100,100], bounds=[100,60], inset=3):
     y+=inset
     dx-=2*inset
     dy-=2*inset
+    gc.clip_to_rect(x,y,dx+1,dy+1)
     gc.move_to( x+radio, y+dy)
     gc.line_to( x+dx-radio, y+dy)
     gc.arc_to( x+dx, y+dy, x+dx, y+dy-radio, radio )
