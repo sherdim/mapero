@@ -44,12 +44,10 @@ class MetaModule ( traits.MetaHasTraits ):
 #        canonical_name = cls.__module__.split('mapero.modules.')
 #        cls.canonical_name = len(canonical_name)==2 and canonical_name[1] or cls.__module__
         cls.canonical_name = cls.__module__
-        print cls.canonical_name
         cls.source_code_file = inspect.getsourcefile(cls)
         
     def __call__(cls, *args):
         inst = super(MetaModule, cls).__call__( *args )
-        print "inst", inst
         MetaModule.init_ports(inst)
         return inst
     
@@ -61,12 +59,10 @@ class MetaModule ( traits.MetaHasTraits ):
                 port = type(attr)(name = attr_name, module=module)
                 module.__dict__[attr_name] = port
                 module.input_ports.append(port)
-                print "port: " , port
             if isinstance(attr, OutputPort):
                 port = type(attr)(name = attr_name, module=module)
                 module.__dict__[attr_name] = port
                 module.output_ports.append(port)
-                print "port: " , port
         
 
 ######################################################################

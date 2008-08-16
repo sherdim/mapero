@@ -80,11 +80,8 @@ class MaperoUIPlugin(Plugin):
         """ Factory method for catalog_tree views. """
         from mapero.dataflow_editor.view.catalog_tree_view import CatalogTreeView
 
-        print "_catalog_tree_view_factory"
-
         catalog = window.get_service( Catalog )
         
-        print catalog
         catalog_tree_view = CatalogTreeView(obj = catalog, window = window)
         return catalog_tree_view
 
@@ -95,8 +92,7 @@ class MaperoUIPlugin(Plugin):
                 TraitsUIView
         
         current_selection = CurrentSelection(workbench=window.workbench)
-        print "workbench : ", window.workbench
-        #print editor.selection
+
         tui_current_view = TraitsUIView(
                                        obj = current_selection,
                                        view = 'view_selection', 

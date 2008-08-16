@@ -25,7 +25,9 @@ class PortComponent(Component):
     
     _absolute_position = coordinate_trait
 
-    
+    def __absolute_position_default(self):
+        self._absolute_position = None
+        
     def _draw_mainlayer(self, gc, view_bounds=None, mode="default"):
         dx, dy = self.bounds
         x, y = self.position
@@ -74,4 +76,12 @@ class PortComponent(Component):
         event.handled
         
     def _get_absolute_position(self):
-        return self._absolute_position
+        if self._absolute_position != [None]:
+            return self._absolute_position
+        else:
+            pos = [self.container.position[0]+self.position[0], 
+                   self.container.position[1]+self.position[1] ]
+            pos[0] += self.bounds[0]/2
+            pos[1] += self.bounds[1]/2
+            self._absolute_position = pos
+            return pos

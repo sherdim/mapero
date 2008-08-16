@@ -41,7 +41,6 @@ class MaperoPlugin(Plugin):
     # Private methods.
     def _service_offers_default(self):
         """ Trait initializer. """
-        print "_service_offers_default"
         catalog_service_offer = ServiceOffer(
             protocol = 'mapero.core.catalog.Catalog',
             factory  = self._catalog_factory
@@ -51,6 +50,5 @@ class MaperoPlugin(Plugin):
     def _catalog_factory(self, window, **traits):
         from mapero.core.catalog import Catalog
         catalog = Catalog()
-        print "_catalog_factory"
         return catalog
         
