@@ -26,9 +26,11 @@ class CurrentSelection(HasTraits):
         self.workbench.on_trait_change(self.on_current_window_changed, 'active_window')
     
     def on_current_window_changed(self, window):
+        print "on_current_window_changed changed" 
         window.on_trait_change(self.update_active_editor, 'active_editor')
             
     def update_active_editor(self, editor):
+        print "update_active_editor changed" , editor
         editor.on_trait_change(self.update_selection, 'selection')
         
     def update_selection(self, event):
@@ -39,6 +41,7 @@ class CurrentSelection(HasTraits):
         else:
             object =  None
         self._current_selection = object 
+        print "current_selection changed" 
         self.trait_property_changed('current_selection', old, object)
             
             

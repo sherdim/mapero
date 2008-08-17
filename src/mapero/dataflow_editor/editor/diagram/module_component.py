@@ -8,7 +8,6 @@ from mapero.dataflow_editor.editor.diagram.port_component import PortComponent
 
 from enthought.traits.api import Bool, on_trait_change, WeakRef, Any, Delegate, Dict, Range
 from enthought.enable.api import Label, Container, Pointer
-from enthought.enable.tools.api import MoveTool
 from enthought.kiva.traits.api import KivaFont
 
 from math import pi
@@ -21,7 +20,6 @@ class ModuleComponent(Container):
     fill_color = (0.9, 0.77, 0.14, 1.0)
     moving_color = (0.0, 0.8, 0.1, 1.0)
     line_color = (0.1, 0.1, 0.1, 0.5)
-    
 
     selected = Bool(False)
     
@@ -51,7 +49,6 @@ class ModuleComponent(Container):
                            font = self.font)
         self.add( self.label )
 
-        self.tools.append(MoveTool(self))
         self._set_ports()
         self._set_label()        
 
@@ -64,7 +61,7 @@ class ModuleComponent(Container):
         pass
     @on_trait_change('module_geom.module.label')
     def module_label_changed(self, label):
-        self.label.text = label
+        self._set_label()
         self.request_redraw()
     
     @on_trait_change('module_geom.module.progress')
@@ -80,7 +77,7 @@ class ModuleComponent(Container):
         ## input ports
         input_ports_len = len(self.module_geom.module.input_ports)
         sep = self.height / ( input_ports_len + 1)
-        y_port = sep
+        y_port = sep - 5
         for input_port in self.module_geom.module.input_ports:
             port_component = PortComponent(
                                            port = input_port,
@@ -95,7 +92,7 @@ class ModuleComponent(Container):
         ## output ports
         output_ports_len = len(self.module_geom.module.output_ports)
         sep = self.height / ( output_ports_len + 1)
-        y_port = sep
+        y_port = sep - 5
         for output_port in self.module_geom.module.output_ports:
             port_component = PortComponent(
                                            port = output_port,
@@ -109,7 +106,8 @@ class ModuleComponent(Container):
         self.request_redraw()
         
     def _set_label(self):
-        self.label.text = self.module_geom.module.label
+        text = "[%d] %s" % (self.module_geom.module.id,self.module_geom.module.label)
+        self.label.text = text
         self.request_redraw()
         
         
@@ -139,7 +137,7 @@ class ModuleComponent(Container):
         gc.restore_state()
         return
     
-    def _draw_container_overlay(self, gc, view_bounds=None, mode="default"):
+    def _draw_container_border(self, gc, view_bounds=None, mode="default"):
         if self.event_state=="selected":
             self.draw_select_box(gc, self.position, self.bounds,
                                  1, (4.0, 2.0), 0,
@@ -147,19 +145,19 @@ class ModuleComponent(Container):
     
     
     
-    ### Interactor Interface
-    def normal_left_down(self, event):
-        #self.event_state = "selected"
-        if event.control_down:
-            self.editor.selection.append(self.module_geom.module)
-        else:
-            self.editor.selection = [self.module_geom.module]
-        self.request_redraw()
-    
-    def selected_left_down(self, event):
-        if event.control_down:
-            #self.event_state = "normal"
-            self.editor.selection.remove(self.module_geom.module)
-        else:
-            self.editor.selection = [self.module_geom.module]
-        self.request_redraw()
+#    ### Interactor Interface
+#    def normal_left_down(self, event):
+#        #self.event_state = "selected"
+#        if event.control_down:
+#            self.editor.selection.append(self.module_geom.module)
+#        else:
+#            self.editor.selection = [self.module_geom.module]
+#        self.request_redraw()
+#    
+#    def selected_left_down(self, event):
+#        if event.control_down:
+#            #self.event_state = "normal"
+#            self.editor.selection.remove(self.module_geom.module)
+#        else:
+#            self.editor.selection = [self.module_geom.module]
+#        self.request_redraw()

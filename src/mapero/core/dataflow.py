@@ -1,3 +1,6 @@
+# Author: Zacarias F. Ojeda <zojeda@gmail.com>
+# License: new BSD Style.
+
 from mapero.core.connection import Connection
 from mapero.core.module import Module
 from enthought.traits import api as traits
