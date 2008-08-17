@@ -48,9 +48,12 @@ class tvtkscene(VisualModule):
         self.progress = 100
 
 
-    def _create_window(self):
-        self.scene = DecoratedScene(self.parent)
+    def create_control(self, parent):
+        self.scene = DecoratedScene(parent)
         return self.scene.control
+    
+    def destroy_control(self):
+        self.scene.destroy()
 
 
 

@@ -1,12 +1,14 @@
 # Author: Zacarias F. Ojeda <zojeda@gmail.com>
 # License: new BSD Style.
 
+from enthought.traits.api import Instance, Property,on_trait_change
 from enthought.pyface.workbench.api import Editor
-from enthought.traits.api import Instance, Property
 
 from mapero.dataflow_editor.editor.diagram.diagram_window import DiagramWindow 
 from mapero.core.catalog import Catalog
 from mapero.core.connection import Connection
+from mapero.dataflow_editor.view.visual_module_view import VisualModuleView
+from mapero.core.module import VisualModule
 
 #### Handy functions ##########################################################
 
@@ -24,7 +26,7 @@ class DataflowDiagramEditor(Editor):
 
     dataflow_diagram = Instance(DiagramWindow)
     
-    dataflow_with_geom = Property()
+    ui_dataflow = Property()
     
     ###########################################################################
     # 'IWorkbenchPart' interface.
@@ -57,7 +59,7 @@ class DataflowDiagramEditor(Editor):
     
     def _create_dataflow_diagram(self, parent):
         dataflow_diagram = DiagramWindow(parent = parent,
-                                         dataflow_with_geom = self.dataflow_with_geom,
+                                         ui_dataflow = self.ui_dataflow,
                                          editor = self)
         return dataflow_diagram
     
@@ -68,8 +70,8 @@ class DataflowDiagramEditor(Editor):
     def add_module(self, module_canonical_name, position=[100,100], bounds=[100,60]):
         catalog = self.window.get_service(Catalog)
         module = catalog.load_module(module_canonical_name)
-#        dataflow_with_geom = self.obj
-        self.dataflow_with_geom.add_module(module, position[0], position[1],
+#        ui_dataflow = self.obj
+        self.ui_dataflow.add_module(module, position[0], position[1],
                                             bounds[0], bounds[1])
         
         
@@ -77,7 +79,15 @@ class DataflowDiagramEditor(Editor):
         #print "output_port: ", output_port
         #print "input_port: ", input_port
         connection = Connection(output_port = output_port, input_port = input_port)
-        self.dataflow_with_geom.add_connection(connection)
+        self.ui_dataflow.add_connection(connection)
         
-    def _get_dataflow_with_geom(self):
+    def _get_ui_dataflow(self):
         return self.obj
+    
+    @on_trait_change('obj.dataflow:modules')
+    def on_modules_change(self, event):
+        for module in event.added:
+            if isinstance(module, VisualModule):
+                view = VisualModuleView(visual_module = module)
+                self.window.add_view(view)
+                print "view added"
