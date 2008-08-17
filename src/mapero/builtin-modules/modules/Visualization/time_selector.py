@@ -61,8 +61,7 @@ class Timer:
         self.__alive = False
         
 class time_selector(VisualModule):
-    """ modulo de prueba uno a"""
-
+    """ """
     h = traits.Range(2,100)
     a = traits.Float(2.0)
 
@@ -158,14 +157,12 @@ class time_selector(VisualModule):
         self.progress = 100
 
 
-    def _create_window(self):
+    def create_ui(self):
         self.container = OverlayPlotContainer(padding=40, bgcolor="lightgray",
                 use_backbuffer = True,
                 border_visible = True,
                 fill_padding = True)
 
-        #FIXME: el tiempo esta en duro, tiene que utilizarse la metadata de la senal
-        #self.window = Window(self.parent, -1, component=self.container)
         return self.window.control
 
 

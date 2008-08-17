@@ -1,4 +1,7 @@
 """ Catalog tree. """
+# Author: Zacarias F. Ojeda <zojeda@gmail.com>
+# License: new BSD Style.
+
 
 
 # Enthought library imports.

@@ -113,7 +113,7 @@ class MyCanvas(DrawingCanvas, Canvas):
     
 class DiagramWindow(Window):
     
-    dataflow_with_geom = Instance(GraphicDataflowModel)
+    ui_dataflow = Instance(GraphicDataflowModel)
     
     canvas = Any#Instance(Canvas)
     
@@ -160,13 +160,13 @@ class DiagramWindow(Window):
                     self.module_geom_component_map[removed].event_state = 'normal'
 
             
-    @on_trait_change('dataflow_with_geom:module_geometrics')
+    @on_trait_change('ui_dataflow:module_geometrics')
     def modules_changed(self, event):
         if isinstance(event, TraitListEvent): ## odd
             for module_geometrics in event.added:
                 self.add_module_component(module_geometrics)
             
-    @on_trait_change('dataflow_with_geom:connection_geometrics')
+    @on_trait_change('ui_dataflow:connection_geometrics')
     def connections_changed(self, event):
         if isinstance(event, TraitListEvent): ## odd
             for connection_geometrics in event.added:

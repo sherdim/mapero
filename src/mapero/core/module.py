@@ -1,25 +1,18 @@
 """module.py
 """
-from IoC.ioc import IsInstanceOf
-from mapero.core.visual_module_window import VisualModuleWindowManager
-from mapero.core.port import Port
-import IoC
-
 # Author: Zacarias F. Ojeda <zojeda@gmail.com>
 # License: new BSD Style.
 
-# Standard library imports.
-import wx
+import inspect
+import logging
 
 from enthought.traits import api as traits
+from enthought.traits.ui.api import View, Group, Include
 
 from mapero.core.port import InputPort
 from mapero.core.port import OutputPort
 
-from enthought.traits.ui.api import View, Group, Include
-import inspect
 
-import logging
 log = logging.getLogger("mapero.logger.module");
 
 
@@ -163,29 +156,15 @@ class Module(traits.HasTraits):
 
 class VisualModule(Module):
     win = traits.Any
-    window_manager = IoC.ManagedRequirement("visual_module_window_manager", IsInstanceOf(VisualModuleWindowManager))
 
     def __init__(self, **traits):
         super(VisualModule, self).__init__(**traits)
 
-    def start_module(self):
-        self.parent = self.window_manager.create_window(self) 
-        self.win = self._create_window()
-
-        sizer = wx.BoxSizer(wx.HORIZONTAL)
-        sizer.Add(self.win, 1, wx.EXPAND)
-        self.parent.SetSizer(sizer)
-        super(VisualModule, self).start_module()
-        self.parent.Show(True)
-
-    def stop_module(self):
-        pass
-#        if self.parent:
-#            self.parent.Destroy()
-#            super(VisualModule, self).stop_module()
-
-    def _create_window(self):
-        "Subclasses should override this method and return an enable.wx.Window"
+    def create_control(self, parent):
+        "Subclasses should override this method and return an UI specific control"
         raise NotImplementedError
 
+    def destroy_control(self):
+        "Subclasses should override this method and destroy the UI specific control"
+        raise NotImplementedError
 
