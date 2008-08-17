@@ -114,7 +114,7 @@ catalog_tree_editor =  TreeEditor(orientation='vertical', editable=False,
                     
                         ObjectTreeNode(node_for   = [ CatalogNode ], 
                                         auto_open  = True, 
-                                        label      = '=Catalog'), 
+                                        label      = '=modules'), 
                         ObjectTreeNode(node_for   = [ CategorieNode ], 
                                         auto_close = True, 
                                         label      = 'name'), 

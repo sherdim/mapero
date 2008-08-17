@@ -1,6 +1,8 @@
 # Author: Zacarias F. Ojeda <zojeda@gmail.com>
 # License: new BSD Style.
 
+from mapero.core.port import Port
+
 from enthought.traits.api import Float, WeakRef, Str, Any, Property, Enum, on_trait_change 
 from enthought.enable.api import Component, str_to_font
 from enthought.enable.enable_traits import coordinate_trait
@@ -15,7 +17,7 @@ class PortComponent(Component):
     padding = 0
     bgcolor = 'transparent'
     bounds=[10,10]
-    port = Any
+    port = WeakRef(Port)
     angle = Float(0.0)
     port_name = Str
     
@@ -74,6 +76,14 @@ class PortComponent(Component):
         
     def normal_left_down(self, event):
         event.handled
+        
+    def normal_mouse_move(self, event):
+        self.port_name = self.port.name
+        self.request_redraw()
+        
+    def normal_mouse_leave(self, event):
+        self.port_name = ''
+        self.request_redraw()
         
     def _get_absolute_position(self):
         if self._absolute_position != [None]:

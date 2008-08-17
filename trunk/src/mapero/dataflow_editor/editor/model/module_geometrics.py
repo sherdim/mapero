@@ -1,12 +1,12 @@
-from enthought.traits import api as traits
+# Author: Zacarias F. Ojeda <zojeda@gmail.com>
+# License: new BSD Style.
+
+from enthought.traits.api import HasTraits, Float, WeakRef
 from mapero.core.module import Module
 
-class ModuleGeometrics(traits.HasTraits):
-    x=traits.Float()
-    y=traits.Float()
-    w=traits.Float()
-    h=traits.Float()
-    module = traits.WeakRef(Module)
-    
-    def __init__(self, **traits):
-        super(ModuleGeometrics, self).__init__(**traits)
+class ModuleGeometrics(HasTraits):
+    x = Float
+    y = Float
+    w = Float
+    h = Float
+    module = WeakRef(Module)

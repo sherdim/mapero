@@ -86,8 +86,14 @@ class DataflowDiagramEditor(Editor):
     
     @on_trait_change('obj.dataflow:modules')
     def on_modules_change(self, event):
-        for module in event.added:
-            if isinstance(module, VisualModule):
-                view = VisualModuleView(visual_module = module)
-                self.window.add_view(view)
-                print "view added"
+        if not isinstance(event,list):
+            for module in event.added:
+                if isinstance(module, VisualModule):
+                    view = VisualModuleView(visual_module = module)
+                    self.window.add_view(view)
+            for module in event.removed:
+                if isinstance(module, VisualModule):
+                    view = self.window.get_view_by_id(
+                                VisualModuleView.construct_visual_module_view_id(self.window, module)
+                                )
+                    self.window.close_view(view)

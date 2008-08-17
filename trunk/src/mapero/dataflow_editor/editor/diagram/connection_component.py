@@ -3,7 +3,7 @@
 
 from mapero.dataflow_editor.editor.model.api import ConnectionGeometrics
 
-from enthought.traits.api import Instance, Delegate, Any
+from enthought.traits.api import WeakRef, Delegate, Any, on_trait_change
 from enthought.enable.api import Component
 from enthought.kiva import FILL_STROKE
 
@@ -11,7 +11,7 @@ class ConnectionComponent(Component):
     
     bgcolor = "transparent"
 
-    connection_geometrics = Instance(ConnectionGeometrics)
+    connection_geometrics = WeakRef(ConnectionGeometrics)
     
     points = Delegate('connection_geometrics')
     
@@ -26,8 +26,6 @@ class ConnectionComponent(Component):
         
     def _draw_connection(self, gc):
         start_point = self.output_port_component.absolute_position
-        start_point[0] -= self.x
-        start_point[1] += self.y
 
         # Draw the path.
         gc.begin_path()
@@ -37,11 +35,11 @@ class ConnectionComponent(Component):
             gc.lines(offset_points)
             
         end_point = self.input_port_component.absolute_position
-        end_point[0] -= self.x
-        end_point[1] += self.y
         
         gc.line_to(end_point[0],end_point[1])
         gc.draw_path()
+        
+        #self.position = start_point
 
         # Draw the vertices.
         #self._draw_vertices(gc)
@@ -70,3 +68,29 @@ class ConnectionComponent(Component):
                 gc.fill_path()
         return
 
+    @on_trait_change('input_port_component.absolute_position')
+    def on_input_port_change_position(self, position):
+        self._include_point_in_coord_box(position)
+
+    @on_trait_change('output_port_component.absolute_position')
+    def on_output_port_change_position(self, position):
+        self._include_point_in_coord_box(position)
+        
+    def _include_point_in_coord_box(self, point):
+        if self.bounds[0] == 0:
+            self.position[0] = point[0]
+            self.bounds[0] = 5
+        if self.bounds[1] == 0:
+            self.position[1] = point[1]
+            self.bounds[1] = 5
+
+        if point[0] < self.position[0]:
+            self.position[0] = point[0]
+        if point[1] < self.position[1]:
+            self.position[1] = point[1]
+        if point[0] > self.x2:
+            self.bounds[0] = point[0] - self.position[0]
+        if point[1] > self.y2:
+            self.bounds[1] = point[1] - self.position[1]
+            
+        

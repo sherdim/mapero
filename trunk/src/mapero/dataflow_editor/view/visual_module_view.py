@@ -23,9 +23,18 @@ class VisualModuleView(View):
     @on_trait_change('visual_module:label')
     def on_label_change(self, label):
         self.name = label
+
+    @on_trait_change('visual_module:id')
+    def on_id_change(self, id):
+        self.id = self.construct_visual_module_view_id(self.window, self.visual_module)
         
     def _name_default(self):
         return self.visual_module.label
     
     def _id_default(self):
-        return "%s.%d" % ( self.visual_module.canonical_name,id(self.visual_module) )
+        return self.construct_visual_module_view_id(self.window, self.visual_module)
+    
+    @staticmethod
+    def construct_visual_module_view_id(window, visual_module):
+        id = "%s.%s[%d]" % ( window.active_editor.id, visual_module.canonical_name, visual_module.id)
+        return id

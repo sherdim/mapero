@@ -7,90 +7,23 @@ from mapero.dataflow_editor.editor.model.api import GraphicDataflowModel
 
 from mapero.dataflow_editor.editor.diagram.module_component import ModuleComponent
 from mapero.dataflow_editor.editor.diagram.connection_component import ConnectionComponent
-from mapero.dataflow_editor.editor.diagram.port_component import PortComponent
+from mapero.dataflow_editor.editor.diagram.tools.connection_adding_tool import ConnectionAddingTool
+from mapero.dataflow_editor.editor.diagram.tools.selection_tool import SelectionTool
 
 
-from enthought.traits.api import Instance, on_trait_change, TraitListEvent, Dict, Delegate
-from enthought.enable.api import Canvas, Viewport, Window, Scrolled, BaseTool
+from enthought.traits.api import Instance, Any, on_trait_change, TraitListEvent, Dict, Delegate
+from enthought.enable.api import Canvas, Viewport, Window, Scrolled
 from enthought.enable.drawing.api import DrawingCanvas
 from enthought.enable.tools.api import ViewportPanTool
 from enthought.pyface.workbench.api import IEditor
-from enthought.enable.drawing.drag_line import DragLine
-from enthought.traits.trait_types import Any
-from enthought.enable.drawing.drag_box import DragBox
-from enthought.enable.drawing.drawing_tool import DrawingTool
+
 
 CURRENT_SELECTION_VIEW = 'mapero.dataflow_editor.view.current_selection'
 
         
 
 
-class ConnectionAddingTool(DrawingTool):
-    visible = True
-    draw_mode = "normal"
-    
-    start = [0,0]
-    end = [0,0]
-    
-    dash_line = (4.0, 2.0)
-    
-    editor = Delegate('container')
-    
-    def reset(self):
-        self.start = [0,0]
-        self.end = [0.0]
-        self._input_port_comp = None
-        self._output_port_comp = None
-        self.event_state = "normal"
-    
-    def normal_draw(self, gc, view_bounds=None, mode=""):
-        pass
-    
-    def drawing_draw(self, gc, view_bounds=None):
-        gc.begin_path()
-        gc.move_to(self.start[0],self.start[1])
-        gc.line_to(self.end[0],self.end[1])
-        gc.draw_path()
 
-    def drawing_mouse_move(self, event):
-        self.end = [event.x, event.y]
-        event.handled
-        self.request_redraw()
-        
-    def drawing_key_pressed(self, event):
-        if event.character == 'Esc':
-            self.reset()
-            self.request_redraw()
-    
-    def drawing_left_down(self, event):
-        input_port_comp = self._is_port_type_at(event.x, event.y, "input")
-        if (input_port_comp):
-            self._input_port_comp = input_port_comp
-            self.editor.add_connection(self._output_port_comp.port, self._input_port_comp.port)
-        self.reset()
-        self.request_redraw()
-
-    def normal_left_down(self, event):
-        output_port_comp = self._is_port_type_at(event.x, event.y, "output")
-        if (output_port_comp):
-            self.start = output_port_comp.absolute_position
-            self.end =  output_port_comp.absolute_position
-            self.event_state = "drawing"
-            self._output_port_comp = output_port_comp
-            self.request_redraw()
-    
-    def _is_port_type_at(self, x, y, type):
-        components = self.container.components_at(x, y)
-        module_components = [mod_comp for mod_comp in components if isinstance(mod_comp, ModuleComponent) ]
-        port_components = []
-        for mod_comp in module_components:
-            port_components += mod_comp.components_at(x, y)
-        port_comps = [port_comp for port_comp in port_components if isinstance(port_comp, PortComponent) and port_comp.type==type]
-        if len(port_comps)==1:
-            return port_comps[0]
-        else:
-            return [] 
-            
         
        
 class MyCanvas(DrawingCanvas, Canvas):
@@ -101,7 +34,8 @@ class MyCanvas(DrawingCanvas, Canvas):
     
     def __init__(self, window):
         self.window = window
-        self.activate(ConnectionAddingTool( container = self, draw_mode="exclusive"))
+        self.activate(ConnectionAddingTool( container = self ))
+        self.listening_tools.append( SelectionTool(container = self) )
     
     def normal_dropped_on(self, event):
         position = [event.x,event.y]
@@ -109,7 +43,13 @@ class MyCanvas(DrawingCanvas, Canvas):
         
     def normal_drag_over(self, event):
         self.window.set_drag_result('copy')
-            
+
+    #the tools should be drawn on the overlay layer
+    def _draw_container_overlay(self, gc, view_bounds=None, mode="default"):
+        super(MyCanvas, self)._draw_container_mainlayer(gc, view_bounds, mode)
+    
+    def _draw_container_mainlayer(self, gc, view_bounds=None, mode="default"):
+        return            
     
 class DiagramWindow(Window):
     
@@ -137,7 +77,7 @@ class DiagramWindow(Window):
         scrolled = Scrolled(self.canvas, fit_window = True,
                             inside_padding_width = 0,
                             mousewheel_scroll = False,
-                            viewport_component = viewport,
+#                            viewport_component = viewport,
                             always_show_sb = True,
                             continuous_drag_update = True)
         
@@ -194,8 +134,6 @@ class DiagramWindow(Window):
                                                    connection_geometrics = connection_geometrics,
                                                    output_port_component = output_port_component,
                                                    input_port_component = input_port_component,
-                                                   position = [0,0],
-                                                   bounds = self.canvas.bounds
                                                    )
         
         self.canvas.add(connection_component)
