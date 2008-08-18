@@ -5,8 +5,8 @@ from mapero.core.module import Module
 from mapero.core.connection import Connection
 from mapero.dataflow_editor.editor.model.api import GraphicDataflowModel
 
-from mapero.dataflow_editor.editor.diagram.module_component import ModuleComponent
-from mapero.dataflow_editor.editor.diagram.connection_component import ConnectionComponent
+from mapero.dataflow_editor.editor.diagram.components.module_component import ModuleComponent
+from mapero.dataflow_editor.editor.diagram.components.connection_component import ConnectionComponent
 from mapero.dataflow_editor.editor.diagram.tools.connection_adding_tool import ConnectionAddingTool
 from mapero.dataflow_editor.editor.diagram.tools.selection_tool import SelectionTool
 
@@ -16,6 +16,8 @@ from enthought.enable.api import Canvas, Viewport, Window, Scrolled
 from enthought.enable.drawing.api import DrawingCanvas
 from enthought.enable.tools.api import ViewportPanTool
 from enthought.pyface.workbench.api import IEditor
+from mapero.dataflow_editor.editor.diagram.components.diagram_component import DiagramComponent
+from mapero.dataflow_editor.editor.model.diagram_object_model import DiagramObjectModel
 
 
 CURRENT_SELECTION_VIEW = 'mapero.dataflow_editor.view.current_selection'
@@ -31,6 +33,8 @@ class MyCanvas(DrawingCanvas, Canvas):
     draw_axes=True
     window = Window
     editor = Delegate('window')
+    module_geom_component_map  = Delegate('window')
+    connection_geom_component_map  = Delegate('window')
     
     def __init__(self, window):
         self.window = window
@@ -57,8 +61,8 @@ class DiagramWindow(Window):
     
     canvas = Any#Instance(Canvas)
     
-    module_geom_component_map = Dict(Module, ModuleComponent)
-    connection_geom_component_map = Dict(Connection, ConnectionComponent)
+    diagram_object_component_dict = Dict(DiagramObjectModel, DiagramComponent)
+
     editor = Instance(IEditor)
     
     def __init__ ( self, parent, wid = -1, pos = None, size = None, **traits ):
@@ -86,18 +90,19 @@ class DiagramWindow(Window):
     @on_trait_change('editor.selection')
     def selection_items_changed(self, event):
         if isinstance(event, list):
-            for module in self.module_geom_component_map:
-                if module not in event:
-                    self.module_geom_component_map[module].event_state = 'normal'
+            for diagram_object in self.diagram_object_component_dict:
+                if diagram_object not in event:
+                    self.diagram_object_component_dict[diagram_object].selected = False
                 else:
-                    self.module_geom_component_map[module].event_state = 'selected'
+                    self.diagram_object_component_dict[diagram_object].selected = True
         else:
             if event.added:
                 for added in event.added:
-                    self.module_geom_component_map[added].event_state = 'selected'
+                    self.diagram_object_component_dict[added].selected = True
             if event.removed:
                 for removed in event.removed:
-                    self.module_geom_component_map[removed].event_state = 'normal'
+                    self.diagram_object_component_dict[removed].selected = False
+        
 
             
     @on_trait_change('ui_dataflow:module_geometrics')
@@ -117,17 +122,17 @@ class DiagramWindow(Window):
         module_component = ModuleComponent(module_geometrics, diagram=self)
         self.canvas.add(module_component)
         self.canvas.invalidate_and_redraw()
-        self.module_geom_component_map[module_geometrics.module] = module_component
+        self.diagram_object_component_dict[module_geometrics] = module_component
         return module_component
         
     def add_connection_component(self, connection_geometrics):
         
         input_port = connection_geometrics.connection.input_port
-        in_mod_comp = self.module_geom_component_map[input_port.module]
+        in_mod_comp = self.diagram_object_component_dict[input_port.module]
         input_port_component = in_mod_comp.port_component_dict[input_port]
         
         output_port = connection_geometrics.connection.output_port
-        out_mod_comp = self.module_geom_component_map[output_port.module]
+        out_mod_comp = self.diagram_object_component_dict[output_port.module]
         output_port_component = out_mod_comp.port_component_dict[output_port]
 
         connection_component = ConnectionComponent(
@@ -138,7 +143,7 @@ class DiagramWindow(Window):
         
         self.canvas.add(connection_component)
         self.canvas.invalidate_and_redraw()
-        self.connection_geom_component_map[connection_geometrics.connection] = connection_component
+        self.diagram_object_component_dict[connection_geometrics] = connection_component
         return connection_component
         
 

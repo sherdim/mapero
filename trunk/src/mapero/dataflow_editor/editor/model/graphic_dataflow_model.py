@@ -4,11 +4,12 @@
 from mapero.core.dataflow import Dataflow
 from module_geometrics import ModuleGeometrics
 from connection_geometrics import ConnectionGeometrics
-from enthought.traits.api import HasTraits, List, Instance
-from enthought.traits.has_traits import on_trait_change
+
+from enthought.traits.api import HasTraits, List, Instance, implements
 
 
 class GraphicDataflowModel(HasTraits):
+    
     dataflow = Instance(Dataflow, Dataflow())
     module_geometrics = List(ModuleGeometrics, [])
     connection_geometrics = List(ConnectionGeometrics, [])
@@ -45,7 +46,7 @@ class GraphicDataflowModel(HasTraits):
             self._remove_module_geom(module)
 
     def _add_module_geom(self, module, x=200, y=200, w=200, h=100):
-        module_geometrics = ModuleGeometrics(x=x, y=y, w=w, h=h, module=module)
+        module_geometrics = ModuleGeometrics(position=[x,y], bounds=[w,h], module=module)
         self.module_geometrics.append( module_geometrics )
 
     def _add_connection_geom(self, connection, points=[]):

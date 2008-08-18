@@ -4,16 +4,17 @@
 from mapero.dataflow_editor.editor.model.api import ModuleGeometrics
 
 from mapero.dataflow_editor.editor.diagram import round_rect
-from mapero.dataflow_editor.editor.diagram.port_component import PortComponent
+from mapero.dataflow_editor.editor.diagram.components.diagram_component import DiagramComponent
+from mapero.dataflow_editor.editor.diagram.components.port_component import PortComponent
 
 from enthought.traits.api import Bool, on_trait_change, WeakRef, Any, Delegate, Dict, Range
 from enthought.enable.api import Label, Container, Pointer
-from enthought.kiva.traits.api import KivaFont
 
 from math import pi
 
-class ModuleComponent(Container):
+class ModuleComponent(DiagramComponent, Container):
 
+    
     normal_pointer = Pointer("arrow")
     moving_pointer = Pointer("hand")
   
@@ -26,10 +27,11 @@ class ModuleComponent(Container):
     padding = 10
     resizable = ""
     bgcolor = 'transparent'
-    font = KivaFont("Modern 10")
+    #font = KivaFont("Modern 10")
      
     diagram = Any #Instance(DiagramWindow) 
     module_geom = WeakRef(ModuleGeometrics)
+    
     label = Label
     progress = Range(0,100)
     
@@ -40,13 +42,13 @@ class ModuleComponent(Container):
     
     def __init__(self, module_geom , **traits):
         super(ModuleComponent, self).__init__(**traits)
-        self.position = [module_geom.x, module_geom.y]
-        self.bounds = [module_geom.w, module_geom.h]
+        self.position = module_geom.position
+        self.bounds = module_geom.bounds
         self.module_geom = module_geom
         self.label = Label(text="Module", 
                            position = [self.bounds[0]/7, self.bounds[1]/1.4],
                            bounds=self.bounds, 
-                           font = self.font)
+                           )#font = self.font)
         self.add( self.label )
 
         self._set_ports()
@@ -110,11 +112,17 @@ class ModuleComponent(Container):
         self.label.text = text
         self.request_redraw()
         
+    @on_trait_change('module_geom:position')
+    def on_module_geom_change(self, position):
+        self.position = position
         
+    #### DiagramComponent interface ##########################
+    
+    def _get_diagram_object_model(self):
+        return self.module_geom
+
         
-        
-        
-    def _draw_container_mainlayer(self, gc, view_bounds=None, mode="default"):
+    def draw_diagram_component(self, gc):
         gc.save_state()
         gc.set_fill_color(self.fill_color)
         gc.set_stroke_color(self.line_color)
@@ -137,27 +145,11 @@ class ModuleComponent(Container):
         gc.restore_state()
         return
     
-    def _draw_container_border(self, gc, view_bounds=None, mode="default"):
-        if self.event_state=="selected":
-            self.draw_select_box(gc, self.position, self.bounds,
-                                 1, (4.0, 2.0), 0,
+    def draw_selection(self, gc):
+        self.draw_select_box(gc, self.position, self.bounds,
+                             1, (4.0, 2.0), 0,
                                  (0.0,0.0,0.0), (1.0,1.0,1.0), 2)
-    
-    
-    
-#    ### Interactor Interface
-#    def normal_left_down(self, event):
-#        #self.event_state = "selected"
-#        if event.control_down:
-#            self.editor.selection.append(self.module_geom.module)
-#        else:
-#            self.editor.selection = [self.module_geom.module]
-#        self.request_redraw()
-#    
-#    def selected_left_down(self, event):
-#        if event.control_down:
-#            #self.event_state = "normal"
-#            self.editor.selection.remove(self.module_geom.module)
-#        else:
-#            self.editor.selection = [self.module_geom.module]
-#        self.request_redraw()
+
+    ##########################################################
+        
+        

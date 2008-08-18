@@ -1,8 +1,8 @@
 # Author: Zacarias F. Ojeda <zojeda@gmail.com>
 # License: new BSD Style.
 
-from mapero.dataflow_editor.editor.diagram.module_component import ModuleComponent
-from mapero.dataflow_editor.editor.diagram.port_component import PortComponent
+from mapero.dataflow_editor.editor.diagram.components.module_component import ModuleComponent
+from mapero.dataflow_editor.editor.diagram.components.port_component import PortComponent
 
 from enthought.traits.api import Delegate
 from mapero.dataflow_editor.editor.diagram.tools.base_diagram_tool import BaseDiagramTool

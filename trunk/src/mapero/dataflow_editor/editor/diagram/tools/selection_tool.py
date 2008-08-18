@@ -1,10 +1,14 @@
 # Author: Zacarias F. Ojeda <zojeda@gmail.com>
 # License: new BSD Style.
 
+from mapero.core.module import Module
 
 from mapero.dataflow_editor.editor.diagram.tools.base_diagram_tool import BaseDiagramTool
-from mapero.dataflow_editor.editor.diagram.module_component import ModuleComponent
-from mapero.dataflow_editor.editor.diagram.connection_component import ConnectionComponent
+from mapero.dataflow_editor.editor.diagram.components.module_component import ModuleComponent
+from mapero.dataflow_editor.editor.diagram.components.connection_component import ConnectionComponent
+from enthought.traits.has_traits import on_trait_change
+from mapero.dataflow_editor.editor.model.diagram_object_model import DiagramObjectModel
+from mapero.dataflow_editor.editor.diagram.components.diagram_component import DiagramComponent
 
 
 class SelectionTool(BaseDiagramTool):
@@ -15,12 +19,16 @@ class SelectionTool(BaseDiagramTool):
     bg_color = (0.6,0.6,1.0,0.4)
     bgcolor = "transparent"
     selection = []
+    start_moving = [0,0]
+    movement = [0,0]
 
     def reset(self):
         self.start = [0,0]
         self.end = [0,0]
         self.event_state = 'normal'
-        self.selection = []
+        self.start_moving = [0,0]
+        self.movement = [0,0]
+        self.container.request_redraw()
     
     def selecting_draw(self, gc, view_bounds):
         gc.save_state()
@@ -35,10 +43,12 @@ class SelectionTool(BaseDiagramTool):
     def normal_left_down(self, event):
         components = self.container.components_at(event.x, event.y)
         if len( components )>0:
+            self.start_moving = [event.x, event.y]
+            self.movement = [0,0]
+            
             self.event_state = 'moving'
-            comp = components[0]
-            if isinstance(comp, ModuleComponent):
-                self.editor.selection = [comp.module_geom.module]
+            for comp in components:
+                self.editor.selection = [comp.diagram_object_model]
         else:
             self.start = [event.x, event.y]
             self.end = [event.x, event.y]
@@ -52,21 +62,18 @@ class SelectionTool(BaseDiagramTool):
         
         min_c = [min(self.start[0], self.end[0]), min(self.start[1], self.end[1])]
         max_c = [max(self.start[0], self.end[0]), max(self.start[1], self.end[1])]
+        rect = min_c + max_c
+        print rect
+        
         for comp in self.container.components:
-            if isinstance(comp, (ModuleComponent, ConnectionComponent)):
-                if comp.position[0] >= min_c[0]    \
-                    and comp.position[1]>=min_c[1] \
-                    and comp.x2 <= max_c[0]  \
-                    and comp.y2 <= max_c[1]:
-                    if isinstance(comp, ModuleComponent):
-                        module = comp.module_geom.module
-                        if (module not in self.editor.selection):
-                            self.editor.selection.append( module )
+            if isinstance(comp, DiagramComponent):
+                diagram_object_model = comp.diagram_object_model
+                if diagram_object_model.is_included_in( rect ):
+                    if (diagram_object_model not in self.editor.selection):
+                        self.editor.selection.append( diagram_object_model )
                 else:
-                    if isinstance(comp, ModuleComponent):
-                        module = comp.module_geom.module
-                        if (module in self.editor.selection):
-                            self.editor.selection.remove( module )
+                    if (diagram_object_model in self.editor.selection):
+                        self.editor.selection.remove( diagram_object_model )
                     
         
         self.request_redraw()
@@ -88,6 +95,8 @@ class SelectionTool(BaseDiagramTool):
     def selected_left_down(self, event):
         components = self.container.components_at(event.x, event.y)
         if len( components )>0:
+            self.start_moving = [event.x, event.y]
+            self.movement = [0,0]
             self.event_state = 'moving'
         else:
             self.reset()
@@ -95,10 +104,22 @@ class SelectionTool(BaseDiagramTool):
         self.request_redraw()
             
     def moving_mouse_move(self, event):
-        print "moving_mouse_move"
+        movement = [0,0]
+        movement[0] = event.x - self.start_moving[0]
+        movement[1] = event.y - self.start_moving[1]
+        for diagram_object in self.editor.selection:
+            if isinstance(diagram_object, DiagramObjectModel):
+                comp = self.container.window.diagram_object_component_dict[diagram_object]
+                comp.diagram_object_model.move(movement)
+        self.container.request_redraw()
+        self.start_moving = [event.x, event.y]
         
     def moving_left_up(self, event):
-        "move to here"
+        print "move to here"
         self.reset()
+        
+    @on_trait_change('event_state')
+    def on_event_state_change(self, event):
+        print event
                 
         

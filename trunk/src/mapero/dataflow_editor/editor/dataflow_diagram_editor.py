@@ -1,7 +1,7 @@
 # Author: Zacarias F. Ojeda <zojeda@gmail.com>
 # License: new BSD Style.
 
-from enthought.traits.api import Instance, Property,on_trait_change
+from enthought.traits.api import Instance, Property, List, on_trait_change
 from enthought.pyface.workbench.api import Editor
 
 from mapero.dataflow_editor.editor.diagram.diagram_window import DiagramWindow 
@@ -9,6 +9,7 @@ from mapero.core.catalog import Catalog
 from mapero.core.connection import Connection
 from mapero.dataflow_editor.view.visual_module_view import VisualModuleView
 from mapero.core.module import VisualModule
+from mapero.dataflow_editor.editor.model.diagram_object_model import DiagramObjectModel
 
 #### Handy functions ##########################################################
 
@@ -27,6 +28,8 @@ class DataflowDiagramEditor(Editor):
     dataflow_diagram = Instance(DiagramWindow)
     
     ui_dataflow = Property()
+    
+    selection = List(DiagramObjectModel)
     
     ###########################################################################
     # 'IWorkbenchPart' interface.

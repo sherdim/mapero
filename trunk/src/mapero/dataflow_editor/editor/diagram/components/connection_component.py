@@ -2,12 +2,13 @@
 # License: new BSD Style.
 
 from mapero.dataflow_editor.editor.model.api import ConnectionGeometrics
+from mapero.dataflow_editor.editor.diagram.components.diagram_component import DiagramComponent
 
 from enthought.traits.api import WeakRef, Delegate, Any, on_trait_change
 from enthought.enable.api import Component
 from enthought.kiva import FILL_STROKE
 
-class ConnectionComponent(Component):
+class ConnectionComponent(Component, DiagramComponent):
     
     bgcolor = "transparent"
 
@@ -21,7 +22,7 @@ class ConnectionComponent(Component):
     input_port_component = Any
     resizable = "hv"
     
-    def _draw_mainlayer(self, gc, view_bounds=None, mode="default"):
+    def draw_diagram_component(self, gc):
         self._draw_connection(gc)
         
     def _draw_connection(self, gc):
