@@ -5,12 +5,14 @@ from enthought.traits.api import HasTraits, Property, Instance
 from enthought.traits.ui.api import View, Item
 from enthought.envisage.ui.workbench.api import Workbench
 
+from mapero.dataflow_editor.editor.model.diagram_object_model import DiagramObjectModel
+
 
 class CurrentSelection(HasTraits):
     workbench = Instance(Workbench)
     current_selection = Property
     
-    _current_selection = Instance(HasTraits)
+    _current_selection = Instance(DiagramObjectModel)
     
     view_selection = View(Item(name='_current_selection',
                                        enabled_when='_current_selection is not None',
