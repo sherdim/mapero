@@ -109,6 +109,7 @@ class DiagramWindow(Window):
             
     @on_trait_change('ui_dataflow:module_geometrics')
     def modules_changed(self, event):
+        print "diagram_window: dataflow : ", self.ui_dataflow.dataflow
         if isinstance(event, TraitListEvent): ## odd
             for module_geometrics in event.added:
                 self.add_module_component(module_geometrics)
