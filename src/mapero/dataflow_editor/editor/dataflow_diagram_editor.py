@@ -4,12 +4,15 @@
 from enthought.traits.api import Instance, Property, List, on_trait_change
 from enthought.pyface.workbench.api import Editor
 
-from mapero.dataflow_editor.editor.diagram.diagram_window import DiagramWindow 
+from mapero.core.module import VisualModule
 from mapero.core.catalog import Catalog
 from mapero.core.connection import Connection
-from mapero.dataflow_editor.view.visual_module_view import VisualModuleView
-from mapero.core.module import VisualModule
+
+from mapero.dataflow_editor.editor.model.module_geometrics import ModuleGeometrics
+from mapero.dataflow_editor.editor.model.connection_geometrics import ConnectionGeometrics
+from mapero.dataflow_editor.editor.diagram.diagram_window import DiagramWindow 
 from mapero.dataflow_editor.editor.model.diagram_object_model import DiagramObjectModel
+from mapero.dataflow_editor.view.visual_module_view import VisualModuleView
 
 #### Handy functions ##########################################################
 
@@ -83,6 +86,15 @@ class DataflowDiagramEditor(Editor):
         #print "input_port: ", input_port
         connection = Connection(output_port = output_port, input_port = input_port)
         self.ui_dataflow.add_connection(connection)
+        
+    def remove_selection(self):
+        #TODO: very ugly use of isinstance
+        for selection in self.selection:
+            if isinstance(selection, ModuleGeometrics):
+                self.ui_dataflow.remove_module(selection)
+            if isinstance(selection, ConnectionGeometrics):
+                self.ui_dataflow.remove_connection(selection)
+        self.selection = []
         
     def _get_ui_dataflow(self):
         return self.obj

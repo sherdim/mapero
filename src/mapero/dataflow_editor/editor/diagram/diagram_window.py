@@ -1,8 +1,6 @@
 # Author: Zacarias F. Ojeda <zojeda@gmail.com>
 # License: new BSD Style.
 
-from mapero.core.module import Module
-from mapero.core.connection import Connection
 from mapero.dataflow_editor.editor.model.api import GraphicDataflowModel
 
 from mapero.dataflow_editor.editor.diagram.components.module_component import ModuleComponent
@@ -47,6 +45,10 @@ class MyCanvas(DrawingCanvas, Canvas):
         
     def normal_drag_over(self, event):
         self.window.set_drag_result('copy')
+        
+    def normal_key_pressed(self, event):
+        if event.character == 'Delete':
+            self.editor.remove_selection()
 
     #the tools should be drawn on the overlay layer
     def _draw_container_overlay(self, gc, view_bounds=None, mode="default"):
@@ -111,29 +113,42 @@ class DiagramWindow(Window):
             for module_geometrics in event.added:
                 self.add_module_component(module_geometrics)
             
+            for module_geometrics in event.removed:
+                mod_com = self.diagram_object_component_dict.pop(module_geometrics)
+                self.canvas.remove(mod_com)
+        self.canvas.invalidate_and_redraw()
+
     @on_trait_change('ui_dataflow:connection_geometrics')
     def connections_changed(self, event):
         if isinstance(event, TraitListEvent): ## odd
             for connection_geometrics in event.added:
                 self.add_connection_component(connection_geometrics)
+
+            for connection_geometrics in event.removed:
+                conn_com = self.diagram_object_component_dict.pop(connection_geometrics)
+                self.canvas.remove(conn_com)
+        self.canvas.invalidate_and_redraw()
             
 
     def add_module_component(self, module_geometrics):
         module_component = ModuleComponent(module_geometrics, diagram=self)
         self.canvas.add(module_component)
-        self.canvas.invalidate_and_redraw()
         self.diagram_object_component_dict[module_geometrics] = module_component
         return module_component
         
     def add_connection_component(self, connection_geometrics):
         
         input_port = connection_geometrics.connection.input_port
-        in_mod_comp = self.diagram_object_component_dict[input_port.module]
-        input_port_component = in_mod_comp.port_component_dict[input_port]
+        for diagram_object in self.diagram_object_component_dict:
+            if diagram_object.dataflow_element == input_port.module:
+                in_mod_comp = self.diagram_object_component_dict[diagram_object]
+                input_port_component = in_mod_comp.port_component_dict[input_port]
         
         output_port = connection_geometrics.connection.output_port
-        out_mod_comp = self.diagram_object_component_dict[output_port.module]
-        output_port_component = out_mod_comp.port_component_dict[output_port]
+        for diagram_object in self.diagram_object_component_dict:
+            if diagram_object.dataflow_element == output_port.module:
+                out_mod_comp = self.diagram_object_component_dict[diagram_object]
+                output_port_component = out_mod_comp.port_component_dict[output_port]
 
         connection_component = ConnectionComponent(
                                                    connection_geometrics = connection_geometrics,
@@ -142,7 +157,6 @@ class DiagramWindow(Window):
                                                    )
         
         self.canvas.add(connection_component)
-        self.canvas.invalidate_and_redraw()
         self.diagram_object_component_dict[connection_geometrics] = connection_component
         return connection_component
         

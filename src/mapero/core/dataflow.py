@@ -66,9 +66,10 @@ class Dataflow(Module):
 		if isinstance(module, str):
 			return self.get_module_by_label(module)
 		else:
-			if self.modules.index(module) > -1:
+			try: 
+				self.modules.index(module)
 				return module
-			else:
+			except:
 				raise ModuleNotFoundInDataflowError(str(module))
 
 
@@ -78,12 +79,16 @@ class Dataflow(Module):
 				return True
 		return False
 	
-	def get_module_connections(self, module):
-		module = self.network.get_module(module)
+	def disconnect_module(self, module):
+		connections = self._get_module_connections(module)
+		for connection in connections:
+			self.connections.remove(connection)
+
+	def _get_module_connections(self, module):
 		connections = [connection for connection in self.connections 
 					   if connection.input_port.module == module or connection.output_port.module == module]
 		return connections
-
+	
 	def __set_pure_state__(self, state):
 		self.modules = state.modules
 		self.connections = state.connections

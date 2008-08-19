@@ -77,10 +77,12 @@ class Module(traits.HasTraits):
 
     #logs = Dict(Str, Str)
 
-    module_view = View(Group(
-                        Group('label', label='General', springy=True),
-                        Include('view'))
-    )
+    module_view = View(
+                       Group(
+                             Group('label', label='Module', springy=True),
+                             Include('view')
+                             )
+                       )
 
 #    class ProcessThread(Thread):
 #        def __init__(self, module):

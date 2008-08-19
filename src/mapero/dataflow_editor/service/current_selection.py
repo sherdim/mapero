@@ -43,7 +43,6 @@ class CurrentSelection(HasTraits):
         else:
             object =  None
         self._current_selection = object 
-        print "current_selection changed" 
         self.trait_property_changed('current_selection', old, object)
             
             

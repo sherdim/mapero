@@ -7,7 +7,7 @@ from diagram_object_model import DiagramObjectModel
 
 from enthought.traits.api import WeakRef, Property
 from enthought.enable.enable_traits import coordinate_trait, bounds_trait
-from enthought.traits.ui.api import View, Item, Group
+from enthought.traits.ui.api import View, Item
 
 class ModuleGeometrics(DiagramObjectModel):
  
@@ -28,12 +28,19 @@ class ModuleGeometrics(DiagramObjectModel):
         self.position = new_pos
 
     def is_included_in(self, rect):
-        if self.x >= rect[0] and self.y>= rect[1] \
-            and self.x2 <= rect[2] and self.y2 <= rect[3]:
-            return True
-        else:
-            return False
-    
+        x = self.x
+        y = self.y
+        x2 = self.x2
+        y2 = self.y2
+        return  ( x >= rect[0] and y  >= rect[1] and \
+                 x2 <= rect[2] and y2 <= rect[3])
+        
+    def is_in(self, x,y):
+        pos = self.position
+        bounds = self.bounds
+        return (x >= pos[0]) and (x < pos[0] + bounds[0]) and \
+               (y >= pos[1]) and (y < pos[1] + bounds[1])
+        
     def _get_dataflow_element(self):
         return self.module
 
