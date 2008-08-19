@@ -12,22 +12,23 @@ class DiagramComponent(HasTraits):
     def draw_diagram_component(self, gc):
         raise NotImplementedError           
         
-    def draw_selection(self, gc):
-        raise NotImplementedError               
+    def draw_diagram_component_border(self, gc):
+        pass           
+
+    def is_in(self, x,y):
+        return self.diagram_object_model.is_in(x,y)
+
+    def is_included_in(self, rect):
+        return self.diagram_object_model.is_included_in(rect)
     
+    def _get_diagram_object_model(self):
+        raise NotImplementedError           
+        
     def _draw_container_mainlayer(self, gc, view_bounds=None, mode="default"):
         self.draw_diagram_component(gc)
         
+    def _draw_container_border(self, gc, view_bounds=None, mode="default"):
+        self.draw_diagram_component_border(gc)
+        
     def _draw_mainlayer(self, gc, view_bounds=None, mode="default"):
         self.draw_diagram_component(gc)
-        
-    def _draw_container_border(self, gc, view_bounds=None, mode="default"):
-        if self.selected:
-            self.draw_selection(gc)
-
-    def _draw_border(self, gc, view_bounds=None, mode="default"):
-        if self.selected:
-            self.draw_selection(gc)
-            
-    def _get_diagram_object_model(self):
-        raise NotImplementedError           

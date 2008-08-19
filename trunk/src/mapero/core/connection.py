@@ -1,7 +1,8 @@
 # Author: Zacarias F. Ojeda <correo@zojeda.com.ar>
 # License: new BSD.
 
-from enthought.traits import api as traits
+from enthought.traits.api import HasTraits, Instance, Property, Any, Int, Bool 
+from enthought.traits.ui.api import View, Item, Group
 
 from mapero.core.port import OutputPort, InputPort
 
@@ -20,18 +21,20 @@ class ModuleConnectionError(Exception):
 ######################################################################
 # `Conection` class.
 ######################################################################
-class Connection(traits.HasTraits):
-	id = traits.Int
-	input_port = traits.Instance(InputPort())
-	output_port = traits.Instance(OutputPort())
-	data = traits.Any
-	enable = traits.Property(traits.Bool)
+class Connection(HasTraits):
+	id = Int
+	input_port = Instance(InputPort)
+	output_port = Instance(OutputPort)
+	data = Any
+	enabled = Property(Bool)
+	
+	_enabled = True
 
 	def __init__(self, **traits):
 		super(Connection, self).__init__(**traits)
 		self.output_port.connections.append(self)
 		self.input_port.connection = self
-		self.enable = True
+		self.enabled = True
 
 	def update_data(self):
 		self.input_port.update_data(self.data, self.data)
@@ -40,21 +43,22 @@ class Connection(traits.HasTraits):
 		if (value.connection != None):
 			raise ModuleConnectionError("the input port only accept one connection")
 		else:
-			self.enable = True
+			self.enabled = True
 
 	def _data_changed(self, old, new):
 		self.input_port.data = self.data
 
-	def _set_enable(self, value):
-		if (value != self.enable):
+	def _set_enabled(self, value):
+		if (value != self.enabled):
 			if (value == True):
 				if (self.input_port != None) and (self.output_port != None):
 					self.data = self.output_port.data
 			else:
 				self.data = None
+			self._enabled = value
 
-	def _get_enable(self):
-		pass
+	def _get_enabled(self):
+		return self._enabled
 	
 	def __get_pure_state__(self):
 		"""Method used by the state_pickler.
@@ -65,8 +69,19 @@ class Connection(traits.HasTraits):
 		return d
 
 	def __del__(self):
-		self.enable = False
+		self.enabled = False
 		self.input_port.connection = None
 		self.output_port.connections.remove(self)
+		
+	view = View(
+			    Group(
+					  Item( name = "enabled"),
+					  Group(
+						    Item( name = "data", style = 'readonly', enabled_when='enabled', show_label=False),
+						    label = 'Data'
+						    ),
+					  label='Connection', springy=True,
+					  )
+			    )    	
 
 

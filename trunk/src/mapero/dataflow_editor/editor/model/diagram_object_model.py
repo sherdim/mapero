@@ -13,7 +13,11 @@ class DiagramObjectModel(HasTraits):
     def is_included_in(self, rect):
         raise NotImplementedError
     
+    def is_in(self, x,y):
+        raise NotImplementedError
+
     def _get_dataflow_element(self):
         raise NotImplementedError
-        
+      
+          
         

@@ -1,15 +1,12 @@
 # Author: Zacarias F. Ojeda <zojeda@gmail.com>
 # License: new BSD Style.
 
-from mapero.core.module import Module
+from mapero.dataflow_editor.editor.model.diagram_object_model import DiagramObjectModel
 
 from mapero.dataflow_editor.editor.diagram.tools.base_diagram_tool import BaseDiagramTool
-from mapero.dataflow_editor.editor.diagram.components.module_component import ModuleComponent
-from mapero.dataflow_editor.editor.diagram.components.connection_component import ConnectionComponent
-from enthought.traits.has_traits import on_trait_change
-from mapero.dataflow_editor.editor.model.diagram_object_model import DiagramObjectModel
 from mapero.dataflow_editor.editor.diagram.components.diagram_component import DiagramComponent
 
+from enthought.traits.has_traits import on_trait_change
 
 class SelectionTool(BaseDiagramTool):
 
@@ -63,7 +60,6 @@ class SelectionTool(BaseDiagramTool):
         min_c = [min(self.start[0], self.end[0]), min(self.start[1], self.end[1])]
         max_c = [max(self.start[0], self.end[0]), max(self.start[1], self.end[1])]
         rect = min_c + max_c
-        print rect
         
         for comp in self.container.components:
             if isinstance(comp, DiagramComponent):
@@ -118,8 +114,4 @@ class SelectionTool(BaseDiagramTool):
         print "move to here"
         self.reset()
         
-    @on_trait_change('event_state')
-    def on_event_state_change(self, event):
-        print event
-                
         

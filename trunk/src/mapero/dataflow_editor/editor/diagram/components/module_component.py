@@ -7,7 +7,7 @@ from mapero.dataflow_editor.editor.diagram import round_rect
 from mapero.dataflow_editor.editor.diagram.components.diagram_component import DiagramComponent
 from mapero.dataflow_editor.editor.diagram.components.port_component import PortComponent
 
-from enthought.traits.api import Bool, on_trait_change, WeakRef, Any, Delegate, Dict, Range
+from enthought.traits.api import Bool, on_trait_change, Instance, Any, Delegate, Dict, Range
 from enthought.enable.api import Label, Container, Pointer
 
 from math import pi
@@ -30,7 +30,7 @@ class ModuleComponent(DiagramComponent, Container):
     #font = KivaFont("Modern 10")
      
     diagram = Any #Instance(DiagramWindow) 
-    module_geom = WeakRef(ModuleGeometrics)
+    module_geom = Instance(ModuleGeometrics)
     
     label = Label
     progress = Range(0,100)
@@ -45,30 +45,33 @@ class ModuleComponent(DiagramComponent, Container):
         self.position = module_geom.position
         self.bounds = module_geom.bounds
         self.module_geom = module_geom
-        self.label = Label(text="Module", 
-                           position = [self.bounds[0]/7, self.bounds[1]/1.4],
-                           bounds=self.bounds, 
-                           )#font = self.font)
-        self.add( self.label )
+#        self.label = Label(text="Module", 
+#                           position = [self.bounds[0]/7, self.bounds[1]/1.4],
+#                           bounds=self.bounds, 
+#                           )#font = self.font)
+#        self.add( self.label )
 
         self._set_ports()
         self._set_label()        
 
-    @on_trait_change('module_geom.module.input_ports_items')
+    @on_trait_change('module_geom:module.input_ports_items')
     def module_input_ports_changed(self, event):
         pass
         
-    @on_trait_change('module_geom.module.output_ports_items')
+    @on_trait_change('module_geom:module.output_ports_items')
     def module_output_ports_changed(self, event):
         pass
-    @on_trait_change('module_geom.module.label')
+    @on_trait_change('module_geom:module:label')
     def module_label_changed(self, label):
         self._set_label()
         self.request_redraw()
     
-    @on_trait_change('module_geom.module.progress')
+    @on_trait_change('module_geom:module.progress')
     def module_progress_changed(self, progress):
-        self.progress=progress
+        if progress:
+            self.progress = progress
+        else:
+            self.progress = 0 
         self.request_redraw()
         
     def _set_ports(self):
@@ -108,8 +111,9 @@ class ModuleComponent(DiagramComponent, Container):
         self.request_redraw()
         
     def _set_label(self):
-        text = "[%d] %s" % (self.module_geom.module.id,self.module_geom.module.label)
-        self.label.text = text
+        if self.module_geom.module:
+            text = "[%d] %s" % (self.module_geom.module.id,self.module_geom.module.label)
+#            self.label.text = text
         self.request_redraw()
         
     @on_trait_change('module_geom:position')
@@ -141,15 +145,14 @@ class ModuleComponent(DiagramComponent, Container):
         round_rect(gc, radio=2, position=[self.x+11,self.y+11], bounds=[bar_width, bar_height])
         gc.fill_path()
 
-        
         gc.restore_state()
         return
     
-    def draw_selection(self, gc):
-        self.draw_select_box(gc, self.position, self.bounds,
+    ##########################################################
+
+    def draw_diagram_component_border(self, gc):
+        if self.selected:
+            self.draw_select_box(gc, self.position, self.bounds,
                              1, (4.0, 2.0), 0,
                                  (0.0,0.0,0.0), (1.0,1.0,1.0), 2)
-
-    ##########################################################
-        
         
