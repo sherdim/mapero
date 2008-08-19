@@ -67,6 +67,7 @@ class DataflowDiagramEditor(Editor):
         dataflow_diagram = DiagramWindow(parent = parent,
                                          ui_dataflow = self.ui_dataflow,
                                          editor = self)
+        print self.ui_dataflow
         return dataflow_diagram
     
     
@@ -99,7 +100,7 @@ class DataflowDiagramEditor(Editor):
     def _get_ui_dataflow(self):
         return self.obj
     
-    @on_trait_change('obj.dataflow:modules')
+    @on_trait_change('obj:dataflow.modules')
     def on_modules_change(self, event):
         if not isinstance(event,list):
             for module in event.added:

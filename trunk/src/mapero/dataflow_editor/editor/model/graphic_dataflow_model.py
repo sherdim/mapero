@@ -13,15 +13,14 @@ logger = logging.getLogger()
 
 class GraphicDataflowModel(HasTraits):
     
-    dataflow = Instance(Dataflow, Dataflow())
+    dataflow = Instance(Dataflow)
     module_geometrics = List(ModuleGeometrics, [])
     connection_geometrics = List(ConnectionGeometrics, [])
 
     from_here = False
     def __init__(self, **traits):
         super(GraphicDataflowModel, self).__init__(**traits)
-        self.dataflow.on_trait_change(self.on_dataflow_connections_changes, 'connections')
-        self.dataflow.on_trait_change(self.on_dataflow_modules_changes, 'modules')
+        self.dataflow = Dataflow()
     
     def add_module(self, module, x=200, y=200, w=200, h=100):
         self.from_here = True
