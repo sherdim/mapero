@@ -1,16 +1,13 @@
 from mapero.core.module import Module
-from mapero.core.port import InputPort
-from enthought.traits import api as traits
+from mapero.core.port import InputPort, MultiInputPort
+from enthought.traits.api import Int
 
 import logging
 log = logging.getLogger("mapero.logger.module");
 
 class modulo2(Module):
     """ aaaaaaa  """
-    in1 = InputPort(
-                                   data_types = None, 
-                                   name = 'in1' 
-                            )
+    in1 = InputPort( data_type = Int )
 
     def execute(self):
         log.debug("processin  g")

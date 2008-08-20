@@ -2,6 +2,8 @@
 """
 # Author: Zacarias F. Ojeda <zojeda@gmail.com>
 # License: new BSD Style.
+from mapero.core.data_type import DefaultDataType
+from mapero.core.data_type import DataType
 
 import inspect
 import logging
@@ -12,6 +14,7 @@ from enthought.traits.ui.api import View, Group, Include
 from mapero.core.port import InputPort
 from mapero.core.port import OutputPort
 
+module_registry = []
 
 log = logging.getLogger("mapero.logger.module");
 
@@ -39,6 +42,7 @@ class MetaModule ( traits.MetaHasTraits ):
         cls.canonical_name = cls.__module__
         cls.source_code_file = inspect.getsourcefile(cls)
         
+        
     def __call__(cls, *args):
         inst = super(MetaModule, cls).__call__( *args )
         MetaModule.init_ports(inst)
@@ -48,14 +52,20 @@ class MetaModule ( traits.MetaHasTraits ):
     def init_ports(module):
         for attr_name in module.__class__.__dict__:
             attr = getattr(module, attr_name)
-            if isinstance(attr, InputPort):
+            if isinstance(attr, (InputPort, OutputPort)):
                 port = type(attr)(name = attr_name, module=module)
+                if not isinstance(attr.data_type, DataType):
+                    data_type = DefaultDataType(type = attr.data_type)
+                else:
+                    data_type = attr.data_type
+                    
+                port.data_type = data_type
                 module.__dict__[attr_name] = port
-                module.input_ports.append(port)
-            if isinstance(attr, OutputPort):
-                port = type(attr)(name = attr_name, module=module)
-                module.__dict__[attr_name] = port
-                module.output_ports.append(port)
+                
+                if isinstance(attr, InputPort):
+                    module.input_ports.append(port)
+                if isinstance(attr, OutputPort):
+                    module.output_ports.append(port)
         
 
 ######################################################################

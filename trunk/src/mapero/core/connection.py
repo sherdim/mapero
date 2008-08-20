@@ -32,9 +32,12 @@ class Connection(HasTraits):
 
 	def __init__(self, **traits):
 		super(Connection, self).__init__(**traits)
-		self.output_port.connections.append(self)
-		self.input_port.connection = self
-		self.enabled = True
+		if self.input_port.data_type.is_compatible_with(self.output_port.data_type):
+			self.output_port.connections.append(self)
+			self.input_port.connection = self
+			self.enabled = True
+		else:
+			raise ModuleConnectionError(" incompatible types ")
 
 	def update_data(self):
 		self.input_port.update_data(self.data, self.data)
