@@ -17,15 +17,6 @@ from enthought.pyface.workbench.api import IEditor
 from mapero.dataflow_editor.editor.diagram.components.diagram_component import DiagramComponent
 from mapero.dataflow_editor.editor.model.diagram_object_model import DiagramObjectModel
 
-
-CURRENT_SELECTION_VIEW = 'mapero.dataflow_editor.view.current_selection'
-
-        
-
-
-
-        
-       
 class MyCanvas(DrawingCanvas, Canvas):
     bgcolor = (1.0, 0.95, 0.71, 1.0)
     draw_axes=True
@@ -109,7 +100,6 @@ class DiagramWindow(Window):
             
     @on_trait_change('ui_dataflow:module_geometrics')
     def modules_changed(self, event):
-        print "diagram_window: dataflow : ", self.ui_dataflow.dataflow
         if isinstance(event, TraitListEvent): ## odd
             for module_geometrics in event.added:
                 self.add_module_component(module_geometrics)

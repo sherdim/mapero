@@ -24,7 +24,7 @@ class PortNameError(Exception):
 class Port(HasTraits):
 	#TODO: hacer comprobacion de los tipos cuando cambia data
 	#TODO:
-	data_types = Trait
+	data_type = Any
 	name = Str
 	data = Any
 	connection = Any
@@ -35,7 +35,7 @@ class Port(HasTraits):
 		"""Method used by the state_pickler.
 		"""
 		d = self.__dict__.copy()
-		for attr in ('data', 'data_types', 'type'):
+		for attr in ('data', 'data_type', 'type'):
 			d.pop(attr, None)
 		return d
 
@@ -76,15 +76,17 @@ class MultiInputPort(InputPort):
 	base_name = Str
 
 	#TODO: fix the automatic naming port system
-	def _set_output_port(self, output_port):
-		super(MultiInputPort, self)._set_output_port(output_port)
+	def _connection_changed(self, connection):
 		pattern = re.compile(r'^(\D+)(\d*)$')
 		print self.name
 		try:
 			complete_name = pattern.search(self.name).groups()
 			base_name = complete_name[0]
 			port_number = str(int(complete_name[1]) + 1)
-			self.module.input_ports.append(MultiInputPort(self.data_types, base_name + port_number, self.module))
+			new_port = MultiInputPort(data_type = self.data_type,
+									  name = base_name + port_number,
+									  module = self.module)
+			self.module.input_ports.append(new_port)
 		except AttributeError:
 			raise PortNameError("port's name don't follow the naming rules")
 
