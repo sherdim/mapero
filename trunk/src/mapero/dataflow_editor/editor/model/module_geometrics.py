@@ -1,7 +1,7 @@
 # Author: Zacarias F. Ojeda <zojeda@gmail.com>
 # License: new BSD Style.
 
-from mapero.core.module import Module
+from mapero.core.api import Module
 
 from diagram_object_model import DiagramObjectModel
 

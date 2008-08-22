@@ -1,7 +1,7 @@
 # Author: Zacarias F. Ojeda <zojeda@gmail.com>
 # License: new BSD Style.
 
-from mapero.core.module import VisualModule
+from mapero.core.api import VisualModule
 
 from enthought.traits.api import WeakRef, on_trait_change
 from enthought.pyface.workbench.api import View

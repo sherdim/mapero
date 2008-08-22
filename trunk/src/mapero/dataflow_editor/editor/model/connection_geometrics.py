@@ -1,7 +1,7 @@
 # Author: Zacarias F. Ojeda <correo@zojeda.com.ar>
 # License: new BSD.
 
-from mapero.core.connection import Connection
+from mapero.core.api import Connection
 
 from diagram_object_model import DiagramObjectModel
 

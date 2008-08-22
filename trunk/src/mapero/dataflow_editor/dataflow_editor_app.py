@@ -63,7 +63,7 @@ def get_plugins():
     from enthought.envisage.ui.workbench.workbench_plugin import WorkbenchPlugin
     from enthought.plugins.python_shell.python_shell_plugin import PythonShellPlugin
     from enthought.tvtk.plugins.scene.scene_plugin import ScenePlugin
-    from enthought.tvtk.plugins.scene.ui.scene_ui_plugin import SceneUIPlugin
+#    from enthought.tvtk.plugins.scene.ui.scene_ui_plugin import SceneUIPlugin
     from mapero.dataflow_editor.plugins.mapero_plugin import MaperoPlugin
     from mapero.dataflow_editor.plugins.mapero_ui_plugin import MaperoUIPlugin
     plugins = [CorePlugin(),

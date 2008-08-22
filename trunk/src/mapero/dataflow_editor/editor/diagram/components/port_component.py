@@ -1,7 +1,7 @@
 # Author: Zacarias F. Ojeda <zojeda@gmail.com>
 # License: new BSD Style.
 
-from mapero.core.port import Port
+from mapero.core.port_instance import PortInstance
 
 from enthought.traits.api import Float, WeakRef, Str, Any, Property, Enum, on_trait_change 
 from enthought.enable.api import Component, str_to_font
@@ -17,7 +17,7 @@ class PortComponent(Component):
     padding = 0
     bgcolor = 'transparent'
     bounds=[10,10]
-    port = WeakRef(Port)
+    port = WeakRef( PortInstance )
     angle = Float(0.0)
     port_name = Str
     

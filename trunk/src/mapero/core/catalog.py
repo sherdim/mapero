@@ -1,6 +1,9 @@
+# Author: Zacarias F. Ojeda <correo@zojeda.com.ar>
+# License: new BSD.
+
 import mapero.modules
 import mapero.datatypes
-from mapero.core.module import Module
+from mapero.core.api import Module
 from enthought.traits import api as traits
 from os.path import abspath, join, split, isfile, realpath, walk
 import os 
