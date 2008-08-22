@@ -100,8 +100,11 @@ class Catalog(traits.HasTraits):
                                 suff_index = module_name.rfind(".py")
                                 module_name = module_name[1:suff_index]
                                 if not (module_name.endswith("__")):
-                                    py_module = self.import_module(module_name)
-                                    self.__add_modules(py_module)
+                                    try:
+                                        py_module = self.import_module(module_name)
+                                        self.__add_modules(py_module)
+                                    except:
+                                        log.error( "error loading : %s" % module_name)
                                     
                         
 #                        f, fn, d = imp.find_module(module_name, [module_path])
