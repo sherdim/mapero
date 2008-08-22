@@ -54,11 +54,11 @@ class ModuleComponent(DiagramComponent, Container):
         self._set_ports()
         self._set_label()        
 
-    @on_trait_change('module_geom:module.input_ports_items')
+    @on_trait_change('module_geom.module:input_ports_items')
     def module_input_ports_changed(self, event):
         self._set_ports()
         
-    @on_trait_change('module_geom:module.output_ports_items')
+    @on_trait_change('module_geom.module:output_ports_items')
     def module_output_ports_changed(self, event):
         self._set_ports()
         

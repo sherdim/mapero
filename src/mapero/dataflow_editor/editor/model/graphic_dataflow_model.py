@@ -1,12 +1,12 @@
 # Author: Zacarias F. Ojeda <zojeda@gmail.com>
 # License: new BSD Style.
 
-from mapero.core.dataflow import Dataflow
 from module_geometrics import ModuleGeometrics
 from connection_geometrics import ConnectionGeometrics
 
 from enthought.traits.api import HasTraits, List, Instance
 from enthought.traits.has_traits import on_trait_change
+from mapero.core.dataflow import Dataflow
 
 import logging
 logger = logging.getLogger()

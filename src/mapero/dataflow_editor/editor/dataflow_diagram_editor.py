@@ -4,9 +4,8 @@
 from enthought.traits.api import Instance, Property, List, on_trait_change
 from enthought.pyface.workbench.api import Editor
 
-from mapero.core.module import VisualModule
 from mapero.core.catalog import Catalog
-from mapero.core.connection import Connection
+from mapero.core.api import VisualModule, Connection
 
 from mapero.dataflow_editor.editor.model.module_geometrics import ModuleGeometrics
 from mapero.dataflow_editor.editor.model.connection_geometrics import ConnectionGeometrics
