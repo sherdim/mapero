@@ -7,7 +7,8 @@ class modulo1(Module):
     """  """
     
     __version__  = 0
-    __name__     = "Module1 "
+
+    label     = "Module 1"
     
     param = Range(0,100)
     

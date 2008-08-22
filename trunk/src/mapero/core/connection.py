@@ -2,7 +2,7 @@
 # License: new BSD.
 
 
-from enthought.traits.api import HasTraits, Instance, Property, Any, Int, Bool 
+from enthought.traits.api import HasTraits, Instance, Any, Int, Bool 
 from enthought.traits.ui.api import View, Item, Group
 from mapero.core.port_instance import InputPortInstance, OutputPortInstance
 
@@ -23,7 +23,7 @@ class Connection(HasTraits):
 	id = Int
 	input_port = Instance(InputPortInstance)
 	output_port = Instance(OutputPortInstance)
-	data = Any
+	data = Any( trancient = True)
 	enabled = Bool
 	
 

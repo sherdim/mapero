@@ -3,15 +3,15 @@
 
 from mapero.core.data_type import DataType
 
-from enthought.traits.api import HasTraits, Str, Instance, Property, \
+from enthought.traits.api import HasPrivateTraits, Str, Instance, Property, \
                                  List, WeakRef, Bool
 
 
 
-class PortInstance(HasTraits):
+class PortInstance(HasPrivateTraits):
     module = WeakRef( klass = 'mapero.core.module.Module' )
     name = Str
-    data_type = DataType
+    data_type = Instance(DataType)
     data = Property
     
     def __init__(self, **traits):

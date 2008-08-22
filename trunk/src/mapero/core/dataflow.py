@@ -5,8 +5,12 @@ from mapero.core.api import Connection
 from mapero.core.api import Module
 from mapero.core.api import IDataflowEngine
 
-from enthought.traits.api import Instance, List, Int, Event
 from mapero.core.dataflow_engine.simple_engine.simple_engine import SimpleEngine
+
+from enthought.traits.api import Instance, List, Int, Event
+from enthought.traits.has_traits import on_trait_change
+from enthought.persistence import state_pickler
+from enthought.persistence.state_pickler import StateSetterError
 import sys
 
 class RepeatedModuleIDInDataflowError(Exception):
@@ -42,6 +46,7 @@ class Dataflow(Module):
 
 	_max_module_id = Int(0)
 	_max_connection_id = Int(0)
+
 	updated = Event
 	
 	engine = Instance(IDataflowEngine, transcient = True)
@@ -83,37 +88,21 @@ class Dataflow(Module):
 				raise ModuleNotFoundInDataflowError(str(module))
 
 
-	def has_module(self, module_label):
-		for module in self.modules:
-			if module.label == module_label:
-				return True
-		return False
-	
 	def disconnect_module(self, module):
-		connections = self._get_module_connections(module)
+		connections = [connection for connection in self.connections 
+					   if connection.input_port.module == module
+					    or connection.output_port.module == module]
+		
 		for connection in connections:
 			self.connections.remove(connection)
 
-	def _get_module_connections(self, module):
-		connections = [connection for connection in self.connections 
-					   if connection.input_port.module == module or connection.output_port.module == module]
-		return connections
-	
-	def __set_pure_state__(self, state):
-		self.modules = state.modules
-		self.connections = state.connections
-	
-	def _modules_items_changed(self, event):
+	@on_trait_change('modules_items')
+	def on_modules_items_change(self, event):
 		module_ids = [module.id for module in self.modules]
 		for module in event.removed:
 			self.disconnect_module(module)
-			module.stop_module()
-			quedan = sys.getrefcount(module)
-			if quedan > 2:
-				print( "in memory: %s  instances of %s" % ( sys.getrefcount(module), module.__class__ ))
 			
 		for module in event.added:
-			traits = module.class_trait_names()
 			if module.id == None:
 				self._max_module_id = self._max_module_id + 1
 				module.id = self._max_module_id
@@ -127,11 +116,6 @@ class Dataflow(Module):
 					if id >= module.id:
 						id_modules_dict[id].id = id+1
 				self._max_module_id = max(max(module_ids), module.id)
-
-			for attr in ('progress', 'id'):
-				traits.remove(attr)
-			for trait in traits:
-				module.on_trait_change(self._module_attr_changed, trait)
 				
 		if len(event.removed)>0 :
 			i=0;
@@ -142,7 +126,8 @@ class Dataflow(Module):
 			
 		self.updated = True
 		
-	def _connections_items_changed(self, event):
+	@on_trait_change('connections_items')
+	def on_connections_items_change(self, event):
 		for connection in event.added:
 			if connection.input_port.module not in self.modules or \
 			   connection.output_port.module not in self.modules:
@@ -163,7 +148,4 @@ class Dataflow(Module):
 			self._max_connection_id = i
 			
 		self.updated = True
-		
-	def _module_attr_changed(self, module):
-		self.updated = True
-		
+	
