@@ -3,8 +3,7 @@
 
 from mapero.core.data_type import DataType
 
-from enthought.traits.api import HasTraits, Instance, Type, TraitType, \
-                                 List, WeakRef
+from enthought.traits.api import HasTraits, Instance, Type, TraitType
 
 
 class PortDefinition(HasTraits):
@@ -25,10 +24,10 @@ class PortDefinition(HasTraits):
     
     
 class Port( PortDefinition ):
-    module = WeakRef
+    pass
 
 class OutputPort( Port ):
-    connections = List(WeakRef)
+    pass
 
 class InputPort( Port ):
-    connection = WeakRef
+    pass

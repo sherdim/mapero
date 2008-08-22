@@ -7,13 +7,13 @@ from mapero.core.port_instance import InputPortInstance, OutputPortInstance
 import inspect
 import logging
 
-from enthought.traits import api as traits
+from enthought.traits.api import Int, List, Str, Range, HasTraits, MetaHasTraits
 from enthought.traits.ui.api import View, Group, Include
 
 log = logging.getLogger("mapero.logger.module");
 
 
-class MetaModule ( traits.MetaHasTraits ):
+class MetaModule ( MetaHasTraits ):
     def __init__ ( cls, name, bases, dict):
         super(MetaModule, cls).__init__(name, bases, dict)
         cls.module_class = cls.__class__
@@ -22,43 +22,23 @@ class MetaModule ( traits.MetaHasTraits ):
         cls.canonical_name = cls.__module__
         cls.source_code_file = inspect.getsourcefile(cls)
         
-#        
-#    def __call__(cls, *args):
-#        inst = super(MetaModule, cls).__call__( *args )
-#        MetaModule.init_ports(inst)
-#        return inst
-#    
-    @staticmethod
-    def init_ports(module):
-        for attr_name in module.__class__.__dict__:
-            attr = getattr(module, attr_name)
-            if isinstance(attr, (InputPort, OutputPort)):
-                port = type(attr)(name = attr_name, module=module)
-                port.data_type = attr.data_type
-                module.__dict__[attr_name] = port
-                
-                if isinstance(attr, InputPort):
-                    module.input_ports.append(port)
-                if isinstance(attr, OutputPort):
-                    module.output_ports.append(port)
-        
 
 ######################################################################
 # `Module` class.
 ######################################################################
-class Module(traits.HasTraits):
+class Module( HasTraits ):
     """ Base class for all modules in the mapero structure """
     
     __metaclass__ = MetaModule
     
     __version__ = 1.0
     
-    id = traits.Int(None)
-    label = traits.Str('None')
-    progress = traits.Range(0,100)
+    id = Int(None)
+    label = Str('None')
+    progress = Range(0,100)
     
-    input_ports = traits.List(InputPortInstance, [])
-    output_ports = traits.List(OutputPortInstance, [])
+    input_ports = List(InputPortInstance, [], transcient = True)
+    output_ports = List(OutputPortInstance, [], transcient = True)
 
     module_view = View(
                        Group(
@@ -94,7 +74,6 @@ class Module(traits.HasTraits):
     
 
 class VisualModule(Module):
-    win = traits.Any
 
     def __init__(self, **traits):
         super(VisualModule, self).__init__(**traits)
