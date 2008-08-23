@@ -1,7 +1,7 @@
 # Author: Zacarias F. Ojeda <correo@zojeda.com.ar>
 # License: new BSD.
 
-from enthought.traits.api import HasTraits, Any, Undefined, on_trait_change, implements
+from enthought.traits.api import HasTraits, Any, on_trait_change, implements
 from mapero.core.dataflow_engine.i_dataflow_engine import IDataflowEngine
 from mapero.core.port_definition import InputPort, OutputPort
 from mapero.core.dataflow_engine.simple_engine.port import SimpleInputPort,\
@@ -23,7 +23,7 @@ class SimpleEngine(HasTraits):
                 module.__dict__[attr_name] = port
                 module.input_ports.append(port)
             if isinstance(attr, OutputPort):
-                port = SimpleOutputPort(name = attr_name, module=module, data_type = attr.data_type)
+                port = SimpleOutputPort(name = attr_name, module=module, data_type = attr.data_type )
                 module.__dict__[attr_name] = port
                 module.output_ports.append(port)
     
