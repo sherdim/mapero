@@ -9,9 +9,6 @@ from mapero.core.dataflow_engine.simple_engine.simple_engine import SimpleEngine
 
 from enthought.traits.api import Instance, List, Int, Event
 from enthought.traits.has_traits import on_trait_change
-from enthought.persistence import state_pickler
-from enthought.persistence.state_pickler import StateSetterError
-import sys
 
 class RepeatedModuleIDInDataflowError(Exception):
 	def __init__(self, value):

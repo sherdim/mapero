@@ -3,6 +3,7 @@
 # Author: Zacarias F. Ojeda <zojeda@gmail.com>
 # License: new BSD Style.
 from mapero.core.port_instance import InputPortInstance, OutputPortInstance
+from enthought.traits.has_traits import HasStrictTraits
 
 import inspect
 import logging
@@ -26,7 +27,7 @@ class MetaModule ( MetaHasTraits ):
 ######################################################################
 # `Module` class.
 ######################################################################
-class Module( HasTraits ):
+class Module( HasStrictTraits ):
     """ Base class for all modules in the mapero structure """
     
     __metaclass__ = MetaModule
@@ -37,8 +38,8 @@ class Module( HasTraits ):
     label = Str('None')
     progress = Range(0,100)
     
-    input_ports = List(InputPortInstance, [], transcient = True)
-    output_ports = List(OutputPortInstance, [], transcient = True)
+    input_ports = List(InputPortInstance, [])
+    output_ports = List(OutputPortInstance, [])
 
     module_view = View(
                        Group(
@@ -71,8 +72,15 @@ class Module( HasTraits ):
     def post_execute(self):
         return True
 
+    def __get_pure_state__(self):
+        traits_names = self.class_trait_names()
+        avoided_traits = ['input_ports', 'output_ports', 'trait_added',
+                           'trait_modified', 'progress' ]
+        traits = [ trait for trait in traits_names if trait not in avoided_traits ]
+        log.debug("returning state : %s for module [%s]" % (traits,self.__class__.__name__ ))
+        result = self.get(traits)
+        return result
     
-
 class VisualModule(Module):
 
     def __init__(self, **traits):
