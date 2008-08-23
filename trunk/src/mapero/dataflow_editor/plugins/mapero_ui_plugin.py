@@ -7,7 +7,7 @@ from mapero.core.catalog import Catalog
 
 from enthought.traits.api import List, on_trait_change, HasTraits
 from enthought.envisage.api import Plugin
-from mapero.dataflow_editor.service.api import CurrentSelection
+from enthought.envisage.service_offer import ServiceOffer
 
 
 # This module's package.
@@ -55,11 +55,11 @@ class MaperoUIPlugin(Plugin):
         
         return [MaperoUIActionSet]
 
+    # Services we contribute.
+    service_offers = List(contributes_to=SERVICE_OFFERS)
+
     # Views.
     views = List(contributes_to=VIEWS)
-
-    # Services we contribute.
-    #service_offers = List(contributes_to=SERVICE_OFFERS)
 
     # Preferences.
     #preferences = List(contributes_to=PREFERENCES)
@@ -91,8 +91,8 @@ class MaperoUIPlugin(Plugin):
         from enthought.pyface.workbench.traits_ui_view import \
                 TraitsUIView
         
-        current_selection = CurrentSelection(workbench=window.workbench)
-
+        from mapero.dataflow_editor.service.api import CurrentSelection
+        current_selection = window.get_service( CurrentSelection )
         tui_current_view = TraitsUIView(
                                        obj = current_selection,
                                        view = 'view_selection', 
@@ -105,18 +105,21 @@ class MaperoUIPlugin(Plugin):
         return tui_current_view
     
 
-#    def _service_offers_default(self):
-#        """ Trait initializer. """
-#        engine_service_offer = ServiceOffer(
-#            protocol = 'enthought.mayavi.core.engine.Engine',
-#            factory  = PKG + '.envisage_engine.EnvisageEngine'
-#        )
-#
-#        script_service_offer = ServiceOffer(
-#            protocol = 'enthought.mayavi.plugins.script.Script',
-#            factory  = PKG + '.script.Script'
-#        )
-#        return [engine_service_offer, script_service_offer]
+    def _service_offers_default(self):
+        """ Trait initializer. """
+        current_selection_service_offer = ServiceOffer(
+            protocol = 'mapero.dataflow_editor.service.current_selection.CurrentSelection',
+            factory  = self._current_selection_factory
+        )
+
+        return [current_selection_service_offer]
+
+    def _current_selection_factory(self, window, **traits):
+        from mapero.dataflow_editor.service.api import CurrentSelection
+        current_selection = CurrentSelection(workbench=window.workbench)
+        return current_selection
+        
+
     ######################################################################
     # Trait handlers.
     @on_trait_change('application.gui:started')

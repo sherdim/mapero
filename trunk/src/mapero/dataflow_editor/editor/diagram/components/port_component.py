@@ -78,7 +78,7 @@ class PortComponent(Component):
         event.handled
         
     def normal_mouse_move(self, event):
-#        self.port_name = self.port.name
+        self.port_name = self.port.name
         self.request_redraw()
         
     def normal_mouse_leave(self, event):
