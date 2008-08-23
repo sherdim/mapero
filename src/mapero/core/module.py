@@ -36,7 +36,7 @@ class Module( HasStrictTraits ):
     
     id = Int(None)
     label = Str('None')
-    progress = Range(0,100)
+    progress = Range(0,100, transient=True)
     
     input_ports = List(InputPortInstance, [])
     output_ports = List(OutputPortInstance, [])
@@ -72,14 +72,13 @@ class Module( HasStrictTraits ):
     def post_execute(self):
         return True
 
-    def __get_pure_state__(self):
-        traits_names = self.class_trait_names()
-        avoided_traits = ['input_ports', 'output_ports', 'trait_added',
-                           'trait_modified', 'progress' ]
-        traits = [ trait for trait in traits_names if trait not in avoided_traits ]
-        log.debug("returning state : %s for module [%s]" % (traits,self.__class__.__name__ ))
-        result = self.get(traits)
-        return result
+#    def __get_pure_state__(self):
+#        traits_names = self.class_trait_names()
+#        avoided_traits = [ 'trait_added', 'trait_modified', 'progress' ]
+#        traits = [ trait for trait in traits_names if trait not in avoided_traits ]
+#        log.debug("returning state : %s for module [%s]" % (traits,self.__class__.__name__ ))
+#        result = self.get(traits)
+#        return result
     
 class VisualModule(Module):
 

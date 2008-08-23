@@ -14,7 +14,7 @@ class PortDefinition(HasTraits):
         trait     : if no data_type is assigned, the trait attribute can
                     be used to construct a default data_type based on it
     """
-    data_type = Instance( DataType, allow_none = False )
+    data_type = Instance( DataType, allow_none = True )
     trait = Type( TraitType )
     
     def __init__(self, **traits):
