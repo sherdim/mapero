@@ -38,6 +38,9 @@ class SimpleEngine(HasTraits):
     def on_modules_changes(self, event):
         for module in event.added:
             self.instanciate_ports(module)
+            module.start_module()
+        for module in event.removed:
+            module.stop_module()
             
     @on_trait_change('dataflow:connections_items')
     def on_connection_changes(self, event):
