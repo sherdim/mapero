@@ -5,7 +5,7 @@ from mapero.core.api import Module
 
 from diagram_object_model import DiagramObjectModel
 
-from enthought.traits.api import WeakRef, Property
+from enthought.traits.api import Instance, Property
 from enthought.enable.enable_traits import coordinate_trait, bounds_trait
 from enthought.traits.ui.api import View, Item
 
@@ -14,7 +14,7 @@ class ModuleGeometrics(DiagramObjectModel):
     position = coordinate_trait
     bounds = bounds_trait
     
-    module = WeakRef(Module)
+    module = Instance(Module)
     
     x = Property
     x2 = Property

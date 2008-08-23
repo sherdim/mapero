@@ -5,14 +5,14 @@ from mapero.core.api import Connection
 
 from diagram_object_model import DiagramObjectModel
 
-from enthought.traits.api import List, WeakRef
+from enthought.traits.api import List, Instance
 from enthought.enable.enable_traits import coordinate_trait
 from enthought.traits.ui.api import View, Item
 
 class ConnectionGeometrics(DiagramObjectModel):
     
     points = List(coordinate_trait)
-    connection = WeakRef(Connection)
+    connection = Instance(Connection)
     start_point = coordinate_trait   # correspond to the port associated
     end_point = coordinate_trait
     

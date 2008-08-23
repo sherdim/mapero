@@ -6,10 +6,17 @@ from enthought.traits.ui.api import View, Item
 from enthought.envisage.ui.workbench.api import Workbench
 
 from mapero.dataflow_editor.editor.model.diagram_object_model import DiagramObjectModel
+from mapero.dataflow_editor.editor.dataflow_diagram_editor import DataflowDiagramEditor
+from mapero.dataflow_editor.editor.model.graphic_dataflow_model import GraphicDataflowModel
 
 
 class CurrentSelection(HasTraits):
     workbench = Instance(Workbench)
+    
+    editor = Instance(DataflowDiagramEditor)
+    
+    graphic_dataflow = Instance(GraphicDataflowModel)
+    
     current_selection = Property
     
     _current_selection = Instance(DiagramObjectModel)
@@ -32,7 +39,9 @@ class CurrentSelection(HasTraits):
         window.on_trait_change(self.update_active_editor, 'active_editor')
             
     def update_active_editor(self, editor):
-        print "update_active_editor changed" , editor
+        self.editor = editor
+        print editor.ui_dataflow
+        self.graphic_dataflow = editor.ui_dataflow
         editor.on_trait_change(self.update_selection, 'selection')
         
     def update_selection(self, event):
