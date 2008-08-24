@@ -101,8 +101,8 @@ class SelectionTool(BaseDiagramTool):
             
     def moving_mouse_move(self, event):
         movement = [0,0]
-        movement[0] = event.x - self.start_moving[0]
-        movement[1] = event.y - self.start_moving[1]
+        movement[0] = int(event.x - self.start_moving[0])
+        movement[1] = int(event.y - self.start_moving[1])
         for diagram_object in self.editor.selection:
             if isinstance(diagram_object, DiagramObjectModel):
                 comp = self.container.window.diagram_object_component_dict[diagram_object]

@@ -31,7 +31,7 @@ class MyCanvas(DrawingCanvas, Canvas):
         self.listening_tools.append( SelectionTool(container = self) )
     
     def normal_dropped_on(self, event):
-        position = [event.x,event.y]
+        position = [int(event.x), int(event.y)]
         self.editor.add_module( event.obj.module_info.clazz.canonical_name, position=position  )
         
     def normal_drag_over(self, event):

@@ -9,10 +9,13 @@ from enthought.pyface.api import FileDialog, OK
 
 from enthought.pyface.action.api import Action
 from enthought.persistence import state_pickler
+from enthought.persistence.state_pickler import set_state
 
 # Local imports.
 import logging
 logger = logging.getLogger()
+
+from os.path import isfile
 
 def shell_bind(window, name, object):
     SHELL_VIEW = 'enthought.plugins.python_shell_view'
@@ -81,7 +84,52 @@ class SaveAs(Action):
             from mapero.dataflow_editor.service.current_selection import CurrentSelection
             current_selection = self.window.get_service(CurrentSelection)
             
+#            state = state_pickler.get_state(current_selection.graphic_dataflow)
+#            print state
             state_pickler.dump(current_selection.graphic_dataflow, dialog.path)
+
+
+######################################################################
+# `OpenDataflow` class.
+######################################################################
+class OpenDataflow(Action):
+    """ An action that open a dataflow definition from file. """
+
+    name = "Open Dataflow ..."
+
+    tooltip       = "Open saved dataflow"
+
+    description   = "Open saved dataflow from a Mapero file"
+
+    ###########################################################################
+    # 'Action' interface.
+    ###########################################################################
+
+    def perform(self, event):
+        """ Performs the action. """
+        wildcard = 'Mapero files (*.mprd)|*.mprd|' + FileDialog.WILDCARD_ALL
+        parent = self.window.control
+        dialog = FileDialog(parent=parent,
+                            title='Open Mapero file',
+                            action='open', wildcard=wildcard
+                            )
+        if dialog.open() == OK:
+            if not isfile(dialog.path):
+                logger.error("File '%s' does not exist" % dialog.path, parent)
+                return
+            
+            # Get the state from the file.
+            state = state_pickler.load_state(dialog.path)
+            state_pickler.update_state(state)
+            print state
+            from mapero.dataflow_editor.editor.api import DataflowDiagramEditor
+            from mapero.dataflow_editor.editor.model.api import GraphicDataflowModel
+            graphic_dataflow_model = GraphicDataflowModel()
+            editor = self.window.edit(graphic_dataflow_model, kind=DataflowDiagramEditor)
+            
+            shell_bind(self.window, editor.id, editor)
+            
+            set_state(graphic_dataflow_model, state)
 
             
         

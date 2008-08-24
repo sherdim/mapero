@@ -8,7 +8,7 @@ from enthought.traits.has_traits import HasStrictTraits
 import inspect
 import logging
 
-from enthought.traits.api import Int, List, Str, Range, HasTraits, MetaHasTraits
+from enthought.traits.api import Int, List, Str, Range, MetaHasTraits
 from enthought.traits.ui.api import View, Group, Include
 
 log = logging.getLogger("mapero.logger.module");
@@ -38,8 +38,8 @@ class Module( HasStrictTraits ):
     label = Str('None')
     progress = Range(0,100, transient=True)
     
-    input_ports = List(InputPortInstance, [])
-    output_ports = List(OutputPortInstance, [])
+    input_ports = List(InputPortInstance, [], transient=True)
+    output_ports = List(OutputPortInstance, [], transient=True)
 
     module_view = View(
                        Group(
@@ -48,6 +48,15 @@ class Module( HasStrictTraits ):
                              )
                        )
 
+    def get_port(self, name):
+        for input_port in self.input_ports:
+            if input_port.name == name:
+                return input_port
+        for output_port in self.output_ports:
+            if output_port.name == name:
+                return output_port
+            
+        raise NotImplementedError
 
     def __init__(self, **traits):
         super(Module, self).__init__(**traits)
@@ -72,14 +81,6 @@ class Module( HasStrictTraits ):
     def post_execute(self):
         return True
 
-#    def __get_pure_state__(self):
-#        traits_names = self.class_trait_names()
-#        avoided_traits = [ 'trait_added', 'trait_modified', 'progress' ]
-#        traits = [ trait for trait in traits_names if trait not in avoided_traits ]
-#        log.debug("returning state : %s for module [%s]" % (traits,self.__class__.__name__ ))
-#        result = self.get(traits)
-#        return result
-    
 class VisualModule(Module):
 
     def __init__(self, **traits):

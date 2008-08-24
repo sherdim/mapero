@@ -40,9 +40,12 @@ class CurrentSelection(HasTraits):
             
     def update_active_editor(self, editor):
         self.editor = editor
-        print editor.ui_dataflow
-        self.graphic_dataflow = editor.ui_dataflow
-        editor.on_trait_change(self.update_selection, 'selection')
+        if editor:
+            self.graphic_dataflow = editor.ui_dataflow
+            editor.on_trait_change(self.update_selection, 'selection')
+        else:
+            self.graphic_dataflow = None
+            
         
     def update_selection(self, event):
         selection = self.workbench.active_window.active_editor.selection

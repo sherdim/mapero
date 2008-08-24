@@ -9,6 +9,7 @@ from mapero.core.dataflow_engine.simple_engine.simple_engine import SimpleEngine
 
 from enthought.traits.api import Instance, List, Int, Event
 from enthought.traits.has_traits import on_trait_change
+from enthought.persistence import state_pickler
 
 class RepeatedModuleIDInDataflowError(Exception):
 	def __init__(self, value):
@@ -46,7 +47,7 @@ class Dataflow(Module):
 
 	updated = Event
 	
-	engine = Instance(IDataflowEngine, transcient = True)
+	engine = Instance(IDataflowEngine, transient = True)
 
 	def __init__(self, **traits):
 		super(Dataflow, self).__init__(**traits)
@@ -146,3 +147,20 @@ class Dataflow(Module):
 			
 		self.updated = True
 	
+	def __set_pure_state__(self, state):
+		for module_state in state.modules:
+			module = state_pickler.create_instance(module_state)
+			self.modules.append(module)
+			state_pickler.set_state(module, module_state)
+
+		for connection_state in state.connections:
+			out_module = self.get_module_by_id(connection_state.output_port.module.id)
+			in_module = self.get_module_by_id(connection_state.input_port.module.id)
+			
+			out_port = out_module.get_port(connection_state.output_port.name)
+			in_port = in_module.get_port(connection_state.input_port.name)
+			
+			connection = Connection(output_port = out_port, input_port = in_port)
+			connection.enabled = connection_state.enabled
+			self.connections.append(connection)
+			
