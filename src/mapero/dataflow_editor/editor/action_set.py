@@ -26,6 +26,11 @@ new_dataflow  = Action(
     path       = 'MenuBar/File', group = 'DataflowEditorFileGroup'
 )
 
+open_dataflow = Action(
+    class_name = 'mapero.dataflow_editor.editor.actions.OpenDataflow',
+    path       = 'MenuBar/File', group = 'DataflowEditorFileGroup'
+)
+
 save_dataflow = Action(
     class_name = 'mapero.dataflow_editor.editor.actions.SaveAs',
     path       = 'MenuBar/File', group = 'DataflowEditorFileGroup'
@@ -36,5 +41,5 @@ class MaperoUIActionSet(ActionSet):
 
     groups  = [file_group, view_group]
     menus   = []
-    actions = [ new_dataflow, save_dataflow ]
+    actions = [ new_dataflow, open_dataflow, save_dataflow ]
     

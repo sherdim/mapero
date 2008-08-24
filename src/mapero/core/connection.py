@@ -23,7 +23,7 @@ class Connection(HasTraits):
 	id = Int
 	input_port = Instance(InputPortInstance)
 	output_port = Instance(OutputPortInstance)
-	data = Any( trancient = True)
+	data = Any( transient = True)
 	enabled = Bool
 	
 
@@ -41,14 +41,8 @@ class Connection(HasTraits):
 		else:
 			self.enabled = True
 
-	def __get_pure_state__(self):
-		"""Method used by the state_pickler.
-		"""
-		d = self.__dict__.copy()
-		for attr in ('data',):
-			d.pop(attr, None)
-		return d
-
+	def __set_pure_state__(self, state):
+		self.enabled = state.enabled
 		
 	view = View(
 			    Group(

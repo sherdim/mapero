@@ -5,16 +5,15 @@ from mapero.core.api import Module
 
 from diagram_object_model import DiagramObjectModel
 
-from enthought.traits.api import Instance, Property
-from enthought.enable.enable_traits import coordinate_trait, bounds_trait
+from enthought.traits.api import Instance, Property, List
 from enthought.traits.ui.api import View, Item
 
 class ModuleGeometrics(DiagramObjectModel):
  
-    position = coordinate_trait
-    bounds = bounds_trait
-    
     module = Instance(Module)
+    
+    position = List([0.0, 0.0])
+    bounds = List([0.0, 0.0])
     
     x = Property
     x2 = Property
@@ -61,6 +60,10 @@ class ModuleGeometrics(DiagramObjectModel):
     
     def _get_height(self):
         return self.bounds[1]
+    
+#    def __get_pure_state__(self):
+#        state = super(ModuleGeometrics, self).__get_state__()
+#        return state
 
     view = View(
                 Item( name = "module", show_label = False, style = 'custom' )
