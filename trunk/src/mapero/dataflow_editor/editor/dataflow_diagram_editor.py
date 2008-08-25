@@ -66,7 +66,6 @@ class DataflowDiagramEditor(Editor):
         dataflow_diagram = DiagramWindow(parent = parent,
                                          ui_dataflow = self.ui_dataflow,
                                          editor = self)
-        print self.ui_dataflow
         return dataflow_diagram
     
     

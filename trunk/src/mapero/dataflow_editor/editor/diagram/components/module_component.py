@@ -73,7 +73,7 @@ class ModuleComponent(DiagramComponent, Container):
             self.add(port_component)
             self.port_component_dict[output_port] = port_component
         
-        self._set_ports()
+        self._set_positions()
         
     @on_trait_change('module_geom.module:input_ports_items')
     def module_input_ports_changed(self, event):
@@ -92,7 +92,7 @@ class ModuleComponent(DiagramComponent, Container):
             port_component = self.port_component_dict.pop(input_port)
             self.remove(port_component)
             
-        self._set_ports()
+        self._set_positions()
         
     @on_trait_change('module_geom.module:output_ports_items')
     def module_output_ports_changed(self, event):
@@ -110,7 +110,7 @@ class ModuleComponent(DiagramComponent, Container):
             port_component = self.port_component_dict.pop(output_port)
             self.remove(port_component)
             
-        self._set_ports()
+        self._set_positions()
         
     @on_trait_change('module_geom:module:[label,id]')
     def module_label_changed(self, label):
@@ -125,7 +125,8 @@ class ModuleComponent(DiagramComponent, Container):
             self.progress = 0 
         self.request_redraw()
         
-    def _set_ports(self):
+    def _set_positions(self):
+        self.label.position = [self.bounds[0]/7, self.bounds[1]/1.4]
 
         ## input ports
         input_ports_len = len(self.module_geom.module.input_ports)
@@ -154,11 +155,12 @@ class ModuleComponent(DiagramComponent, Container):
     @on_trait_change('module_geom:position')
     def on_module_geom_position_change(self, position):
         self.position = position
+        self._set_positions()
         
     @on_trait_change('module_geom:bounds')
     def on_module_geom_bounds_change(self, bounds):
         self.bounds = bounds
-        self._set_ports()
+        self._set_positions()
     #### DiagramComponent interface ##########################
     
     def _get_diagram_object_model(self):

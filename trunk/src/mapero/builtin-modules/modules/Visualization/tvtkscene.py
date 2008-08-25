@@ -11,10 +11,7 @@ import types
 class tvtkscene(VisualModule):
     """ modulo de prueba visual """
     scene = Instance(DecoratedScene)
-    view = Group(
-                 Item('scene', label='', style='custom'),
-                 label='Scene', show_labels=False
-                )
+    view =  Item('scene', style='custom')
 
     label = 'TVTK Scene'
     input1 = InputPort(trait = Any)
