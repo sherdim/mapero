@@ -1,19 +1,20 @@
 from mapero.core.api import VisualModule
 from mapero.core.api import OutputPort, InputPort
+
 from enthought.traits.api import Array, Str, Range, Float, Button
 from enthought.traits.ui.api import Group
 from enthought.enable.api import Window
 from enthought.chaco.api import add_default_axes, add_default_grids, LinearMapper,\
-      ArrayDataSource, MultiArrayDataSource, DataRange1D, AbstractDataSource
+      ArrayDataSource, MultiArrayDataSource, DataRange1D, AbstractDataSource, \
+      OverlayPlotContainer
 from enthought.chaco.tools.api import RangeSelection, RangeSelectionOverlay
-from enthought.chaco.plot_containers import OverlayPlotContainer
+
 from numpy.lib.function_base import linspace
 import numpy.core.multiarray as mu
 from numpy.core.numeric import array
+from numpy.core.defmatrix import matrix
 
 from multiline_plot import MultiLinePlot
-from enthought.chaco.plot_factory import create_line_plot
-from numpy.core.defmatrix import matrix
 import time
 
 import logging
@@ -104,10 +105,16 @@ class time_selector(VisualModule):
 
     def execute(self):
         self.i_values = self.ip_values.data
-        if (self.i_values != None) :
+        if self.i_values != None :
             self.process()
         else:
+            if self.container and self.plot :
+                try:
+                    self.container.remove(self.plot)
+                except:
+                    log.error("unable to remove plot componet")
             self.op_selected_values.data = None
+        self.container.request_redraw()
 
     def process(self):
         i_values = self.i_values
@@ -116,8 +123,10 @@ class time_selector(VisualModule):
         low = 0.0
         high = i_values.shape[1]
         t = linspace(low, high, i_values.shape[1])
-        if ( self.plot != None ):
+        try:
             self.container.remove(self.plot)
+        except:
+            log.error("unable to remove plot componet")
             
         self.plot = create_multi_line_plot((t,i_values),width=0.5)
 
