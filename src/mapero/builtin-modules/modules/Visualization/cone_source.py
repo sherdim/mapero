@@ -26,7 +26,6 @@ class cone_source(Module):
 
         self.cone_out.data = self.actor
         
-        print self.cone_out.data
     
 
 

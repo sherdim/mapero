@@ -78,16 +78,14 @@ class ConnectionComponent(DiagramComponent, Component):
     def on_input_port_change_position(self, position):
         if self.connection_geometrics:
             self._include_point_in_coord_box(position)
-            self.connection_geometrics.start_point = position
-            print "new port position (connection_component): ", position
+            self.connection_geometrics.end_point = position
             self.invalidate_and_redraw()
 
     @on_trait_change('output_port_component.absolute_position')
     def on_output_port_change_position(self, position):
         if self.connection_geometrics:
             self._include_point_in_coord_box(position)
-            self.connection_geometrics.end_point = position
-            print "new port position (connection_component): ", position
+            self.connection_geometrics.start_point = position
             self.invalidate_and_redraw()
 
     #utility function used to change the position and bounds

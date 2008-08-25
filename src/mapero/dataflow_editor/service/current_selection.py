@@ -21,13 +21,15 @@ class CurrentSelection(HasTraits):
     
     _current_selection = Instance(DiagramObjectModel)
     
-    view_selection = View(Item(name='_current_selection',
+    view_selection = View(
+                          Item(name='_current_selection',
                                        enabled_when='_current_selection is not None',
-                                       style='custom', springy=True,
-                                       show_label=False,),
-                                  resizable=True,
-                                  scrollable=True
-                                  )
+                                       style='custom', springy=True, show_label=True
+                               ),
+                          resizable=True,
+                          scrollable=True,
+                          style = 'custom'
+                         )
     
     def __init__(self, workbench):
         self.workbench = workbench
@@ -35,7 +37,6 @@ class CurrentSelection(HasTraits):
         self.workbench.on_trait_change(self.on_current_window_changed, 'active_window')
     
     def on_current_window_changed(self, window):
-        print "on_current_window_changed changed" 
         window.on_trait_change(self.update_active_editor, 'active_editor')
             
     def update_active_editor(self, editor):

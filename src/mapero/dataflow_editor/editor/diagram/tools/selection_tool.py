@@ -109,7 +109,6 @@ class SelectionTool(BaseDiagramTool):
         self.start_moving = [event.x, event.y]
         
     def moving_left_up(self, event):
-        print "move to here"
         self.reset()
         
         

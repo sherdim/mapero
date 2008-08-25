@@ -43,7 +43,8 @@ class Module( HasTraits ):
     module_view = View(
                        Group(
                              Group('label', label='Module', springy=True),
-                             Include('view')
+                             Include('view'),
+                             show_labels = True
                              )
                        )
 

@@ -44,9 +44,9 @@ class SimpleEngine(HasTraits):
     @on_trait_change('dataflow:connections_items')
     def on_connection_changes(self, event):
         for connection in event.added:
-            connection.enabled = True
-            connection.data = connection.output_port.data
-            connection.input_port.data = connection.data
+            if connection.enabled:
+                connection.data = connection.output_port.data
+                connection.input_port.data = connection.data
             
         for connection in event.removed:
             connection.enabled = False
