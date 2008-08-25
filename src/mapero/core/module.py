@@ -80,6 +80,17 @@ class Module( HasTraits ):
 
     def post_execute(self):
         return True
+    
+    def __get_pure_state__(self):
+        traits_names = self.class_trait_names()
+        avoided_traits = ['input_ports', 'output_ports', 'trait_added',
+                           'trait_modified', 'progress', 'parent', 'engine',
+                           'updated' ]
+        traits = [ trait for trait in traits_names if trait not in avoided_traits ]
+        log.debug("returning state : %s for module [%s]" % (traits,self.__class__.__name__ ))
+        result = self.get(traits)
+        
+        return result
 
 class VisualModule(Module):
 
