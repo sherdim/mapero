@@ -1,34 +1,28 @@
-from mapero.core.module import VisualModule
-from mapero.core.port import MultiInputPort
-from enthought.traits.api import Instance
+from mapero.core.api import VisualModule, InputPort
+from enthought.traits.api import Instance, Any
 from enthought.traits.ui.api import Group, Item
 from enthought.pyface.gui import GUI
 from enthought.tvtk.pyface.decorated_scene import DecoratedScene
 
 import types
 
-module_info = {    'name': 'Visualization.tvtkscene',
-                'desc': "Module with a InputPort with test purpose"}
+
 
 class tvtkscene(VisualModule):
     """ modulo de prueba visual """
     scene = Instance(DecoratedScene)
     view = Group(
-                     Item('scene', label='', style='custom'),
-                label='Scene', show_labels=False
+                 Item('scene', label='', style='custom'),
+                 label='Scene', show_labels=False
                 )
 
+    label = 'TVTK Scene'
+    input1 = InputPort(trait = Any)
+    
     def __init__(self, **traitsv):
         super(tvtkscene, self).__init__(**traitsv)
-        self.name = 'TVTK Scene'
+        self.input_actors = []
         self.actors_pattern = "actors1"
-        self.input1 = MultiInputPort(
-                                     data_types = types.IntType,
-                                     name = self.actors_pattern,
-                                     module = self
-                                     )
-        self.input_ports.append(self.input1)
-        self.input_actors = None
 
     def execute(self):
         self.input_actors = self.input1.data

@@ -36,5 +36,11 @@ class VisualModuleView(View):
     
     @staticmethod
     def construct_visual_module_view_id(window, visual_module):
-        id = "%s.%s[%d]" % ( window.active_editor.id, visual_module.canonical_name, visual_module.id)
+        active_editor_id = ''
+        if window.active_editor:
+            active_editor_id = window.active_editor.id
+        else:
+            active_editor_id = 'de_1'
+            
+        id = "%s.%s[%d]" % ( active_editor_id, visual_module.canonical_name, visual_module.id)
         return id

@@ -23,7 +23,7 @@ class ModuleGeometrics(DiagramObjectModel):
     width = Property
     
     def move(self, movement=[100,100]):
-        new_pos = [self.x + movement[0], self.y + movement[1]]
+        new_pos = [self.x + float(movement[0]), self.y + float(movement[1])]
         self.position = new_pos
 
     def is_included_in(self, rect):

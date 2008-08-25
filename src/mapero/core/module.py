@@ -3,12 +3,11 @@
 # Author: Zacarias F. Ojeda <zojeda@gmail.com>
 # License: new BSD Style.
 from mapero.core.port_instance import InputPortInstance, OutputPortInstance
-from enthought.traits.has_traits import HasStrictTraits
 
 import inspect
 import logging
 
-from enthought.traits.api import Int, List, Str, Range, MetaHasTraits
+from enthought.traits.api import Int, List, Str, Range, MetaHasTraits, HasTraits
 from enthought.traits.ui.api import View, Group, Include
 
 log = logging.getLogger("mapero.logger.module");
@@ -27,7 +26,7 @@ class MetaModule ( MetaHasTraits ):
 ######################################################################
 # `Module` class.
 ######################################################################
-class Module( HasStrictTraits ):
+class Module( HasTraits ):
     """ Base class for all modules in the mapero structure """
     
     __metaclass__ = MetaModule

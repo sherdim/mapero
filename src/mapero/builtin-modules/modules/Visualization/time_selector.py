@@ -1,5 +1,5 @@
-from mapero.core.module import VisualModule
-from mapero.core.port import OutputPort, InputPort
+from mapero.core.api import VisualModule
+from mapero.core.api import OutputPort, InputPort
 from numpy.oldnumeric.precision import Float
 from enthought.traits import api as traits
 from enthought.traits.ui.api import Group

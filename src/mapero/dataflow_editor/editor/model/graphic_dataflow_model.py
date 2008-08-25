@@ -7,6 +7,7 @@ from connection_geometrics import ConnectionGeometrics
 from enthought.traits.api import HasTraits, List, Instance
 from enthought.traits.has_traits import on_trait_change
 from mapero.core.dataflow import Dataflow
+from mapero.core.persistence.state_setter import set_state
 
 import logging
 logger = logging.getLogger()
@@ -25,7 +26,7 @@ class GraphicDataflowModel(HasTraits):
     def add_module(self, module, x=200, y=200, w=200, h=100):
         self.from_here = True
         self.dataflow.modules.append( module )
-        self._add_module_geom(module, x, y, w, h)
+        self._add_module_geom( module, float(x), float(y), float(w), float(h) )
         self.from_here = False
     
     def remove_module(self, module_geometrics):
@@ -87,4 +88,11 @@ class GraphicDataflowModel(HasTraits):
             self.connection_geometrics.remove(connection_geometrics)
         else:
             logger.error("not connection_geomtrics found for connection: %s" % (connection))
+            
+    def __set_pure_state__(self, state):
+        set_state(self.dataflow, state.dataflow)
+        set_state(self.module_geometrics, state.module_geometrics)
+        set_state(self.connection_geometrics, state.connection_geometrics)
+            
+        
                         

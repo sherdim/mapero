@@ -9,7 +9,7 @@ from enthought.pyface.api import FileDialog, OK
 
 from enthought.pyface.action.api import Action
 from enthought.persistence import state_pickler
-from enthought.persistence.state_pickler import set_state
+from mapero.core.persistence.state_setter import set_state
 
 # Local imports.
 import logging
@@ -121,7 +121,6 @@ class OpenDataflow(Action):
             # Get the state from the file.
             state = state_pickler.load_state(dialog.path)
             state_pickler.update_state(state)
-            print state
             from mapero.dataflow_editor.editor.api import DataflowDiagramEditor
             from mapero.dataflow_editor.editor.model.api import GraphicDataflowModel
             graphic_dataflow_model = GraphicDataflowModel()

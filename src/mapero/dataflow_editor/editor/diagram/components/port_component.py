@@ -62,14 +62,16 @@ class PortComponent(Component):
         gc.restore_state()
         return
 
-    @on_trait_change('container:position')
-    def on_position_change(self, position):
+    @on_trait_change('container:[position,bounds]')
+    def on_position_change(self, object, trait_name, old_value, value):
+        print "trait_name: %s - value: %s - old_value: %s " % (trait_name, value, old_value)
         old_pos = self._absolute_position
-        new_pos = [position[0]+self.position[0], 
-                   position[1]+self.position[1] ]
+        new_pos = [self.container.position[0]+self.position[0], 
+                   self.container.position[1]+self.position[1] ]
         new_pos[0] += self.bounds[0]/2
         new_pos[1] += self.bounds[1]/2
         
+        print "new port position (port_component): ", new_pos
         self._absolute_position = new_pos
         self.trait_property_changed('absolute_position', old_pos, new_pos)
 

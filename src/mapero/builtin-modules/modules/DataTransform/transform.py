@@ -1,5 +1,5 @@
-from mapero.core.module import Module
-from mapero.core.port import OutputPort, InputPort
+from mapero.core.api import Module
+from mapero.core.api import OutputPort, InputPort
 from numpy.oldnumeric.precision import Float
 from enthought.traits.api import Array
 from numpy import zeros, dot
