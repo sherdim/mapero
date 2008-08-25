@@ -18,14 +18,6 @@ class PortInstance(HasPrivateTraits):
         super(PortInstance, self).__init__(**traits)
         self.add_trait('_data', self.data_type.type)
     
-    def _get_data(self):
-        return self._data
-    
-    def _set_data(self, data):
-        old = self._data
-        self._data = data
-        self.trait_property_changed('data', old, data)
-    
 class InputPortInstance(PortInstance):
     
     connection = Instance( klass = 'mapero.core.connection.Connection')
@@ -44,9 +36,19 @@ class InputPortInstance(PortInstance):
             self.is_input_none = False
             self._data = data
         self.trait_property_changed('data', old, data)
+        self.module.execute()
     
 class OutputPortInstance(PortInstance):
 
     connections = List( Instance( klass = 'mapero.core.connection.Connection') )
     
+    def _get_data(self):
+        return self._data
+    
+    def _set_data(self, data):
+        old = self._data
+        self._data = data
+        for connection in self.connections:
+            if connection.enabled:
+                connection.data = data
     

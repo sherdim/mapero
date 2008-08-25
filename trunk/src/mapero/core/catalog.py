@@ -103,8 +103,9 @@ class Catalog(traits.HasTraits):
                                     try:
                                         py_module = self.import_module(module_name)
                                         self.__add_modules(py_module)
-                                    except:
+                                    except Exception,e:
                                         log.error( "error loading : %s" % module_name)
+                                        log.error(e)
                                     
                         
 #                        f, fn, d = imp.find_module(module_name, [module_path])

@@ -1,5 +1,5 @@
-from mapero.core.module import VisualModule
-from mapero.core.port import OutputPort
+from mapero.core.api import VisualModule
+from mapero.core.api import OutputPort
 from enthought.traits.api import Range, Str
 from enthought.traits.ui.api import Group
 
@@ -9,7 +9,7 @@ class visual_modulo1(VisualModule):
     
     view = Group('param' )
     
-    out1 = OutputPort( data_type = Str )
+    out1 = OutputPort( trait = Str )
         
     def _param_changed(self, value):
         self.out1.data = value

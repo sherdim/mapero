@@ -1,38 +1,32 @@
-from mapero.core.module import Module
-from mapero.core.port import OutputPort
-from enthought.traits import api as traits
+from mapero.core.api import Module, OutputPort
+
+from enthought.traits.api import Instance, Any
 from enthought.traits.ui.api import Group
 from enthought.tvtk.api import tvtk
 
-import types
-
-module_info = {'name': 'Visualization.cone_source',
-	       'desc': "Module with cone source"}
 
 class cone_source(Module):
     """ modulo de prueba visual """
-    conesource = traits.Instance(tvtk.ConeSource)
-    mapper = traits.Instance(tvtk.PolyDataMapper)
-    property = traits.Instance(tvtk.Property)
+    
+    conesource = Instance(tvtk.ConeSource)
+    mapper = Instance(tvtk.PolyDataMapper)
+    property = Instance(tvtk.Property)
     view = Group('conesource', 'mapper','property')
 
+    label = "Cone Source"
+    
+    cone_out = OutputPort( trait = Any )
 
-    def __init__(self, **traitsv):
-        super(cone_source, self).__init__(**traitsv)
-        self.name = 'ConeSources'
-        self.out1 = OutputPort(
-							   data_types = types.IntType,
-							   name = 'salida1',
-							   module = self
-							   )
-        self.output_ports.append(self.out1)
+    def start_module(self):
         self.conesource = tvtk.ConeSource()
 	
         self.mapper = tvtk.PolyDataMapper(input=self.conesource.output)
         self.property = tvtk.Property()
         self.actor = tvtk.Actor(mapper=self.mapper, property=self.property)
 
-        self.out1.data = self.actor
+        self.cone_out.data = self.actor
+        
+        print self.cone_out.data
     
 
 
