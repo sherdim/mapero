@@ -6,6 +6,7 @@ import mapero.datatypes
 from mapero.core.api import Module
 from enthought.traits import api as traits
 from os.path import abspath, join, split, isfile, realpath, walk
+from mapero.core.common import exception
 import os 
 import glob
 import sys
@@ -103,9 +104,8 @@ class Catalog(traits.HasTraits):
                                     try:
                                         py_module = self.import_module(module_name)
                                         self.__add_modules(py_module)
-                                    except Exception,e:
-                                        log.error( "error loading : %s" % module_name)
-                                        log.error(e)
+                                    except Exception:
+                                        exception("error loading : %s" % module_name)
                                     
                         
 #                        f, fn, d = imp.find_module(module_name, [module_path])
@@ -118,9 +118,14 @@ class Catalog(traits.HasTraits):
 
     def load_module(self, module_name):
         log.debug("loading module : " + module_name)
-        module_info = self._get_module_info(module_name)
-        module = module_info.clazz()
-        return module
+        try:
+            module_info = self._get_module_info(module_name)
+            module = module_info.clazz()
+            return module
+
+        except Exception:
+            exception("failed loading module : %s" % module_name)
+            
 
     def _get_module_info(self, module_name):
         def cross_catalog(categorie):
@@ -216,7 +221,8 @@ class Catalog(traits.HasTraits):
 #        print "categories: ", categories 
 #        print "========"
         mapero_module = get_mapero_module(py_module)
-        _recorrer_categories(None, categories, mapero_module)
+        if mapero_module:
+            _recorrer_categories(None, categories, mapero_module)
     
 def import_module(partname, fqname, parent, reload=False):
     log.debug( "import_module: partname: %s\t fqname:%s\t parent:%s" % (partname, fqname, parent) )
@@ -239,7 +245,12 @@ def import_module(partname, fqname, parent, reload=False):
     return m
 
 def get_mapero_module(py_module):
-    mapero_modules = [ getattr(py_module,mapero_module_class) for mapero_module_class in dir(py_module) if inspect.isclass(getattr(py_module,mapero_module_class)) and issubclass(getattr(py_module,mapero_module_class), Module) and mapero_module_class not in ('Module', 'VisualModule') ]
+    mapero_modules = [ getattr(py_module,mapero_module_class) for mapero_module_class
+                       in dir(py_module) 
+                       if isinstance(getattr(py_module,mapero_module_class), type)
+                        and issubclass(getattr(py_module,mapero_module_class), Module)
+                        and mapero_module_class not in ('Module', 'VisualModule')
+                     ]
     if len(mapero_modules) > 1:
         raise MoreThanOneMaperoModuleInPythonFile("More Than One Mapero Module In Python File")
     else:

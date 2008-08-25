@@ -1,33 +1,25 @@
 from mapero.core.api import Module
 from mapero.core.api import OutputPort
-from enthought.traits.api import File
+from enthought.traits.api import File, Array
 from enthought.traits.ui.api import Group
 
 from numpy import array, resize
-
-module_info = {	"name": "DataIO.array_reader",
-				"desc": "Module with an OutputPort for visualize pointset in a vtk scene"}
 
 class array_reader(Module):
 	"""  """
 	file = File(filter=["matrix text file [*.mat]", "*.mat", "text file [*.txt]", "*.txt"])
 
-	def __init__(self, **traits):
-		super(array_reader, self).__init__(**traits)
-		self.name = 'Array Reader'
-		self.array_output = OutputPort(
-									   data_types=list,
-									   name = 'array_output',
-									   module = self)
-		self.output_ports.append(self.array_output)
+	label = 'Array Reader'
+	array_output = OutputPort( trait = Array(dtype=float, shape=(None,None))  )
+	
+	view = Group('file')
+	
+	
+	def start_module(self):
 		self.a = array([[]], dtype=float)
 
 	def _file_changed(self):
 		self.process()
-
-
-	view = Group('file')
-
 
 	def process(self):
 		f = open(self.file, "r", 0)
