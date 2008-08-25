@@ -12,6 +12,7 @@ from mapero.dataflow_editor.editor.model.connection_geometrics import Connection
 from mapero.dataflow_editor.editor.diagram.diagram_window import DiagramWindow 
 from mapero.dataflow_editor.editor.model.diagram_object_model import DiagramObjectModel
 from mapero.dataflow_editor.view.visual_module_view import VisualModuleView
+from mapero.core.common import exception
 
 #### Handy functions ##########################################################
 
@@ -83,8 +84,11 @@ class DataflowDiagramEditor(Editor):
     def add_connection(self, output_port, input_port, points = []):
         #print "output_port: ", output_port
         #print "input_port: ", input_port
-        connection = Connection(output_port = output_port, input_port = input_port)
-        self.ui_dataflow.add_connection(connection)
+        try:
+            connection = Connection(output_port = output_port, input_port = input_port)
+            self.ui_dataflow.add_connection(connection)
+        except Exception, e:
+            exception("error adding connection: %s" % e)
         
     def remove_selection(self):
         #TODO: very ugly use of isinstance

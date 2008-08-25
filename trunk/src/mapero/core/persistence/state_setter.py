@@ -5,7 +5,6 @@ log = logging.getLogger("mapero.logger.mvc");
 class StateSetter(state_pickler.StateSetter):
     def _do_instance(self, obj, state):
         if obj == None:
-            print "obj == NONE"
             obj = state_pickler.create_instance(state)
         try:
             state_pickler.StateSetter._do_instance(self, obj, state)

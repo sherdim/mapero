@@ -1,26 +1,21 @@
 # Author: Zacarias F. Ojeda <zojeda@gmail.com>
 # License: new BSD Style.
 
-from enthought.util.numerix import around, array, transpose, compress, concatenate, zeros, take
-
 
 # Enthought library imports
-from enthought.enable2.api import black_color_trait, LineStyle
+from enthought.enable.api import black_color_trait, LineStyle
 from enthought.traits.api import Any, Array, false, Float, Instance, Property, List, Int
 from enthought.traits.ui.api import View, Item
 
 
 # Local relative imports
-from enthought.chaco2.abstract_mapper import AbstractMapper
-from enthought.chaco2.abstract_plot_renderer import AbstractPlotRenderer
-##from enthought.chaco2.abstract_data_source import AbstractDataSource
-from enthought.chaco2.multi_array_data_source import MultiArrayDataSource
-from enthought.chaco2.array_data_source import ArrayDataSource
-from enthought.chaco2.axis import PlotAxis
-from enthought.chaco2.base import reverse_map_1d
-from enthought.chaco2.grid import PlotGrid
-from enthought.chaco2.plot_label import PlotLabel
-from enthought.chaco2.base import arg_find_runs
+from enthought.chaco.api import AbstractMapper, AbstractPlotRenderer, \
+    MultiArrayDataSource, ArrayDataSource, PlotAxis, reverse_map_1d,  \
+    PlotGrid, PlotLabel, arg_find_runs
+from numpy.core.ma import transpose, concatenate
+from numpy.numarray.functions import compress, take
+from numpy.core.numeric import array
+
 
 import logging
 log = logging.getLogger("mapero.logger.module");
@@ -70,7 +65,7 @@ class BaseMultiLinePlot(AbstractPlotRenderer):
 	# Should be plot use downsampling?
 	# This is not used right now.  We need to implement robust, fast downsampling
 	# before flipping the switch on this.
-	use_downsampling = false
+	use_downsampling = True
 
 	# Should the plot use a spatial subdivision structure for fast hittesting?
 	# This makes data updates slower, but makes hittests extremely fast.
@@ -225,16 +220,12 @@ class BaseMultiLinePlot(AbstractPlotRenderer):
 
 	def _draw_component(self, gc, view_bounds=None, mode="normal"):
 		# Normal rendering
-		print "_gather_points iniciado"
 		self._gather_points()
-		print "_gather_points terminado"
 		if self.use_downsampling:
-			print "use_downsampling"
 			pts = self._downsample()
 		else:
 			# The BaseMultiLinePlot implementation of _downsample doesn't actually
 			# do any downsampling.
-			print "not use_downsampling"
 			pts = self._downsample()
 		self._render(gc, pts)
 		return
@@ -586,13 +577,13 @@ class MultiLinePlot(BaseMultiLinePlot):
 			index = index.reshape(1,lindex)
 			points = transpose(concatenate((index,values)))
 			#self._cached_data_pts = zeros(lindex, lsignals)
-			self._cached_data_pts = compress(point_mask[0], points, axis=0)
+			self._cached_data_pts = array(compress(point_mask[0], points, axis=0))
 			self._cache_valid = True
 		return
 
 	def _downsample(self):
 		if not self._screen_cache_valid:
-			self._cached_screen_pts = self.map_screen(self._cached_data_pts)
+			self._cached_screen_pts = array(self.map_screen(self._cached_data_pts))
 			self._screen_cache_valid = True
 
 			pts = self._cached_screen_pts

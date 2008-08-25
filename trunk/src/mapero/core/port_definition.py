@@ -3,7 +3,7 @@
 
 from mapero.core.data_type import DataType
 
-from enthought.traits.api import HasTraits, Instance, Type, TraitType
+from enthought.traits.api import HasTraits, Instance, Either, TraitType, Type
 
 
 class PortDefinition(HasTraits):
@@ -15,7 +15,7 @@ class PortDefinition(HasTraits):
                     be used to construct a default data_type based on it
     """
     data_type = Instance( DataType, allow_none = True )
-    trait = Type( TraitType )
+    trait = Either( Type(TraitType), Instance(TraitType) )
     
     def __init__(self, **traits):
         super(PortDefinition, self).__init__(**traits)
