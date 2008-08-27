@@ -8,7 +8,7 @@ class modulo1(Module):
     
     __version__  = 0
 
-    label     = "Module 1"
+    label     = "Modulo 1"
     
     param = Range(0,100)
     
@@ -22,6 +22,7 @@ class modulo1(Module):
     def _param_changed(self, value):
         self.out1.data = value
         if value == 50:
-            self.out1.data = "error"
+            self.out1.data = "-- error --"
         self.progress = value
+        #print value
 

@@ -40,10 +40,17 @@ class CurrentSelection(HasTraits):
         window.on_trait_change(self.update_active_editor, 'active_editor')
             
     def update_active_editor(self, editor):
-        self.editor = editor
         if editor:
-            self.graphic_dataflow = editor.ui_dataflow
-            editor.on_trait_change(self.update_selection, 'selection')
+            if isinstance(editor, DataflowDiagramEditor):
+                self.editor = editor
+                self.graphic_dataflow = editor.ui_dataflow
+                editor.on_trait_change(self.update_selection, 'selection')
+            else:
+                old = self._current_selection
+                self.graphic_dataflow = None
+                self._current_selection = None 
+                self.trait_property_changed('current_selection', old, object)
+                
         else:
             self.graphic_dataflow = None
             

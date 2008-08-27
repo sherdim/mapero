@@ -10,12 +10,15 @@ from mapero.dataflow_editor.editor.diagram.tools.selection_tool import Selection
 
 
 from enthought.traits.api import Instance, Any, on_trait_change, TraitListEvent, Dict, Delegate
+from enthought.traits.ui.menu import Menu, Action, Separator
+
 from enthought.enable.api import Canvas, Viewport, Window, Scrolled
 from enthought.enable.drawing.api import DrawingCanvas
 from enthought.enable.tools.api import ViewportPanTool
 from enthought.pyface.workbench.api import IEditor
 from mapero.dataflow_editor.editor.diagram.components.diagram_component import DiagramComponent
 from mapero.dataflow_editor.editor.model.diagram_object_model import DiagramObjectModel
+from mapero.dataflow_editor.editor.model.module_geometrics import ModuleGeometrics
 
 class MyCanvas(DrawingCanvas, Canvas):
     bgcolor = (1.0, 0.95, 0.71, 1.0)
@@ -41,6 +44,24 @@ class MyCanvas(DrawingCanvas, Canvas):
         if event.character == 'Delete':
             self.editor.remove_selection()
 
+    def normal_right_down(self, event):
+        selection_enabled = len(self.editor.selection)>0 and True or False
+        modules_selected = len( self.editor.get_modules_selected() ) > 0
+
+        menu = Menu( 
+                    Action( name = 'Copy', enabled=False ),
+                    Action( name = 'Paste', enabled=False ),
+                    Action( name = 'Delete', enabled=selection_enabled,
+                             on_perform=self.editor.remove_selection ),
+                    Separator(),
+                    Action( name = 'Edit Code', enabled=modules_selected,
+                             on_perform=self.editor.edit_code ),
+#                    Action( name = _('Help'), on_perform=self.show_module_help, enabled=self.is_only_one_module_selected() )
+                    )
+        popup_menu = menu.create_menu(event.window.control)
+        popup_menu.show(event.x, event.window._flip_y(event.y))
+        
+        
     #the tools should be drawn on the overlay layer
     def _draw_container_overlay(self, gc, view_bounds=None, mode="default"):
         super(MyCanvas, self)._draw_container_mainlayer(gc, view_bounds, mode)

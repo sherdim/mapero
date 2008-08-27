@@ -1,6 +1,7 @@
 # Author: Zacarias F. Ojeda <zojeda@gmail.com>
 # License: new BSD Style.
 
+from enthought.io.api import File
 from enthought.traits.api import Instance, Property, List, on_trait_change
 from enthought.pyface.workbench.api import Editor
 
@@ -98,6 +99,19 @@ class DataflowDiagramEditor(Editor):
             if isinstance(selection, ConnectionGeometrics):
                 self.ui_dataflow.remove_connection(selection)
         self.selection = []
+        
+    def get_modules_selected(self):
+        modules_selected = [ module_geom.module for module_geom in self.selection
+                                if isinstance(module_geom, ModuleGeometrics)]
+        return modules_selected
+    
+    def edit_code(self):
+        try:
+            from enthought.plugins.text_editor.editor.text_editor import TextEditor
+            for module in self.get_modules_selected():
+                self.window.edit(File(module.source_code_file), kind=TextEditor)
+        except Exception, e:
+            exception("error editing modules: %s" % e)
         
     def _get_ui_dataflow(self):
         return self.obj
