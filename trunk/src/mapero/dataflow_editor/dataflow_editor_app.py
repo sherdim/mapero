@@ -66,12 +66,16 @@ def get_plugins():
 #    from enthought.tvtk.plugins.scene.ui.scene_ui_plugin import SceneUIPlugin
     from mapero.dataflow_editor.plugins.mapero_plugin import MaperoPlugin
     from mapero.dataflow_editor.plugins.mapero_ui_plugin import MaperoUIPlugin
+    from enthought.plugins.refresh_code.refresh_code_plugin import RefreshCodePlugin
+    #from enthought.plugins.text_editor.text_editor_plugin import TextEditorPlugin
     plugins = [CorePlugin(),
                WorkbenchPlugin(),
                MaperoPlugin(),
                MaperoUIPlugin(),
                ScenePlugin(),
+               RefreshCodePlugin(),
                #SceneUIPlugin(),
+               #TextEditorPlugin(), 
                PythonShellPlugin(),
                ]
     return plugins

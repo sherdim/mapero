@@ -171,7 +171,6 @@ class time_selector(VisualModule):
             col_selected = (int)(value[0])
             output = matrix(self.plot.value.get_data( axes = col_selected ))
             self.op_selected_values.data = output.T
-            print output.shape
         else:
             self.op_selected_values.data = None
 
