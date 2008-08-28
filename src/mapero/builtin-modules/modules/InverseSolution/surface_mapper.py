@@ -1,7 +1,6 @@
 from mapero.core.api import Module
 from mapero.core.api import OutputPort, InputPort
-from numpy.oldnumeric.precision import Float, Int
-from enthought.traits import api as traits
+from enthought.traits.api import Any, Array
 from enthought.traits.ui.api import Group
 from enthought.tvtk.api import tvtk
 
@@ -12,41 +11,19 @@ from scipy import square, diag, identity
 import logging
 log = logging.getLogger("mapero.logger.module");
 
-module_info = {'name': 'InverseSolution.surface_mapper',
-                    'desc': ""}
-
 class surface_mapper(Module):
     """ surface mapper """
 
-    def __init__(self, **traitsv):
-        super(surface_mapper, self).__init__(**traitsv)
-        self.name = 'Surface Mapper'
+    label = 'Surface Mapper'
+    ip_dipole_sources = InputPort( trait = Array(typecode=float, shape=(None,None)) )
+    ip_cortex = InputPort( trait = Any)
+    
+    op_polydata = OutputPort( trait = Any)
+    
+    def start_module(self):
 
-        dipole_sources_trait = traits.Array(typecode=Float, shape=(None,None))
-        self.ip_dipole_sources = InputPort(
-                                           data_types = dipole_sources_trait,
-                                           name = 'dipole source',
-                                           module = self
-                                           )
-        self.input_ports.append(self.ip_dipole_sources)
         self.i_dipole_sources = None
-        
-        polydata_trait = traits.Trait(tvtk.PolyData)
-        self.ip_cortex = InputPort(
-                                   data_types = polydata_trait,
-                                   name = 'cortex',
-                                   module = self
-                                   )
-        self.input_ports.append(self.ip_cortex)
         self.i_cortex = None
-
-        self.op_polydata = OutputPort(
-                                      data_types = polydata_trait,
-                                      name = 'mapped cortex',
-                                      module = self
-                                      )
-        self.output_ports.append(self.op_polydata)
-
 
     def execute(self):
         self.i_dipole_sources = self.ip_dipole_sources.data
@@ -69,6 +46,5 @@ class surface_mapper(Module):
 
         self.progress = 100
         self.op_polydata.data = ocortex
-        self.op_polydata.update_data()
 
 

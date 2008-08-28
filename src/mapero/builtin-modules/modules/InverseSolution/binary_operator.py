@@ -14,39 +14,19 @@ module_info = {'name': 'InverseSolution.binary_operator',
 class binary_operator(Module):
 	""" inverse solution """
 
-	operator = Enum("x", "+", "-")
+	label = 'Binary Op'
 
+	operator = Enum("x", "+", "-")
 	view = Group('operator')
 
-	def __init__(self, **traits):
-		super(binary_operator, self).__init__(**traits)
-		self.name = 'Binary Operator'
+	ip_first_matrix = InputPort( trait = Array(typecode=Float, shape=(None,None)) )
+	ip_second_matrix = InputPort( trait = Array(typecode=Float, shape=(None,None)) )
+	
+	op_output_matrix = OutputPort( trait = Array(typecode=Float, shape=(None,None)) )
 
-		matrix_trait = Array(typecode=Float, shape=(None,None))
-		self.ip_first_matrix = InputPort(
-										 data_types = matrix_trait,
-										 name = 'first matrix',
-										 module = self
-										 )
-		self.input_ports.append(self.ip_first_matrix)
+	def start_module(self):
 		self.i_first_matrix = None
-
-		self.ip_second_matrix = InputPort(
-										  data_types = matrix_trait,
-										  name = 'second matrix',
-										  module = self
-										  )
-		self.input_ports.append(self.ip_second_matrix)
 		self.i_second_matrix = None
-
-
-		self.op_output_matrix = OutputPort(
-										   data_types = matrix_trait,
-										   name = 'output matrix',
-										   module = self
-										   )
-		self.output_ports.append(self.op_output_matrix)
-
 
 	def execute(self):
 		self.i_first_matrix = self.ip_first_matrix.data

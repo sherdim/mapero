@@ -11,11 +11,11 @@ class StateSetter(state_pickler.StateSetter):
         except Exception, e:
             log.warning("Failed to set the state due to errors to object: %s \n %s" % (obj, e))
             
-#        try 
-#            super(StateSetter, self)._do_instance(obj, state)
-#        except StateSetterError:
-#            instance = state_pickler.create_instance(state)
-#   
+    def _do(self, obj, key, value):
+        try:
+            state_pickler.StateSetter._do(self, obj, key, value)
+        except Exception, e:
+            log.warning("Failed to set the state due to errors to object: \n obj: %s - key: %s \n exception: %s" % (obj, key, e))
 
 def set_state(object, state):
     StateSetter().set(object, state)

@@ -9,45 +9,28 @@ from numpy import matrix, array, power
 from scipy.linalg import pinv
 from scipy import square, identity, reshape, sparse
 
-module_info = {'name': 'InverseSolution.inverse_solution',
-                    'desc': ""}
-
 class inverse_solution(Module):
     """ inverse solution """
 
-    method = Enum( "WMN", "MN", "LORETA")
+    label = 'Inverse Solution'
 
+    method = Enum( "WMN", "MN" )
     view = Group('method')
+    
+    ### Input port
+    ip_lead_field_avg = InputPort( trait = Array(typecode=Float, shape=(None,None)) )
 
-    def __init__(self, **traits):
-        super(inverse_solution, self).__init__(**traits)
-        self.name = 'Inverse Solution'
-
-        lead_field_trait = Array(typecode=Float, shape=(None,None))
-        self.ip_lead_field_avg = InputPort(
-                                           data_types = lead_field_trait,
-                                           name = 'lead field avg',
-                                           module = self
-                                           )
-        self.input_ports.append(self.ip_lead_field_avg)
+    ### Output port
+    op_inverse_solution = OutputPort( trait = Array(typecode=Float, shape=(None,None)) )
+    
+    def start_module(self):
         self.i_lead_field_avg = None
-
-        inverse_solution_trait = Array(typecode=Float, shape=(None,None))
-        self.op_inverse_solution = OutputPort(
-                                              data_types = inverse_solution_trait,
-                                              name = 'inverse solution',
-                                              module = self
-                                              )
-        self.output_ports.append(self.op_inverse_solution)
-
 
     def execute(self):
         self.i_lead_field_avg = self.ip_lead_field_avg.data
         if (self.i_lead_field_avg != None):
             self.process()
             
-
-
     def process(self):
         self.progress = 0
         def calqomega_x_i(K):

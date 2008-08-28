@@ -33,7 +33,8 @@ class Connection(HasTraits):
 			self.output_port.connections.append(self)
 			self.input_port.connection = self
 		else:
-			raise ModuleConnectionError(" incompatible types ")
+			raise ModuleConnectionError(" incompatible types : %s and %s" %
+									     (self.output_port.data_type.type, self.input_port.data_type.type) )
 
 	def _input_port_changed(self, value):
 		if (value.connection != None):

@@ -1,6 +1,6 @@
 from mapero.core.api import Module
 from mapero.core.api import OutputPort, InputPort
-from enthought.traits.api import Range, Int, Instance, File
+from enthought.traits.api import Range, Int, Instance, File, Any
 from enthought.traits.ui.api import View, Group
 from enthought.tvtk.api import tvtk
 
@@ -11,22 +11,14 @@ module_info = {'name': 'Visualization.vtkpolydatareader',
 
 class vtkpolydatareader(Module):
     """ modulo de prueba visual """
+
+    label = 'VTK Data Reader'
+    
     vtk_file = File(filter=['*.vtk'])
 
     view = Group('vtk_file')
 
-
-    def __init__(self, **traitsv):
-        super(vtkpolydatareader, self).__init__(**traitsv)
-        self.name = 'VTK Data Reader'
-        self.out1 = OutputPort(
-                                data_types = None,
-                                name = 'out1',
-                                module = self
-                                )
-        
-        self.output_ports.append(self.out1)
-
+    out1 = OutputPort( trait = Any )
 
     def process(self):
         print "processing ..."

@@ -1,58 +1,47 @@
 from mapero.core.api import Module
 from mapero.core.api import OutputPort, InputPort
-from numpy.oldnumeric.precision import Float
-from enthought.traits import api as traits
-from enthought.enable.traits import api as enable_traits  
+from enthought.traits.api import Any, Float, RGBColor
 from enthought.traits.ui.api import Group, Item
 from enthought.traits.ui.api import ListEditor
 from enthought.tvtk.api import tvtk
-from enthought.tvtk.tvtk_base import vtk_color_trait
 
 import logging
 log = logging.getLogger("mapero.logger.module");
 
-module_info = {'name': 'Visualization.polydata_viewer',
-                 'desc': ""}
-
 class polydata_viewer(Module):
-    """ modulo de prueba uno """
+    """ polydata_viewer """
 
 #    lookup_color_list = traits.List(enable_traits.RGBAColor)
-    color_1 = enable_traits.RGBAColor('red')
-    color_2 = enable_traits.RGBAColor('white')
-    color_3 = enable_traits.RGBAColor('blue')
-    low_scalar = traits.Float
-    high_scalar = traits.Float
+    label = 'PolyData Viewer'
+
+    color_1 = RGBColor('red')
+    color_2 = RGBColor('white')
+    color_3 = RGBColor('blue')
+
+    low_scalar = Float
+    high_scalar = Float
+#    view = Group(
+#                             Item('color_1',
+#                                   style='custom'),
+#                              Item('color_2',
+#                                   style='custom'),
+#                              Item('color_3',
+#                                   style='custom'),
+#                  'low_scalar' ,
+#                  'high_scalar'
+#                  )
     view = Group(
-                             Item('color_1',
-                                   style='custom'),
-                              Item('color_2',
-                                   style='custom'),
-                              Item('color_3',
-                                   style='custom'),
-                  'low_scalar' ,
-                  'high_scalar'
-                  )
+                 Item('color_1'),
+                 Item('color_2'),
+                 Item('color_3'),
+                 'low_scalar',
+                 'high_scalar'
+                 )
     
-    def __init__(self, **traitsv):
-        super(polydata_viewer, self).__init__(**traitsv)
-        self.name = 'Point Set Viewer'
-
-        polydata_trait = traits.Trait(tvtk.PolyData)
-        polydata_trait = None
-        self.ip_polydata = InputPort(
-                                     data_types = polydata_trait,
-                                     name = 'polydata_input',
-                                     module = self
-                                     )
-        self.input_ports.append(self.ip_polydata)
-
-        self.op_actor = OutputPort(
-                                   data_types = polydata_trait,
-                                   name = 'actors_output',
-                                   module = self
-                                   )
-        self.output_ports.append(self.op_actor)
+    ip_polydata = InputPort( trait = Any )
+    op_actor = OutputPort( trait = Any )
+    
+    def start_module(self):
         self.actor = None
         self.lookup_table = None
         self.colors = [(1.0, 0.0, 0.0, 1.0),(0.5, 0.5, 0.5, 1.0),(0.0, 0.0, 0.1, 1.0)]
@@ -84,6 +73,8 @@ class polydata_viewer(Module):
         print "color1: ",value
         self.colors[0] = value
         self.recalc_lt()
+        self.op_actor.data = self.actor
+        
     def _color_2_changed(self, value):
         print "color2: ",value
         self.colors[1] = value
@@ -105,7 +96,7 @@ class polydata_viewer(Module):
          
         colors_cnt = 0
         for color in self.colors:
-            if  isinstance(color, tuple) and len(color)==4:
+            if  isinstance(color, tuple) and len(color)>=3:
                 colors_cnt += 1
             
         if colors_cnt >= 2:
@@ -116,11 +107,11 @@ class polydata_viewer(Module):
             r_colors = 1
             log.debug("number of colors: %s" , colors_cnt)
             log.debug("colors: %s" , self.colors)
-
+            self.lookup_table.build()
             i = 0
             for color in self.colors:
-                if  isinstance(color, tuple) and len(color)==4:
-                    self.lookup_table.set_table_value(i*r_colors, color[0] , color[1] , color[2], color[3])
+                if  isinstance(color, tuple) and len(color)>=3:
+                    self.lookup_table.set_table_value(i*r_colors, color[0] , color[1] , color[2], 1.0)
                     i += 1
             
             if self.actor:
@@ -133,5 +124,6 @@ class polydata_viewer(Module):
     def _high_scalar_changed(self, value):
         if self.actor:
             self.actor.mapper.scalar_range=(self.low_scalar, value)
+            
         
                 
