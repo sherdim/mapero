@@ -12,7 +12,7 @@ from enthought.traits.ui.api import View, Item
 from enthought.chaco.api import AbstractMapper, AbstractPlotRenderer, \
     MultiArrayDataSource, ArrayDataSource, PlotAxis, reverse_map_1d,  \
     PlotGrid, PlotLabel, arg_find_runs
-from numpy.core.ma import transpose, concatenate
+from numpy.core import transpose, concatenate
 from numpy.numarray.functions import compress, take
 from numpy.core.numeric import array
 

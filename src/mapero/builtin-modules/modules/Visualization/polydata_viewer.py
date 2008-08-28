@@ -56,6 +56,7 @@ class polydata_viewer(Module):
         else:
             self.progress = 0
             self.op_actor.data = None
+        self.op_actor.update_data()
 
     def process(self):
         input_array = self.ip_polydata.data
@@ -116,14 +117,19 @@ class polydata_viewer(Module):
             
             if self.actor:
                 self.actor.mapper.lookup_table = self.lookup_table
+
+            self.op_actor.update_data()
+
             
     def _low_scalar_changed(self, value):
         if self.actor:
             self.actor.mapper.scalar_range=(value, self.high_scalar)
+        self.op_actor.update_data()
             
     def _high_scalar_changed(self, value):
         if self.actor:
             self.actor.mapper.scalar_range=(self.low_scalar, value)
+        self.op_actor.update_data()
             
         
                 
