@@ -27,8 +27,10 @@ class tvtkscene(VisualModule):
             self._remove_actors()
         else:
             self._add_actors()
+        self.scene.render()
 
     def _add_actors(self):
+        print "adding actors"
         self.progress = 0
         self.scene.add_actors(self.input_actors)
         self.progress = 100

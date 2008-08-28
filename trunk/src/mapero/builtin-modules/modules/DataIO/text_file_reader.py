@@ -5,26 +5,17 @@ from enthought.traits.api import File, Array, List, Str
 from enthought.traits.ui.api import  Group
 from numpy import array, zeros, resize
 
-
-module_info = {	"name": "DataIO.text_file_reader",
-				"desc": "aaa"}
-
 class text_file_reader(Module):
-	"""  """
+	""" Text File Reader """
+
 	file = File(filter=['*.txt'])
+	view = Group('file')
 
-	def __init__(self, **traits):
-		super(text_file_reader, self).__init__(**traits)
-		self.name = 'Text File Reader'
 
-		list_string_trait = List(Str)
-		self.op_lines = OutputPort(
-								   data_types =  list_string_trait,
-								   name = 'lines', 
-								   module = self
-								   )
-		self.output_ports.append(self.op_lines)
-
+	label = 'Text File Reader'
+	
+	### Output port
+	op_lines = OutputPort( trait = List(Str) )
 
 
 	def _file_changed(self):
@@ -33,11 +24,6 @@ class text_file_reader(Module):
 		else:
 			self.op_lines.data = None
 
-
-	view = Group('file')
-
-
-	#TODO: verify the correctness file format and add other formats
 	def process(self):
 		self.progress = 0
 		f = open(self.file, "r", 0)

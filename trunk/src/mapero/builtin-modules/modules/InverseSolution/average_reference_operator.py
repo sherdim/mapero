@@ -1,79 +1,34 @@
 from mapero.core.api import Module
 from mapero.core.api import OutputPort, InputPort
-from numpy.oldnumeric.precision import Float, Int
-from enthought.traits import api as traits
+from enthought.traits.api import Array, List, Str, Any, HasTraits, Float
 from numpy import array, resize
 
-module_info = {'name': 'InverseSolution.average_reference_operator',
-                'desc': ""}
-
-class registration_metadata(traits.HasTraits):
-    fm = traits.Float
-    channels = traits.List(traits.Str)
+class registration_metadata(HasTraits):
+    fm = Float
+    channels = List(Str)
 
 class average_reference_operator(Module):
     """ average reference operator """
 
-    def __init__(self, **traitsv):
-        super(average_reference_operator, self).__init__(**traitsv)
-        self.name = 'Avg Ref Op'
+    label = 'Avg Ref Op'
+    
+    ### Input Ports
+    ip_registration_values = InputPort( trait = Array(typecode=float, shape=(None,None)) )
+    ip_registration_electrode_names = InputPort( trait = List(Str) )
+    ip_lead_field = InputPort( trait = Array(typecode=float, shape=(None,None)) )
+    ip_lead_field_electrode_names = InputPort( trait = List(Str) )
+    
+    ### Output Ports
+    op_registration_values_avg = OutputPort( trait = Array(typecode=float, shape=(None,None)) )
+    op_registration_metadata = OutputPort( trait = Any );
+    op_lead_field_avg = OutputPort( trait = Array(typecode=Float, shape=(None,None)))                                            
 
-        registration_values_trait = traits.Array(typecode=Float, shape=(None,None))
-        self.ip_registration_values = InputPort(
-                                                data_types = registration_values_trait,
-                                                name = 'registration values',
-                                                module = self
-                                                )
-        self.input_ports.append(self.ip_registration_values)
+    def start_module(self):
+
         self.i_registration_values = None
-
-        electrode_names_trait =  traits.List(traits.Str)
-        self.ip_registration_electrode_names = InputPort(
-                                                         data_types = electrode_names_trait,
-                                                         name = 'reg electrode names',
-                                                         module = self
-                                                         )
-        self.input_ports.append(self.ip_registration_electrode_names)
         self.i_registration_electrode_names = None
-
-        lead_field_trait = traits.Array(typecode=Float, shape=(None,None))
-        self.ip_lead_field = InputPort(
-                                       data_types = lead_field_trait,
-                                       name = 'lead field',
-                                       module = self
-                                       )
-        self.input_ports.append(self.ip_lead_field)
         self.i_lead_field = None
-
-        self.ip_lead_field_electrode_names = InputPort(
-                                                       data_types = electrode_names_trait,
-                                                       name = 'lead field electrode names',
-                                                       module = self
-                                                       )
-        self.input_ports.append(self.ip_lead_field_electrode_names)
         self.i_lead_field_electrode_names = None
-
-        self.op_registration_values_avg = OutputPort(
-                                                     data_types = registration_values_trait,
-                                                     name = 'registration values avg',
-                                                     module = self
-                                                     )
-        self.output_ports.append(self.op_registration_values_avg)
-
-        registration_metadata_trait = traits.Trait()
-        self.op_registration_metadata = OutputPort(
-                                                   data_types = registration_metadata_trait,
-                                                   name = 'registration metadata',
-                                                   module = self
-                                                   )
-        self.output_ports.append(self.op_registration_metadata)
-
-        self.op_lead_field_avg = OutputPort(
-                                            data_types = lead_field_trait,
-                                            name = 'lead field avg',
-                                            module = self
-                                            )
-        self.output_ports.append(self.op_lead_field_avg)
 
     def execute(self):
         self.i_registration_values = self.ip_registration_values.data

@@ -24,7 +24,7 @@ class CurrentSelection(HasTraits):
     view_selection = View(
                           Item(name='_current_selection',
                                        enabled_when='_current_selection is not None',
-                                       style='custom', springy=True, show_label=True
+                                       style='custom', springy=True, show_label=False
                                ),
                           resizable=True,
                           scrollable=True,
