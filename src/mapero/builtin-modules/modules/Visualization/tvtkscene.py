@@ -36,6 +36,7 @@ class tvtkscene(VisualModule):
         self.progress = 100
         
     def _remove_actors(self):
+        print "removing actors"
         self.progress = 0
         self.scene.remove_actors(self.input_actors)
         self.progress = 100

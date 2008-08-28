@@ -32,18 +32,18 @@ class ConnectionGeometrics(DiagramObjectModel):
         tol = 5
         x0, y0 = self.start_point
         x1, y1 = self.end_point
-        
-        if abs(x0 - x1) < tol:
-            if abs(x0-x) < tol:
-                return ((y0 > y) and (y1 < y)) or ((y0 < y) and (y1 > y))
+        if (x>=x0 and x<x1) or (x<x0 and x>=x1):
+            if abs(x0 - x1) < tol:
+                if abs(x0-x) < tol:
+                    return ((y0 > y) and (y1 < y)) or ((y0 < y) and (y1 > y))
+                else:
+                    return False
             else:
-                return False
-        else:
-            m = (y1 - y0) / (x1 - x0)
-            b = y0 - m * x0
-            yl = m*x + b
-            if abs( yl-y ) < tol:
-                return True
+                m = (y1 - y0) / (x1 - x0)
+                b = y0 - m * x0
+                yl = m*x + b
+                if abs( yl-y ) < tol:
+                    return True
 
         return False
             
