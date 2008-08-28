@@ -42,7 +42,6 @@ class SimpleEngine(HasTraits):
         for module in event.removed:
             module.stop_module()
             
-    @threaded_process
     def set_input_port_data(self, input_port, data):
         input_port.data = data
         
