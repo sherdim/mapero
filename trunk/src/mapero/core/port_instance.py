@@ -44,7 +44,13 @@ class InputPortInstance(PortInstance):
 class OutputPortInstance(PortInstance):
 
     connections = List( Instance( klass = 'mapero.core.connection.Connection') )
-    
+
+    def update_data(self):
+        print "updating data"
+        for connection in self.connections:
+            if connection.enabled:
+                connection.input_port.module.execute()
+
     def _set_data(self, data):
         super(OutputPortInstance, self)._set_data(data)
         for connection in self.connections:

@@ -22,24 +22,32 @@ class tvtkscene(VisualModule):
         self.actors_pattern = "actors1"
 
     def execute(self):
-        self.input_actors = self.input1.data
-        if ( not self.input_actors ):
-            self._remove_actors()
+        self.progress = 0
+        if isinstance(self.input1.data, list):
+            input_actors = self.input1.data
         else:
-            self._add_actors()
+            input_actors = [self.input1.data]
+            
+        for actor in input_actors:
+            if ( actor not in self.input_actors ):
+                self._add_actor(actor)
+        for actor in self.input_actors:
+            if ( actor not in input_actors ):
+                self._remove_actor(actor)
+
+        print "tvtk scene updating ..."
+        self.progress = 100
         self.scene.render()
 
-    def _add_actors(self):
+    def _add_actor(self, actor):
         print "adding actors"
-        self.progress = 0
-        self.scene.add_actors(self.input_actors)
-        self.progress = 100
+        self.scene.add_actors(actor)
+        self.input_actors.append(actor)
         
-    def _remove_actors(self):
+    def _remove_actor(self, actor):
         print "removing actors"
-        self.progress = 0
-        self.scene.remove_actors(self.input_actors)
-        self.progress = 100
+        self.scene.remove_actors(actor)
+        self.input_actors.remove(actor)
 
 
     def create_control(self, parent):

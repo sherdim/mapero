@@ -30,6 +30,7 @@ class surface_mapper(Module):
         self.i_cortex = self.ip_cortex.data
         if ( self.i_cortex != None) :
             self.procesar()
+        self.op_polydata.update_data()
 
     def procesar(self):
         self.progress = 0
