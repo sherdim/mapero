@@ -12,24 +12,28 @@ from mapero.dataflow_editor.editor.diagram.tools.selection_tool import Selection
 from enthought.traits.api import Instance, Any, on_trait_change, TraitListEvent, Dict, Delegate
 from enthought.traits.ui.menu import Menu, Action, Separator
 
-from enthought.enable.api import Canvas, Viewport, Window, Scrolled
+from enthought.enable.api import Viewport, Window, Scrolled
 from enthought.enable.drawing.api import DrawingCanvas
 from enthought.enable.tools.api import ViewportPanTool
 from enthought.pyface.workbench.api import IEditor
 from mapero.dataflow_editor.editor.diagram.components.diagram_component import DiagramComponent
 from mapero.dataflow_editor.editor.model.diagram_object_model import DiagramObjectModel
-from mapero.dataflow_editor.editor.model.module_geometrics import ModuleGeometrics
 
-class MyCanvas(DrawingCanvas, Canvas):
+class MyCanvas(DrawingCanvas):
     bgcolor = (1.0, 0.95, 0.71, 1.0)
     draw_axes=True
     window = Window
     editor = Delegate('window')
     module_geom_component_map  = Delegate('window')
     connection_geom_component_map  = Delegate('window')
+    auto_size = False
+    fit_window = False
     
     def __init__(self, window):
         self.window = window
+        self.auto_size = False
+        self.fit_window = False
+        self.bounds = [3000,3000]
         self.activate(ConnectionAddingTool( container = self ))
         self.listening_tools.append( SelectionTool(container = self) )
     
@@ -41,6 +45,8 @@ class MyCanvas(DrawingCanvas, Canvas):
         self.window.set_drag_result('copy')
         
     def normal_key_pressed(self, event):
+        self.bounds = [3000,3000]
+        print self.bounds
         if event.character == 'Delete':
             self.editor.remove_selection()
 
@@ -84,20 +90,19 @@ class DiagramWindow(Window):
         
         
         self.canvas = MyCanvas(window = self)
-        viewport = Viewport(component=self.canvas, enable_zoom=True)
-        viewport.view_position = [0,0]
-        viewport.tools.append(ViewportPanTool(viewport))
+#        viewport = Viewport(component=self.canvas, enable_zoom=True)
+#        viewport.view_position = [0,0]
+#        viewport.tools.append(ViewportPanTool(viewport))
 
         # Uncomment the following to enforce limits on the zoom
-        viewport.min_zoom = 0.2
-        viewport.max_zoom = 1.5
+#        viewport.min_zoom = 0.2
+#       viewport.max_zoom = 1.5
 
-        scrolled = Scrolled(self.canvas, fit_window = True,
-                            inside_padding_width = 0,
-                            mousewheel_scroll = False,
-#                            viewport_component = viewport,
-                            always_show_sb = True,
-                            continuous_drag_update = True)
+        scrolled = Scrolled(self.canvas)
+#                            inside_padding_width = 0,
+#                            mousewheel_scroll = False,
+#@                            viewport_component = viewport,
+#                            continuous_drag_update = True)
         
         self.component = scrolled
     

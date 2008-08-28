@@ -5,6 +5,7 @@ from enthought.traits.api import HasTraits, Any, on_trait_change, implements
 from mapero.core.dataflow_engine.i_dataflow_engine import IDataflowEngine
 from mapero.core.port_definition import InputPort, OutputPort
 from mapero.core.port_instance import InputPortInstance, OutputPortInstance
+from mapero.core.decorators.thread import threaded_process
 
 
 
@@ -41,12 +42,16 @@ class SimpleEngine(HasTraits):
         for module in event.removed:
             module.stop_module()
             
+    @threaded_process
+    def set_input_port_data(self, input_port, data):
+        input_port.data = data
+        
     @on_trait_change('dataflow:connections_items')
     def on_connection_changes(self, event):
         for connection in event.added:
             if connection.enabled:
                 connection.data = connection.output_port.data
-                connection.input_port.data = connection.data
+                self.set_input_port_data(connection.input_port, connection.data)
             
         for connection in event.removed:
             connection.enabled = False

@@ -16,9 +16,11 @@ from numpy.core.defmatrix import matrix
 
 from multiline_plot import MultiLinePlot
 import time
+import thread
 
 import logging
 log = logging.getLogger("mapero.logger.module");
+
 
 class Timer:
 
