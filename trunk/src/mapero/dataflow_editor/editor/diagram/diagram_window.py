@@ -45,8 +45,6 @@ class MyCanvas(DrawingCanvas):
         self.window.set_drag_result('copy')
         
     def normal_key_pressed(self, event):
-        self.bounds = [3000,3000]
-        print self.bounds
         if event.character == 'Delete':
             self.editor.remove_selection()
 
@@ -90,19 +88,19 @@ class DiagramWindow(Window):
         
         
         self.canvas = MyCanvas(window = self)
-#        viewport = Viewport(component=self.canvas, enable_zoom=True)
-#        viewport.view_position = [0,0]
+        viewport = Viewport(component=self.canvas, enable_zoom=True)
+        viewport.view_position = [0,0]
 #        viewport.tools.append(ViewportPanTool(viewport))
 
         # Uncomment the following to enforce limits on the zoom
 #        viewport.min_zoom = 0.2
 #       viewport.max_zoom = 1.5
 
-        scrolled = Scrolled(self.canvas)
-#                            inside_padding_width = 0,
-#                            mousewheel_scroll = False,
-#@                            viewport_component = viewport,
-#                            continuous_drag_update = True)
+        scrolled = Scrolled(self.canvas,
+                            inside_padding_width = 0,
+                            mousewheel_scroll = False,
+                            viewport_component = viewport,
+                            continuous_drag_update = True)
         
         self.component = scrolled
     

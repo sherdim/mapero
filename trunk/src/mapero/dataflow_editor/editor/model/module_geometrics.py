@@ -5,12 +5,12 @@ from mapero.core.api import Module
 
 from diagram_object_model import DiagramObjectModel
 
-from enthought.traits.api import Instance, Property, List
+from enthought.traits.api import WeakRef, Property, List
 from enthought.traits.ui.api import View, Item
 
 class ModuleGeometrics(DiagramObjectModel):
  
-    module = Instance(Module)
+    module = WeakRef(Module)
     
     position = List([0.0, 0.0])
     bounds = List([0.0, 0.0])
